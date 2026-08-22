@@ -1,0 +1,7 @@
+# upstream pristine clone (has its own .git)
+PQR_DarhangeR_3.3.5a/
+
+# build intermediates
+bin/
+obj/
+*.user
