@@ -804,4 +804,81 @@ _G.PQR_WriteToChat = function(msg)
 	if _G._PQR_WriteToChat_Original then
 		return _G._PQR_WriteToChat_Original(msg)
 	end
-end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability></HUNTER>
+end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Deterrence</Name><Default>false</Default><SpellID>19263</SpellID><Actions></Actions><Lua>if UnitAffectingCombat(&amp;quot;player&amp;quot;)
+and not CooldownRemains(19263)
+and (getHp(&amp;quot;player&amp;quot;) &amp;lt; 40
+     or (getHp(&amp;quot;player&amp;quot;) &amp;lt; 70 and UnitIsPlayer(&amp;quot;target&amp;quot;) and rangeCheck2(53339, &amp;quot;target&amp;quot;)))
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Disengage (PvP)</Name><Default>false</Default><SpellID>781</SpellID><Actions></Actions><Lua>if UnitAffectingCombat(&amp;quot;player&amp;quot;)
+and not CooldownRemains(781)
+and UnitExists(&amp;quot;target&amp;quot;)
+and UnitIsPlayer(&amp;quot;target&amp;quot;)
+and UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;)
+and rangeCheck2(53339, &amp;quot;target&amp;quot;)
+and getHp(&amp;quot;player&amp;quot;) &amp;lt; 75
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Master&amp;apos;s Call</Name><Default>false</Default><SpellID>53271</SpellID><Actions></Actions><Lua>if not UnitExists(&amp;quot;pet&amp;quot;) or UnitIsDeadOrGhost(&amp;quot;pet&amp;quot;) then return false end
+if CooldownRemains(53271) then return false end
+if not UnitInRange(&amp;quot;pet&amp;quot;) then return false end
+local snares = { 3409, 8056, 8034, 12290, 12294, 12492, 12493, 15571, 25999, 45524, 50435, 55095, 61391, 68766, 116, 122, 120, 42917, 42918, 44614, 5116, 63685, 8377 }
+for i = 1, #snares do
+  if UnitDebuffID(&amp;quot;player&amp;quot;, snares[i]) then return true end
+end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Feign Death</Name><Default>false</Default><SpellID>5384</SpellID><Actions></Actions><Lua>if not CooldownRemains(5384)
+and UnitAffectingCombat(&amp;quot;player&amp;quot;)
+and getHp(&amp;quot;player&amp;quot;) &amp;lt; 25
+and CooldownRemains(19263)
+and CooldownRemains(781)
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Scatter Shot</Name><Default>false</Default><SpellID>19503</SpellID><Actions></Actions><Lua>if not UnitExists(&amp;quot;focus&amp;quot;) then return false end
+if UnitIsDeadOrGhost(&amp;quot;focus&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;focus&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;focus&amp;quot;) then return false end
+if CooldownRemains(19503) then return false end
+if not rangeCheck(19503, &amp;quot;focus&amp;quot;) then return false end
+if UnitDebuffID(&amp;quot;focus&amp;quot;, 3355) or UnitDebuffID(&amp;quot;focus&amp;quot;, 19386) or UnitDebuffID(&amp;quot;focus&amp;quot;, 118) then return false end
+if UnitCastingInfo(&amp;quot;focus&amp;quot;) or UnitChannelInfo(&amp;quot;focus&amp;quot;) or getHp(&amp;quot;focus&amp;quot;) &amp;gt; 70 then return true end</Lua><RecastDelay>0</RecastDelay><Target>Focus</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Silencing Shot (Focus)</Name><Default>false</Default><SpellID>34490</SpellID><Actions></Actions><Lua>if not UnitExists(&amp;quot;focus&amp;quot;) then return false end
+if UnitIsDeadOrGhost(&amp;quot;focus&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;focus&amp;quot;) then return false end
+if CooldownRemains(34490) then return false end
+if not rangeCheck(34490, &amp;quot;focus&amp;quot;) then return false end
+local n, _, _, _, _, _, _, _, notInt = UnitCastingInfo(&amp;quot;focus&amp;quot;)
+if n and not notInt then return true end
+local cn, _, _, _, _, _, _, cNotInt = UnitChannelInfo(&amp;quot;focus&amp;quot;)
+if cn and not cNotInt then return true end</Lua><RecastDelay>0</RecastDelay><Target>Focus</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Wyvern Sting</Name><Default>false</Default><SpellID>19386</SpellID><Actions></Actions><Lua>if not UnitExists(&amp;quot;focus&amp;quot;) then return false end
+if UnitIsDeadOrGhost(&amp;quot;focus&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;focus&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;focus&amp;quot;) then return false end
+if CooldownRemains(19386) then return false end
+if not rangeCheck(19386, &amp;quot;focus&amp;quot;) then return false end
+if UnitDebuffID(&amp;quot;focus&amp;quot;, 19386) or UnitDebuffID(&amp;quot;focus&amp;quot;, 3355) or UnitDebuffID(&amp;quot;focus&amp;quot;, 118) or UnitDebuffID(&amp;quot;focus&amp;quot;, 19503) then return false end
+if not CooldownRemains(34490) then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Focus</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Concussive Shot</Name><Default>false</Default><SpellID>5116</SpellID><Actions></Actions><Lua>if not CanAttack() then return false end
+if not UnitIsPlayer(&amp;quot;target&amp;quot;) then return false end
+if CooldownRemains(5116) then return false end
+if not rangeCheck(5116, &amp;quot;target&amp;quot;) then return false end
+if UnitDebuffID(&amp;quot;target&amp;quot;, 5116) then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Rapid Fire (PvP)</Name><Default>false</Default><SpellID>3045</SpellID><Actions></Actions><Lua>if not UnitIsPlayer(&amp;quot;target&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if rapfire then return false end
+if CooldownRemains(3045) then return false end
+if not rangeCheck(49052, &amp;quot;target&amp;quot;) then return false end
+if getHp(&amp;quot;target&amp;quot;) &amp;lt; 30 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Readiness (PvP)</Name><Default>false</Default><SpellID>23989</SpellID><Actions></Actions><Lua>if CooldownRemains(23989) then return false end
+if not UnitIsPlayer(&amp;quot;target&amp;quot;) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if rapfire then return false end
+if not CooldownRemains(3045) then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Aimed Shot (PvP)</Name><Default>false</Default><SpellID>49050</SpellID><Actions></Actions><Lua>if not CanAttack() then return false end
+if not rangeCheck(49052, &amp;quot;target&amp;quot;) then return false end
+if not pStay() then return false end
+if CooldownRemains(49050) then return false end
+if PQR_IsCastingSpell(49050) then return false end
+if AOE() == true then return false end
+if UnitBuffID(&amp;quot;player&amp;quot;, 53220) then return true end
+if CooldownRemains(53209) and serpstring then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Call of the Wild (PvP)</Name><Default>false</Default><SpellID>53434</SpellID><Actions></Actions><Lua>if not UnitExists(&amp;quot;pet&amp;quot;) or UnitIsDeadOrGhost(&amp;quot;pet&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;target&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if CooldownRemains(53434) then return false end
+if not rangeCheck(49052, &amp;quot;target&amp;quot;) then return false end
+if getHp(&amp;quot;target&amp;quot;) &amp;lt; 40 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Pet</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability></HUNTER>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?><HUNTER><Rotation><RotationName>Marksmanship_DPS_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Function --|-- Hunter Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- Stats Buffs / Flask --|-- Interrupt Engine --|-- All:Mouseover --|M:Trueshot Aura|All:Aspect of the Dragonhawk|All:Aspect of the Viper|All:Hunter&amp;apos;s Mark|BM:Call Pet|BM:Mend Pet|BM:Revive Pet|-- Offensive Spells --|-- All:Healthstone --|-- All:Potions --|S:Wing Clip|M:Volley|M:Multi-Shot|All:Rapid Fire|-- All:Racial --|All:Misdirection|All:Tranquilizing Shot|S:Mongoose Bite|S:Raptor Strike|All:Kill Command|M:Kill Shot|M:Readiness|All:Serpent Sting|M:Chimera Shot|All:Aimed Shot|Pet:Call of the Wild|All:Arcane Shot (ММ)|All:Steady Shot|M:Silencing Shot</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Specific commands:
+<?xml version="1.0" encoding="utf-8" ?><HUNTER><Rotation><RotationName>Marksmanship_DPS_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Function --|-- Hunter Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- Stats Buffs / Flask --|-- Interrupt Engine --|-- All:Mouseover --|M:Trueshot Aura|All:Aspect of the Dragonhawk|All:Aspect of the Viper|All:Hunter&amp;apos;s Mark|-- Offensive Spells --|-- All:Healthstone --|-- All:Potions --|S:Wing Clip|M:Volley|M:Multi-Shot|All:Rapid Fire|-- All:Racial --|Use:Trinkets/Hands|All:Misdirection|All:Tranquilizing Shot|S:Mongoose Bite|S:Disengage|S:Deterrence|S:Raptor Strike|All:Kill Command|M:Kill Shot|M:Readiness|All:Serpent Sting|M:Chimera Shot|All:Aimed Shot|Pet:Call of the Wild|All:Arcane Shot (ММ)|All:Steady Shot|M:Silencing Shot</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Specific commands:
 - Press Right Shift for use Volley on target;
 - Press Right Alt for change Aimeid Shot / Multi-Shot;
 - Focus Tank for use Misdirection;</RotationNotes></Rotation><Rotation><RotationName>BM_DPS_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Function --|-- Hunter Stuff --|BM: -- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- Stats Buffs / Flask --|-- Interrupt Engine --|-- All:Mouseover --|All:Aspect of the Dragonhawk|All:Aspect of the Viper|All:Hunter&amp;apos;s Mark|BM:Call Pet|BM:Mend Pet|BM:Revive Pet|-- Offensive Spells --|-- All:Healthstone --|-- All:Potions --|S:Wing Clip|M:Volley|M:Multi-Shot()|All:Rapid Fire|BM:Bestial Wrath|-- All:Racial --|All:Misdirection|All:Tranquilizing Shot|S:Mongoose Bite|S:Raptor Strike|All:Kill Command|M:Kill Shot|All:Serpent Sting|Pet:Call of the Wild|All:Arcane Shot|All:Steady Shot (BM)</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Specific commands:
@@ -7,4 +7,27 @@
 - Focus Tank for use Misdirection;</RotationNotes></Rotation><Rotation><RotationName>Survival_DPS_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Function --|-- Hunter Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- Stats Buffs / Flask --|-- Interrupt Engine --|-- All:Mouseover --|All:Aspect of the Dragonhawk|All:Aspect of the Viper|All:Hunter&amp;apos;s Mark|BM:Call Pet|BM:Mend Pet|BM:Revive Pet|-- Offensive Spells --|-- All:Healthstone --|-- All:Potions --|S:Wing Clip|M:Volley|M:Multi-Shot|All:Rapid Fire|BM:Bestial Wrath|-- All:Racial --|All:Misdirection|All:Tranquilizing Shot|S:Mongoose Bite|S:Raptor Strike|All:Kill Command|M:Kill Shot|S:Explosive Shot (LnL)|S:Black Arrow|S:Explosive Shot|All:Serpent Sting|All:Aimed Shot|Pet:Call of the Wild|All:Steady Shot (SV)</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Specific commands:
 - Press Right Shift for use Volley on target;
 - Press Right Alt for change Aimeid Shot / Multi-Shot;
-- Focus Tank for use Misdirection;</RotationNotes></Rotation></HUNTER>
+- Focus Tank for use Misdirection;</RotationNotes></Rotation><Rotation><RotationName>MM_PvP_BG_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Function --|-- Hunter Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- Stats Buffs / Flask --|-- Interrupt Engine --|-- All:Mouseover --|M:Trueshot Aura|All:Aspect of the Dragonhawk|All:Aspect of the Viper|All:Hunter&amp;apos;s Mark|BM:Mend Pet|BM:Revive Pet|-- Offensive Spells --|-- All:Healthstone --|-- All:Potions --|PvP:Deterrence|PvP:Master&amp;apos;s Call|PvP:Feign Death|PvP:Disengage (PvP)|PvP:Silencing Shot (Focus)|PvP:Scatter Shot|PvP:Wyvern Sting|M:Silencing Shot|All:Tranquilizing Shot|PvP:Concussive Shot|Use:Trinkets/Hands|PvP:Rapid Fire (PvP)|PvP:Readiness (PvP)|PvP:Call of the Wild (PvP)|-- All:Racial --|All:Misdirection|M:Kill Shot|All:Serpent Sting|M:Chimera Shot|PvP:Aimed Shot (PvP)|All:Arcane Shot (ММ)|All:Steady Shot</RotationList><RequireCombat>false</RequireCombat><RotationNotes>MM Hunter PvP / Battlegrounds.
+
+STRATEGY: assist-train squishies. Set /focus on the enemy healer before engaging.
+
+MANUAL:
+- Right Shift toggles Volley (leave OFF in BG);
+- Right Alt swaps Aimed / Multi (Aimed = default);
+- Left Ctrl pauses rotation;
+- Manually place Frost/Freezing Trap under yourself when melee sticks.
+
+DEFENSIVE AUTO:
+- Deterrence: HP &amp;lt; 40%, or &amp;lt; 70% with a melee player in range;
+- Disengage: HP &amp;lt; 75% with melee in range;
+- Master&amp;apos;s Call: any common snare on you;
+- Feign Death: HP &amp;lt; 25% AND Deterrence + Disengage on CD.
+
+CC ENGINE (needs /focus):
+- Silencing Shot fires on focus interruptible casts;
+- Scatter Shot on healing/casting focus;
+- Wyvern Sting fallback when Silencing on CD.
+
+BURST: Rapid Fire + Readiness + Call of the Wild fire auto on players HP &amp;gt; 30-40%.
+
+AIMED SHOT is only cast when Improved Steady Shot proc is up (safe window).</RotationNotes></Rotation></HUNTER>

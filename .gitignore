@@ -5,3 +5,7 @@ PQR_DarhangeR_3.3.5a/
 bin/
 obj/
 *.user
+
+# MemPalace per-project files (issue #185)
+mempalace.yaml
+entities.json
