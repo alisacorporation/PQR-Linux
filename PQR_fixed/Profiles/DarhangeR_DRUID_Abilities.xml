@@ -1858,4 +1858,72 @@ _G.PQR_WriteToChat = function(msg)
 	if _G._PQR_WriteToChat_Original then
 		return _G._PQR_WriteToChat_Original(msg)
 	end
-end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability></DRUID>
+end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Barkskin</Name><Default>false</Default><SpellID>22812</SpellID><Actions></Actions><Lua>if CooldownRemains(22812) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if UnitBuffID(&amp;quot;player&amp;quot;, 22812) then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;lt; 65 then return true end
+local stuns = { 408, 1833, 20549, 24394, 44572, 46968, 47481, 5211, 22703, 25046, 39796, 8983, 22570 }
+for i=1,#stuns do
+  if UnitDebuffID(&amp;quot;player&amp;quot;, stuns[i]) then return true end
+end
+local silences = { 15487, 18498, 25046, 47476, 34490, 55021, 31935 }
+for i=1,#silences do
+  if UnitDebuffID(&amp;quot;player&amp;quot;, silences[i]) then return true end
+end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:NS + Healing Touch</Name><Default>false</Default><SpellID>17116</SpellID><Actions></Actions><Lua>if not IsSpellKnown(17116) then return false end
+if CooldownRemains(17116) then return false end
+if UnitBuffID(&amp;quot;player&amp;quot;, 17116) then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;gt; 35 then return false end
+CastSpellByID(17116)
+local ht = GetSpellInfo(48378)
+if ht then CastSpellByName(ht, &amp;quot;player&amp;quot;) end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Cyclone (Focus)</Name><Default>false</Default><SpellID>33786</SpellID><Actions></Actions><Lua>if not UnitExists(&amp;quot;focus&amp;quot;) then return false end
+if UnitIsDeadOrGhost(&amp;quot;focus&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;focus&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;focus&amp;quot;) then return false end
+if not rangeCheck(33786, &amp;quot;focus&amp;quot;) then return false end
+if UnitDebuffID(&amp;quot;focus&amp;quot;, 33786) then return false end
+if PQR_IsCastingSpell(33786) then return false end
+if UnitDebuffID(&amp;quot;focus&amp;quot;, 339) or UnitDebuffID(&amp;quot;focus&amp;quot;, 26989) or UnitDebuffID(&amp;quot;focus&amp;quot;, 53308) then return false end
+local n, _, _, _, _, _, _, _, notInt = UnitCastingInfo(&amp;quot;focus&amp;quot;)
+if n and not notInt then return true end
+local cn, _, _, _, _, _, _, cNotInt = UnitChannelInfo(&amp;quot;focus&amp;quot;)
+if cn and not cNotInt then return true end
+local _, cls = UnitClass(&amp;quot;focus&amp;quot;)
+local isHealer = cls == &amp;quot;PRIEST&amp;quot; or cls == &amp;quot;DRUID&amp;quot; or cls == &amp;quot;PALADIN&amp;quot; or cls == &amp;quot;SHAMAN&amp;quot;
+if isHealer and getHp(&amp;quot;focus&amp;quot;) &amp;lt; 95 then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Focus</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Entangling Roots (Focus)</Name><Default>false</Default><SpellID>53308</SpellID><Actions></Actions><Lua>if not UnitExists(&amp;quot;focus&amp;quot;) then return false end
+if UnitIsDeadOrGhost(&amp;quot;focus&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;focus&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;focus&amp;quot;) then return false end
+if not rangeCheck(53308, &amp;quot;focus&amp;quot;) then return false end
+if UnitDebuffID(&amp;quot;focus&amp;quot;, 339) or UnitDebuffID(&amp;quot;focus&amp;quot;, 26989) or UnitDebuffID(&amp;quot;focus&amp;quot;, 53308) then return false end
+if UnitDebuffID(&amp;quot;focus&amp;quot;, 33786) then return false end
+if PQR_IsCastingSpell(53308) then return false end
+local _, cls = UnitClass(&amp;quot;focus&amp;quot;)
+local isMelee = cls == &amp;quot;WARRIOR&amp;quot; or cls == &amp;quot;ROGUE&amp;quot; or cls == &amp;quot;DEATHKNIGHT&amp;quot;
+if not isMelee then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Focus</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Faerie Fire (Anti-Stealth)</Name><Default>false</Default><SpellID>770</SpellID><Actions></Actions><Lua>if CooldownRemains(770) then return false end
+if not UnitExists(&amp;quot;target&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;target&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) then return false end
+if not rangeCheck(770, &amp;quot;target&amp;quot;) then return false end
+local _, cls = UnitClass(&amp;quot;target&amp;quot;)
+if cls ~= &amp;quot;ROGUE&amp;quot; and cls ~= &amp;quot;DRUID&amp;quot; then return false end
+if UnitDebuffID(&amp;quot;target&amp;quot;, 770) or UnitDebuffID(&amp;quot;target&amp;quot;, 91565) or UnitDebuffID(&amp;quot;target&amp;quot;, 26993) then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Nature's Grasp (PvP)</Name><Default>false</Default><SpellID>53312</SpellID><Actions></Actions><Lua>if CooldownRemains(53312) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if UnitBuffID(&amp;quot;player&amp;quot;, 53312) or UnitBuffID(&amp;quot;player&amp;quot;, 19975) then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;gt; 80 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:War Stomp (Tauren)</Name><Default>false</Default><SpellID>20573</SpellID><Actions></Actions><Lua>if not IsSpellKnown(20573) then return false end
+if CooldownRemains(20573) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if not UnitExists(&amp;quot;target&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;target&amp;quot;) then return false end
+if not rangeCheck(20573, &amp;quot;target&amp;quot;) then return false end
+local _, cls = UnitClass(&amp;quot;target&amp;quot;)
+local isMelee = cls == &amp;quot;WARRIOR&amp;quot; or cls == &amp;quot;ROGUE&amp;quot; or cls == &amp;quot;DEATHKNIGHT&amp;quot; or cls == &amp;quot;PALADIN&amp;quot; or cls == &amp;quot;SHAMAN&amp;quot; or cls == &amp;quot;HUNTER&amp;quot;
+if not isMelee then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;gt; 70 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability></DRUID>

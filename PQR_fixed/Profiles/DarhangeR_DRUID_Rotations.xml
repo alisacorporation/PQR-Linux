@@ -10,4 +10,25 @@
 
 - Hold Left Alt for use Rejuvenation;
 - Press Right Alt for use Auto Swipe;</RotationNotes></Rotation><Rotation><RotationName>Resto25_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Functions --|-- Druid Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- Stats Buffs / Flask --|-- All:Mouseover --|R:Tree of Life|R:Gift of the Wild|B:Thorns|-- All:Auto Buff (Raid/Party) --|-- Offensive Spells (H) --|-- Heal Engine --|-- All:Racial --|-- All:Healthstone --|-- All:Potions --|Use:Trinket (Heal)|B:Barkskin|R:Tranquility|B:Innervate|R:Wild Growth|R:Rejuvenation|R:Swiftmend|R:Abolish Poison|R:Remove Curse|R:Healing Touch|R:Regrowth|R:Regrowth (All)|R:Rejuvenation (All)|R:Nourish|R:Lifebloom</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Notes:
-- DO NOT TARGET A FRIENDLY PLAYER;</RotationNotes></Rotation></DRUID>
+- DO NOT TARGET A FRIENDLY PLAYER;</RotationNotes></Rotation><Rotation><RotationName>Resto_PvP_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Functions --|-- Druid Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- Stats Buffs / Flask --|-- All:Mouseover --|R:Tree of Life|R:Gift of the Wild|B:Thorns|-- All:Auto Buff (Raid/Party) --|-- All:Racial --|-- All:Healthstone --|-- All:Potions --|PvP:Barkskin|PvP:NS + Healing Touch|B:Innervate|PvP:Nature's Grasp (PvP)|-- Heal Engine --|R:Tranquility|R:Wild Growth|R:Swiftmend|R:Regrowth|R:Rejuvenation (All)|R:Lifebloom|R:Nourish|R:Healing Touch|R:Abolish Poison|R:Remove Curse|PvP:Cyclone (Focus)|PvP:Entangling Roots (Focus)|PvP:Faerie Fire (Anti-Stealth)|Use:Trinkets/Hands</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Resto Druid PvP rotation. Talent build: 11/0/60 (Balance/Feral/Resto).
+
+KEY TALENTS ASSUMED: Nature&amp;apos;s Focus 5/5 (70% pushback resist on Healing Touch / Nourish / Regrowth / Tranquility -- vital), Nature&amp;apos;s Swiftness, Tree of Life, Wild Growth, Swiftmend, Improved Barkskin, Nature&amp;apos;s Grasp.
+
+STRATEGY: heal yourself + ally through pressure, CC focus on the side. Heal Engine handles target selection for HoT/direct heals.
+
+FOCUS SETUP: set /focus on the enemy healer or the DPS training you.
+- Cyclone (Focus) fires on any focus cast/channel (interrupts Poly, Fear, big heals), or on a healer over 95% HP as a setup peel.
+- Entangling Roots (Focus) fires on melee focus (Warr/Rogue/DK) not already CCed.
+- Faerie Fire keeps armor debuff + anti-stealth on Rogue/Druid targets.
+
+DEFENSIVE AUTO:
+- Barkskin: HP &amp;lt; 65%, or on stun / silence table (uninterruptible casts under stun/silence);
+- NS + Healing Touch: HP &amp;lt; 35% -- Nature&amp;apos;s Swiftness + instant max-rank HT on self, one-shot panic button (3 min CD, 2 min glyphed);
+- Nature&amp;apos;s Grasp: proactive at HP &amp;lt; 80% for melee peel;
+- Innervate: existing threshold from B:Innervate.
+
+MANUAL:
+- Left Ctrl pauses rotation;
+- do NOT target a friendly player (heal engine picks targets);
+- keep the enemy healer as /focus for Cyclone chains -- rotation
+  DR-checks Cyclone against Entangling Roots on same focus.</RotationNotes></Rotation></DRUID>
