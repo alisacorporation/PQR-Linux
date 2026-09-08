@@ -635,4 +635,149 @@ _G.PQR_WriteToChat = function(msg)
 	if _G._PQR_WriteToChat_Original then
 		return _G._PQR_WriteToChat_Original(msg)
 	end
-end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability></DEATHKNIGHT>
+end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Strangulate</Name><Default>false</Default><SpellID>47476</SpellID><Actions></Actions><Lua>if not UnitExists(&amp;quot;focus&amp;quot;) then return false end
+if UnitIsDeadOrGhost(&amp;quot;focus&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;focus&amp;quot;) then return false end
+if CooldownRemains(47476) then return false end
+if not rangeCheck(47476, &amp;quot;focus&amp;quot;) then return false end
+local BR = select(2, BloodRuneCD()) or 0
+local DR = select(2, DeathRuneCD()) or 0
+if BR &amp;lt; 1 and DR &amp;lt; 1 then return false end
+local n, _, _, _, _, _, _, _, notInt = UnitCastingInfo(&amp;quot;focus&amp;quot;)
+if n and not notInt then return true end
+local cn, _, _, _, _, _, _, cNotInt = UnitChannelInfo(&amp;quot;focus&amp;quot;)
+if cn and not cNotInt then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Focus</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Death Grip</Name><Default>false</Default><SpellID>49576</SpellID><Actions></Actions><Lua>if not UnitExists(&amp;quot;focus&amp;quot;) then return false end
+if UnitIsDeadOrGhost(&amp;quot;focus&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;focus&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;focus&amp;quot;) then return false end
+if CooldownRemains(49576) then return false end
+if not rangeCheck(49576, &amp;quot;focus&amp;quot;) then return false end
+if rangeCheck(47528, &amp;quot;focus&amp;quot;) then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Focus</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Mind Freeze</Name><Default>false</Default><SpellID>47528</SpellID><Actions></Actions><Lua>if CooldownRemains(47528) then return false end
+if not UnitExists(&amp;quot;target&amp;quot;) then return false end
+if UnitIsDeadOrGhost(&amp;quot;target&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) then return false end
+if not rangeCheck(47528, &amp;quot;target&amp;quot;) then return false end
+local n, _, _, _, _, _, _, _, notInt = UnitCastingInfo(&amp;quot;target&amp;quot;)
+if n and not notInt then return true end
+local cn, _, _, _, _, _, _, cNotInt = UnitChannelInfo(&amp;quot;target&amp;quot;)
+if cn and not cNotInt then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Hungering Cold</Name><Default>false</Default><SpellID>49203</SpellID><Actions></Actions><Lua>if not IsSpellKnown(49203) then return false end
+if CooldownRemains(49203) then return false end
+local FR = select(2, FrostRuneCD()) or 0
+local DR = select(2, DeathRuneCD()) or 0
+if FR &amp;lt; 1 and DR &amp;lt; 1 then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;gt; 55 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Deathchill</Name><Default>false</Default><SpellID>49796</SpellID><Actions></Actions><Lua>if not IsSpellKnown(49796) then return false end
+if CooldownRemains(49796) then return false end
+if not UnitExists(&amp;quot;target&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;target&amp;quot;) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if not rangeCheck(49930, &amp;quot;target&amp;quot;) then return false end
+if getHp(&amp;quot;target&amp;quot;) &amp;lt; 25 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Hysteria (Self)</Name><Default>false</Default><SpellID>49016</SpellID><Actions></Actions><Lua>if not IsSpellKnown(49016) then return false end
+if CooldownRemains(49016) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;lt; 70 then return false end
+if not UnitExists(&amp;quot;target&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;target&amp;quot;) then return false end
+if UnitBuffID(&amp;quot;player&amp;quot;, 49016) then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Icebound Fortitude</Name><Default>false</Default><SpellID>48792</SpellID><Actions></Actions><Lua>if CooldownRemains(48792) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;lt; 55 then return true end
+local stuns = { 408, 1833, 20549, 24394, 44572, 46968, 47481, 5211, 22703, 25046, 39796, 91800, 91797 }
+for i = 1, #stuns do
+  if UnitDebuffID(&amp;quot;player&amp;quot;, stuns[i]) then return true end
+end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Anti-Magic Shell</Name><Default>false</Default><SpellID>48707</SpellID><Actions></Actions><Lua>if CooldownRemains(48707) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if not UnitExists(&amp;quot;target&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;target&amp;quot;) then return false end
+local _, cls = UnitClass(&amp;quot;target&amp;quot;)
+local isCaster = cls == &amp;quot;WARLOCK&amp;quot; or cls == &amp;quot;MAGE&amp;quot; or cls == &amp;quot;PRIEST&amp;quot; or cls == &amp;quot;SHAMAN&amp;quot; or cls == &amp;quot;DRUID&amp;quot; or cls == &amp;quot;PALADIN&amp;quot;
+if getHp(&amp;quot;player&amp;quot;) &amp;lt; 70 and isCaster then return true end
+local n = UnitCastingInfo(&amp;quot;target&amp;quot;)
+if n then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Vampiric Blood</Name><Default>false</Default><SpellID>55233</SpellID><Actions>/use Blood Tap</Actions><Lua>local BR = select(2, BloodRuneCD()) or 0
+local DR = select(2, DeathRuneCD()) or 0
+if CooldownRemains(55233) then return false end
+if BR &amp;lt; 1 and DR &amp;lt; 1 then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;lt; 65 then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Rune Tap</Name><Default>false</Default><SpellID>48982</SpellID><Actions>/use Blood Tap</Actions><Lua>local BR = select(2, BloodRuneCD()) or 0
+local DR = select(2, DeathRuneCD()) or 0
+if CooldownRemains(48982) then return false end
+if BR &amp;lt; 1 and DR &amp;lt; 1 then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;lt; 75 then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Unbreakable Armor</Name><Default>false</Default><SpellID>51271</SpellID><Actions>/use Blood Tap</Actions><Lua>if not IsSpellKnown(51271) then return false end
+if CooldownRemains(51271) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if not UnitExists(&amp;quot;target&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;target&amp;quot;) then return false end
+if not rangeCheck(49930, &amp;quot;target&amp;quot;) then return false end
+if getHp(&amp;quot;target&amp;quot;) &amp;lt; 20 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Dancing Rune Weapon</Name><Default>false</Default><SpellID>49028</SpellID><Actions></Actions><Lua>if not IsSpellKnown(49028) then return false end
+if CooldownRemains(49028) then return false end
+if not runpow(49028) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if not UnitExists(&amp;quot;target&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;target&amp;quot;) then return false end
+if not rangeCheck(49930, &amp;quot;target&amp;quot;) then return false end
+if getHp(&amp;quot;target&amp;quot;) &amp;lt; 20 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Empower Rune Weapon</Name><Default>false</Default><SpellID>47568</SpellID><Actions></Actions><Lua>if CooldownRemains(47568) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if not UnitExists(&amp;quot;target&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;target&amp;quot;) then return false end
+if not rangeCheck(49930, &amp;quot;target&amp;quot;) then return false end
+if getHp(&amp;quot;target&amp;quot;) &amp;lt; 30 then return false end
+local BR = select(2, BloodRuneCD()) or 0
+local FR = select(2, FrostRuneCD()) or 0
+local UR = select(2, UnholyRuneCD()) or 0
+local DR = select(2, DeathRuneCD()) or 0
+if (BR + FR + UR + DR) &amp;lt;= 1 then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Lichborne</Name><Default>false</Default><SpellID>49039</SpellID><Actions></Actions><Lua>if not IsSpellKnown(49039) then return false end
+if CooldownRemains(49039) then return false end
+if UnitBuffID(&amp;quot;player&amp;quot;, 49039) then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;lt; 45 then return true end
+local fears = { 6215, 8122, 5484, 2637, 5246, 6358 }
+for i = 1, #fears do
+  if UnitDebuffID(&amp;quot;player&amp;quot;, fears[i]) then return true end
+end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Death Coil (Self Heal)</Name><Default>false</Default><SpellID>49895</SpellID><Actions></Actions><Lua>if not UnitBuffID(&amp;quot;player&amp;quot;, 49039) then return false end
+if not runpow(49895) then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;gt; 85 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Mark of Blood</Name><Default>false</Default><SpellID>49005</SpellID><Actions></Actions><Lua>local BR = select(2, BloodRuneCD()) or 0
+local DR = select(2, DeathRuneCD()) or 0
+if CooldownRemains(49005) then return false end
+if BR &amp;lt; 1 and DR &amp;lt; 1 then return false end
+if not UnitExists(&amp;quot;target&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;target&amp;quot;) then return false end
+if not rangeCheck(49005, &amp;quot;target&amp;quot;) then return false end
+if UnitDebuffID(&amp;quot;target&amp;quot;, 49005) then return false end
+local _, cls = UnitClass(&amp;quot;target&amp;quot;)
+local isMelee = cls == &amp;quot;WARRIOR&amp;quot; or cls == &amp;quot;ROGUE&amp;quot; or cls == &amp;quot;DEATHKNIGHT&amp;quot; or cls == &amp;quot;PALADIN&amp;quot; or cls == &amp;quot;SHAMAN&amp;quot; or cls == &amp;quot;DRUID&amp;quot;
+if not isMelee then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;lt; 80 then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Chains of Ice</Name><Default>false</Default><SpellID>45524</SpellID><Actions></Actions><Lua>if CooldownRemains(45524) then return false end
+if not UnitExists(&amp;quot;target&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;target&amp;quot;) then return false end
+if not rangeCheck(45524, &amp;quot;target&amp;quot;) then return false end
+local FR = select(2, FrostRuneCD()) or 0
+local DR = select(2, DeathRuneCD()) or 0
+if FR &amp;lt; 1 and DR &amp;lt; 1 then return false end
+if UnitDebuffID(&amp;quot;target&amp;quot;, 45524) then return false end
+if rangeCheck(49930, &amp;quot;target&amp;quot;) then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Howling Blast (Rime)</Name><Default>false</Default><SpellID>49184</SpellID><Actions></Actions><Lua>if not UnitBuffID(&amp;quot;player&amp;quot;, 59052) then return false end
+if not UnitExists(&amp;quot;target&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) then return false end
+if not rangeCheck(49184, &amp;quot;target&amp;quot;) then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability></DEATHKNIGHT>

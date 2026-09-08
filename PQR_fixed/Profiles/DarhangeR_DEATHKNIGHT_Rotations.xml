@@ -1,9 +1,46 @@
 <?xml version="1.0" encoding="utf-8" ?><DEATHKNIGHT><Rotation><RotationName>Blood_DPS_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Function --|-- DK Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- Interrupt Engine --|-- All:Mouseover --|B:Blood Presence|F:Horn of Winter|-- Offensive Spells --|-- All:Healthstone --|-- All:Potions --|F:Icebound Fortitude|B:Vampiric Blood|U:Death and Decay|U:Pestilence (AOE)|-- All:Racial --|Use:Trinkets/Hands|B:Hysteria|F:Icy Touch|U:Plague Strike|U:Pestilence (Renew)|B:Dancing Rune Weapon|U:Death Strike|F:Rune Strike|B:Heart Strike|U:Death Coil (Max RP)|U:Death Coil|F:Empower Rune Weapon|U:Raise Dead|U:Anti-Magic Shell|B:Mark of Blood|B:Death Pact|B:Rune Tap|B:Blood Tap</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Specific commands:
 - Hold Left Shift for use Death and Decay;
-- Hold Left Alt for use Pestilence;</RotationNotes></Rotation><Rotation><RotationName>Frost2W_DPS_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Function --|-- DK Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- Interrupt Engine --|-- All:Mouseover --|F:Horn of Winter|-- Offensive Spells --|-- All:Healthstone --|-- All:Potions --|F:Icebound Fortitude|U:Death and Decay|U:Pestilence (AOE)|F:Howling Blast|F:Unbreakable Armor|Use:Trinkets/Hands|-- All:Racial --|F:Icy Touch|U:Plague Strike|U:Pestilence (Renew)|F:Obliterate|F:Rune Strike|F:Frost Strike (TM)|F:Frost Strike|B:Blood Strike|F:Empower Rune Weapon</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Specific commands:
+- Hold Left Alt for use Pestilence;</RotationNotes></Rotation><Rotation><RotationName>Frost2W_DPS_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Function --|-- DK Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- Interrupt Engine --|-- All:Mouseover --|F:Horn of Winter|-- Offensive Spells --|-- All:Healthstone --|-- All:Potions --|F:Icebound Fortitude|U:Death and Decay|U:Pestilence (AOE)|F:Howling Blast|F:Unbreakable Armor|Use:Trinkets/Hands|-- All:Racial --|F:Icy Touch|U:Plague Strike|U:Pestilence (Renew)|U:Death Strike|F:Obliterate|U:Raise Dead|F:Rune Strike|F:Frost Strike (TM)|F:Frost Strike|B:Blood Strike|F:Empower Rune Weapon</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Specific commands:
 - Hold Left Shift for use Death and Decay;
 - Hold Left Alt for use Pestilence;</RotationNotes></Rotation><Rotation><RotationName>Unholy_DPS_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Function --|-- DK Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- Interrupt Engine --|-- All:Mouseover --|B:Blood Presence|F:Horn of Winter|U:Raise Dead|-- Offensive Spells --|-- All:Healthstone --|-- All:Potions --|F:Icebound Fortitude|U:Death and Decay|U:Pestilence (AOE)|-- All:Racial --|Use:Trinkets/Hands|F:Icy Touch|U:Plague Strike|U:Summon Gargoyle|U:Pestilence (Renew)|U:Scourge Strike|B:Blood Strike|F:Rune Strike|U:Death Coil (Max RP)|U:Death Coil|F:Empower Rune Weapon</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Specific commands:
 - Hold Left Shift for use Death and Decay;
 - Hold Left Alt for use Pestilence;</RotationNotes></Rotation><Rotation><RotationName>Blood_Tank_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Function --|-- DK Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- Interrupt Engine --|-- All:Mouseover --|F:Frost Presence|F:Horn of Winter|-- Offensive Spells --|-- All:Healthstone --|-- All:Potions --|B:Blood Tap|B:Vampiric Blood|B:Mark of Blood|B:Rune Tap|F:Icebound Fortitude|U:Death and Decay|U:Pestilence (AOE)|-- All:Racial --|B:Dark Command|F:Icy Touch|U:Plague Strike|U:Pestilence (Renew)|U:Death Strike (Lich)|U:Death Strike|F:Rune Strike|U:Death Coil (Max RP)|B:Blood Boil|U:Death Coil</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Specific commands:
 - Hold Left Shift for use Death and Decay;
-- Hold Left Alt for use Pestilence;</RotationNotes></Rotation></DEATHKNIGHT>
+- Hold Left Alt for use Pestilence;</RotationNotes></Rotation><Rotation><RotationName>Frost_PvP_Burst_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Function --|-- DK Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- Interrupt Engine --|-- All:Mouseover --|B:Blood Presence|F:Horn of Winter|-- All:Healthstone --|-- All:Potions --|PvP:Icebound Fortitude|PvP:Anti-Magic Shell|PvP:Lichborne|PvP:Death Coil (Self Heal)|B:Death Pact|PvP:Mind Freeze|PvP:Strangulate|PvP:Death Grip|PvP:Hungering Cold|-- All:Racial --|Use:Trinkets/Hands|PvP:Empower Rune Weapon|PvP:Unbreakable Armor|PvP:Deathchill|F:Icy Touch|U:Plague Strike|PvP:Chains of Ice|PvP:Howling Blast (Rime)|F:Obliterate|F:Frost Strike|F:Rune Strike|U:Death Coil (Max RP)|U:Death Coil|U:Raise Dead</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Frost DK PvP Burst rotation.
+
+TALENTS ASSUMED: Killing Machine, Rime, Deathchill, Chilblains, Hungering Cold, Improved Icebound Fortitude, Lichborne. 2H build (Nerves of Cold Steel optional for 1H).
+
+STRATEGY: burst opener chain: Trinkets + Empower Rune Weapon + Unbreakable Armor + Deathchill -&amp;gt; Obliterate (KM+DC crit) -&amp;gt; Frost Strike RP dump -&amp;gt; free Howling Blast on Rime proc. Chains of Ice on out-of-melee targets (Chilblains root chance).
+
+FOCUS SETUP: set /focus on the enemy healer or main caster. Strangulate silences focus interruptibles (30yd); Mind Freeze covers current target melee interrupts; Death Grip pulls focus out of range.
+
+DEFENSIVE AUTO:
+- IBF: HP &amp;lt; 55% or on stun debuff table;
+- AMS: caster target casting, or HP &amp;lt; 70% vs caster class;
+- Lichborne: HP &amp;lt; 45% or feared -&amp;gt; Death Coil self-heal fires while aura up;
+- Death Pact: HP &amp;lt; 17% with ghoul;
+- Hungering Cold: emergency AoE freeze at HP &amp;lt; 55%.
+
+MANUAL:
+- Left Ctrl pauses rotation;
+- pre-pull Raise Dead for Death Pact insurance.</RotationNotes></Rotation><Rotation><RotationName>Blood_PvP_Burst_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Function --|-- DK Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- Interrupt Engine --|-- All:Mouseover --|B:Blood Presence|F:Horn of Winter|-- All:Healthstone --|-- All:Potions --|PvP:Icebound Fortitude|PvP:Anti-Magic Shell|PvP:Vampiric Blood|PvP:Rune Tap|PvP:Lichborne|PvP:Death Coil (Self Heal)|B:Death Pact|PvP:Mark of Blood|PvP:Mind Freeze|PvP:Strangulate|PvP:Death Grip|-- All:Racial --|Use:Trinkets/Hands|PvP:Hysteria (Self)|PvP:Empower Rune Weapon|PvP:Dancing Rune Weapon|PvP:Chains of Ice|F:Icy Touch|U:Plague Strike|U:Pestilence (Renew)|U:Death Strike|F:Rune Strike|B:Heart Strike|U:Death Coil (Max RP)|U:Death Coil|U:Raise Dead</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Blood DK PvP Burst rotation.
+
+TALENTS ASSUMED: Butchery, Subversion, Bladed Armor, Dark Conviction, Blood-Caked Blade, Sudden Doom, Vampiric Blood, Mark of Blood, Improved Rune Tap, Hysteria, Dancing Rune Weapon. Off-tree: Lichborne, Anti-Magic Shell (baseline).
+
+STRATEGY: burst chain: Trinkets + Hysteria (self) + Empower Rune Weapon + Dancing Rune Weapon -&amp;gt; Heart Strike x2 + Death Strike + Rune Strike -&amp;gt; Death Coil RP dumps (Sudden Doom = free). DRW mirrors your strikes for 12s = double damage window.
+
+FOCUS SETUP: /focus enemy healer/caster. Strangulate silences focus casts; Mind Freeze on target; Death Grip pulls focus.
+
+DEFENSIVE AUTO:
+- IBF: HP &amp;lt; 55% or on stun;
+- AMS: caster pressure;
+- Vampiric Blood: HP &amp;lt; 65% (+15% max HP);
+- Rune Tap: HP &amp;lt; 75% (30s CD heal);
+- Mark of Blood: on melee attacker while HP &amp;lt; 80%;
+- Lichborne: HP &amp;lt; 45% -&amp;gt; Death Coil self-heal;
+- Death Pact: HP &amp;lt; 17%.
+
+MANUAL:
+- Left Ctrl pauses rotation;
+- pre-pull Raise Dead for Death Pact insurance;
+- Hysteria costs 1% HP/s -- rotation gates it on HP &amp;gt; 70%.</RotationNotes></Rotation></DEATHKNIGHT>
