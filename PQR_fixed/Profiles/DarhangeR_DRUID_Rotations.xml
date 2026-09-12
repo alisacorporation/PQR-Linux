@@ -30,4 +30,10 @@ DEFENSIVE AUTO:
 MANUAL:
 - Left Ctrl pauses rotation;
 - do NOT target a friendly player (heal engine picks targets);
-- keep the enemy healer as /focus for Cyclone chains, or the melee training you for lockdown.</RotationNotes></Rotation></DRUID>
+- keep the enemy healer as /focus for Cyclone chains, or the melee training you for lockdown.
+
+TEST MODE (dummy testing):
+- Enable:  /run PQR_TestMode = true
+- Disable: /run PQR_TestMode = nil
+- When ON, Cyclone/Roots/Faerie Fire/War Stomp bypass UnitIsPlayer and class-filter checks so they fire on training dummies. Target the dummy and /focus it (or another dummy) to see focus abilities trigger.
+- Defensive spells (Barkskin, NS+HT, Nature&amp;apos;s Grasp, Innervate) are NOT bypassed -- they need real damage / low HP / low mana to trigger; test them by taking damage in a duel or from mobs.</RotationNotes></Rotation></DRUID>

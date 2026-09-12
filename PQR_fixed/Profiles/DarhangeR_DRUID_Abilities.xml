@@ -1941,11 +1941,12 @@ local ht = GetSpellInfo(48378)
 if ht then CastSpellByName(ht, &amp;quot;player&amp;quot;) end
 return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Cyclone (Focus)</Name><Default>false</Default><SpellID>33786</SpellID><Actions></Actions><Lua>if not UnitExists(&amp;quot;focus&amp;quot;) then return false end
 if UnitIsDeadOrGhost(&amp;quot;focus&amp;quot;) then return false end
-if not UnitIsPlayer(&amp;quot;focus&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;focus&amp;quot;) and not PQR_TestMode then return false end
 if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;focus&amp;quot;) then return false end
 if not rangeCheck(33786, &amp;quot;focus&amp;quot;) then return false end
 if UnitDebuffID(&amp;quot;focus&amp;quot;, 33786) then return false end
 if PQR_IsCastingSpell(33786) then return false end
+if PQR_TestMode then return true end
 local n, _, _, _, _, _, _, _, notInt = UnitCastingInfo(&amp;quot;focus&amp;quot;)
 if n and not notInt then return true end
 local cn, _, _, _, _, _, _, cNotInt = UnitChannelInfo(&amp;quot;focus&amp;quot;)
@@ -1957,23 +1958,25 @@ local isMelee = cls == &amp;quot;WARRIOR&amp;quot; or cls == &amp;quot;ROGUE&amp
 if isMelee and getHp(&amp;quot;player&amp;quot;) &amp;lt; 65 then return true end
 return false</Lua><RecastDelay>0</RecastDelay><Target>Focus</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Entangling Roots (Focus)</Name><Default>false</Default><SpellID>53308</SpellID><Actions></Actions><Lua>if not UnitExists(&amp;quot;focus&amp;quot;) then return false end
 if UnitIsDeadOrGhost(&amp;quot;focus&amp;quot;) then return false end
-if not UnitIsPlayer(&amp;quot;focus&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;focus&amp;quot;) and not PQR_TestMode then return false end
 if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;focus&amp;quot;) then return false end
 if not rangeCheck(53308, &amp;quot;focus&amp;quot;) then return false end
 if UnitDebuffID(&amp;quot;focus&amp;quot;, 339) or UnitDebuffID(&amp;quot;focus&amp;quot;, 26989) or UnitDebuffID(&amp;quot;focus&amp;quot;, 53308) then return false end
 if UnitDebuffID(&amp;quot;focus&amp;quot;, 33786) then return false end
 if PQR_IsCastingSpell(53308) then return false end
+if PQR_TestMode then return true end
 local _, cls = UnitClass(&amp;quot;focus&amp;quot;)
 local isMelee = cls == &amp;quot;WARRIOR&amp;quot; or cls == &amp;quot;ROGUE&amp;quot; or cls == &amp;quot;DEATHKNIGHT&amp;quot; or cls == &amp;quot;PALADIN&amp;quot; or cls == &amp;quot;SHAMAN&amp;quot; or cls == &amp;quot;DRUID&amp;quot; or cls == &amp;quot;HUNTER&amp;quot;
 if not isMelee then return false end
 return true</Lua><RecastDelay>0</RecastDelay><Target>Focus</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Faerie Fire (Anti-Stealth)</Name><Default>false</Default><SpellID>770</SpellID><Actions></Actions><Lua>if CooldownRemains(770) then return false end
 if not UnitExists(&amp;quot;target&amp;quot;) then return false end
-if not UnitIsPlayer(&amp;quot;target&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;target&amp;quot;) and not PQR_TestMode then return false end
 if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) then return false end
 if not rangeCheck(770, &amp;quot;target&amp;quot;) then return false end
+if UnitDebuffID(&amp;quot;target&amp;quot;, 770) or UnitDebuffID(&amp;quot;target&amp;quot;, 91565) or UnitDebuffID(&amp;quot;target&amp;quot;, 26993) then return false end
+if PQR_TestMode then return true end
 local _, cls = UnitClass(&amp;quot;target&amp;quot;)
 if cls ~= &amp;quot;ROGUE&amp;quot; and cls ~= &amp;quot;DRUID&amp;quot; then return false end
-if UnitDebuffID(&amp;quot;target&amp;quot;, 770) or UnitDebuffID(&amp;quot;target&amp;quot;, 91565) or UnitDebuffID(&amp;quot;target&amp;quot;, 26993) then return false end
 return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Nature's Grasp (PvP)</Name><Default>false</Default><SpellID>53312</SpellID><Actions></Actions><Lua>if CooldownRemains(53312) then return false end
 if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
 if UnitBuffID(&amp;quot;player&amp;quot;, 53312) or UnitBuffID(&amp;quot;player&amp;quot;, 19975) then return false end
@@ -1983,8 +1986,9 @@ if CooldownRemains(20549) then return false end
 if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
 if not UnitExists(&amp;quot;target&amp;quot;) then return false end
 if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) then return false end
-if not UnitIsPlayer(&amp;quot;target&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;target&amp;quot;) and not PQR_TestMode then return false end
 if not rangeCheck(20549, &amp;quot;target&amp;quot;) then return false end
+if PQR_TestMode then return true end
 local _, cls = UnitClass(&amp;quot;target&amp;quot;)
 local isMelee = cls == &amp;quot;WARRIOR&amp;quot; or cls == &amp;quot;ROGUE&amp;quot; or cls == &amp;quot;DEATHKNIGHT&amp;quot; or cls == &amp;quot;PALADIN&amp;quot; or cls == &amp;quot;SHAMAN&amp;quot; or cls == &amp;quot;HUNTER&amp;quot;
 if not isMelee then return false end
