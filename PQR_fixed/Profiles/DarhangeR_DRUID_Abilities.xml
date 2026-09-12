@@ -1470,7 +1470,7 @@ local _,cd,havecd = GetInventoryItemCooldown(&amp;quot;player&amp;quot;,13)
 if cd == 0 and havecd == 1 then
   -- If it's a PvP medallion (breaks CC), only fire when actually CCed.
   local id13 = GetInventoryItemID(&amp;quot;player&amp;quot;,13)
-  local isPvPTrinket = id13 == 18854 or id13 == 18855 or id13 == 42364 or id13 == 42365 or id13 == 61048
+  local isPvPTrinket = id13 == 18854 or id13 == 18855 or id13 == 42364 or id13 == 42365 or id13 == 42126 or id13 == 61048
   if isPvPTrinket then
     local stuns = { 408, 1833, 20549, 24394, 44572, 46968, 47481, 5211, 22703, 25046, 39796, 8983, 22570 }
     local fears = { 5782, 6358, 8122, 8143, 5484, 17928 }
@@ -1495,7 +1495,7 @@ end
 local _,cd,havecd = GetInventoryItemCooldown(&amp;quot;player&amp;quot;,14)
 if cd == 0 and havecd == 1 then
   local id14 = GetInventoryItemID(&amp;quot;player&amp;quot;,14)
-  local isPvPTrinket = id14 == 18854 or id14 == 18855 or id14 == 42364 or id14 == 42365 or id14 == 61048
+  local isPvPTrinket = id14 == 18854 or id14 == 18855 or id14 == 42364 or id14 == 42365 or id14 == 42126 or id14 == 61048
   if isPvPTrinket then
     local stuns = { 408, 1833, 20549, 24394, 44572, 46968, 47481, 5211, 22703, 25046, 39796, 8983, 22570 }
     local fears = { 5782, 6358, 8122, 8143, 5484, 17928 }
