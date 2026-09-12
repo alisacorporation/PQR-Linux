@@ -1451,10 +1451,72 @@ local _,cd,havecd = GetInventoryItemCooldown(&amp;quot;player&amp;quot;,10)
 if cd == 0 and havecd == 1
 and IsBoss()
 and CanAttack()
-then 
+then
   UseInventoryItem(10)
   return true
-end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:-- Hotkeys --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if not leftkeydown then leftkeydown = 0 end
+end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Use:Trinkets/Hands (PvP)</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- PvP variant: fire on-use trinkets and engineer gloves tinker in combat.
+-- No IsBoss gate, no target requirement. Priority: gloves (haste) then trinkets.
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+
+-- Slot 10: gloves (Hyperspeed Accelerators / Synapse Springs = haste burst).
+local _,cd,havecd = GetInventoryItemCooldown(&amp;quot;player&amp;quot;,10)
+if cd == 0 and havecd == 1 then
+  UseInventoryItem(10)
+  return true
+end
+
+-- Slot 13: upper trinket.
+local _,cd,havecd = GetInventoryItemCooldown(&amp;quot;player&amp;quot;,13)
+if cd == 0 and havecd == 1 then
+  -- If it's a PvP medallion (breaks CC), only fire when actually CCed.
+  local id13 = GetInventoryItemID(&amp;quot;player&amp;quot;,13)
+  local isPvPTrinket = id13 == 18854 or id13 == 18855 or id13 == 42364 or id13 == 42365 or id13 == 61048
+  if isPvPTrinket then
+    local stuns = { 408, 1833, 20549, 24394, 44572, 46968, 47481, 5211, 22703, 25046, 39796, 8983, 22570 }
+    local fears = { 5782, 6358, 8122, 8143, 5484, 17928 }
+    local silences = { 15487, 18498, 25046, 47476, 34490, 55021, 31935 }
+    local roots = { 339, 26989, 53308, 122, 33395 }
+    local cced = false
+    for i=1,#stuns   do if UnitDebuffID(&amp;quot;player&amp;quot;, stuns[i])   then cced = true break end end
+    if not cced then for i=1,#fears    do if UnitDebuffID(&amp;quot;player&amp;quot;, fears[i])    then cced = true break end end end
+    if not cced then for i=1,#silences do if UnitDebuffID(&amp;quot;player&amp;quot;, silences[i]) then cced = true break end end end
+    if not cced then for i=1,#roots    do if UnitDebuffID(&amp;quot;player&amp;quot;, roots[i])    then cced = true break end end end
+    if cced then
+      UseInventoryItem(13)
+      return true
+    end
+  else
+    UseInventoryItem(13)
+    return true
+  end
+end
+
+-- Slot 14: lower trinket.
+local _,cd,havecd = GetInventoryItemCooldown(&amp;quot;player&amp;quot;,14)
+if cd == 0 and havecd == 1 then
+  local id14 = GetInventoryItemID(&amp;quot;player&amp;quot;,14)
+  local isPvPTrinket = id14 == 18854 or id14 == 18855 or id14 == 42364 or id14 == 42365 or id14 == 61048
+  if isPvPTrinket then
+    local stuns = { 408, 1833, 20549, 24394, 44572, 46968, 47481, 5211, 22703, 25046, 39796, 8983, 22570 }
+    local fears = { 5782, 6358, 8122, 8143, 5484, 17928 }
+    local silences = { 15487, 18498, 25046, 47476, 34490, 55021, 31935 }
+    local roots = { 339, 26989, 53308, 122, 33395 }
+    local cced = false
+    for i=1,#stuns   do if UnitDebuffID(&amp;quot;player&amp;quot;, stuns[i])   then cced = true break end end
+    if not cced then for i=1,#fears    do if UnitDebuffID(&amp;quot;player&amp;quot;, fears[i])    then cced = true break end end end
+    if not cced then for i=1,#silences do if UnitDebuffID(&amp;quot;player&amp;quot;, silences[i]) then cced = true break end end end
+    if not cced then for i=1,#roots    do if UnitDebuffID(&amp;quot;player&amp;quot;, roots[i])    then cced = true break end end end
+    if cced then
+      UseInventoryItem(14)
+      return true
+    end
+  else
+    UseInventoryItem(14)
+    return true
+  end
+end
+
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:-- Hotkeys --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if not leftkeydown then leftkeydown = 0 end
 
 if modtime == nil then
 	modtime = 0
