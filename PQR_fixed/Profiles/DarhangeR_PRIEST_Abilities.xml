@@ -1118,4 +1118,124 @@ _G.PQR_WriteToChat = function(msg)
 	if _G._PQR_WriteToChat_Original then
 		return _G._PQR_WriteToChat_Original(msg)
 	end
-end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability></PRIEST>
+end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Power Word: Shield (Self)</Name><Default>false</Default><SpellID>48066</SpellID><Actions></Actions><Lua>if CooldownRemains(48066) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if UnitDebuffID(&amp;quot;player&amp;quot;, 6788) then return false end
+if UnitBuffID(&amp;quot;player&amp;quot;, 48066) then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Renew (Self)</Name><Default>false</Default><SpellID>48068</SpellID><Actions></Actions><Lua>if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if UnitBuffID(&amp;quot;player&amp;quot;, 48068, &amp;quot;player&amp;quot;) then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;gt; 95 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Inner Focus</Name><Default>false</Default><SpellID>14751</SpellID><Actions></Actions><Lua>if CooldownRemains(14751) then return false end
+if UnitBuffID(&amp;quot;player&amp;quot;, 14751) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;lt; 55 then return true end
+if PQR_CustomTargetHP and PQR_CustomTargetHP &amp;lt; 55 then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Fade (Snare)</Name><Default>false</Default><SpellID>586</SpellID><Actions></Actions><Lua>if CooldownRemains(586) then return false end
+if UnitBuffID(&amp;quot;player&amp;quot;, 586) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+local snares = { 1715, 8056, 3409, 13810, 2974, 5116, 116, 6136, 120, 12323, 15571, 31589, 45524, 55095, 50259, 58180, 50040, 61391, 68766 }
+for i=1,#snares do if UnitDebuffID(&amp;quot;player&amp;quot;, snares[i]) then return true end end
+local roots = { 339, 26989, 53308, 122, 33395, 63685, 4167 }
+for i=1,#roots do if UnitDebuffID(&amp;quot;player&amp;quot;, roots[i]) then return true end end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Psychic Scream (Panic)</Name><Default>false</Default><SpellID>10890</SpellID><Actions></Actions><Lua>if CooldownRemains(10890) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;gt; 50 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Silence (Focus)</Name><Default>false</Default><SpellID>15487</SpellID><Actions></Actions><Lua>if not IsSpellKnown(15487) then return false end
+if CooldownRemains(15487) then return false end
+if not UnitExists(&amp;quot;focus&amp;quot;) then return false end
+if UnitIsDeadOrGhost(&amp;quot;focus&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;focus&amp;quot;) and not PQR_TestMode then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;focus&amp;quot;) then return false end
+if not rangeCheck(15487, &amp;quot;focus&amp;quot;) then return false end
+if UnitDebuffID(&amp;quot;focus&amp;quot;, 15487) then return false end
+if PQR_TestMode then return true end
+local n, _, _, _, _, _, _, _, notInt = UnitCastingInfo(&amp;quot;focus&amp;quot;)
+if n and not notInt then return true end
+local cn, _, _, _, _, _, _, cNotInt = UnitChannelInfo(&amp;quot;focus&amp;quot;)
+if cn and not cNotInt then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Focus</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Mass Dispel (Focus)</Name><Default>false</Default><SpellID>32375</SpellID><Actions></Actions><Lua>if CooldownRemains(32375) then return false end
+if not UnitExists(&amp;quot;focus&amp;quot;) then return false end
+if UnitIsDeadOrGhost(&amp;quot;focus&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;focus&amp;quot;) and not PQR_TestMode then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;focus&amp;quot;) then return false end
+if not rangeCheck(32375, &amp;quot;focus&amp;quot;) then return false end
+if PQR_TestMode then return true end
+local buffs = { 45438, 642, 33786, 1022, 498, 47585 }
+for i=1,#buffs do if UnitBuffID(&amp;quot;focus&amp;quot;, buffs[i]) then return true end end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Focus</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Dispel Magic (Focus)</Name><Default>false</Default><SpellID>988</SpellID><Actions></Actions><Lua>if CooldownRemains(988) then return false end
+if not UnitExists(&amp;quot;focus&amp;quot;) then return false end
+if UnitIsDeadOrGhost(&amp;quot;focus&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;focus&amp;quot;) and not PQR_TestMode then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;focus&amp;quot;) then return false end
+if not rangeCheck(988, &amp;quot;focus&amp;quot;) then return false end
+local i = 1
+while true do
+  local name, _, _, _, dType = UnitBuff(&amp;quot;focus&amp;quot;, i)
+  if not name then break end
+  if dType == &amp;quot;Magic&amp;quot; then return true end
+  i = i + 1
+end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Focus</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Power Infusion (Self)</Name><Default>false</Default><SpellID>10060</SpellID><Actions></Actions><Lua>if CooldownRemains(10060) then return false end
+if UnitBuffID(&amp;quot;player&amp;quot;, 10060) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;lt; 50 then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Hymn of Hope</Name><Default>false</Default><SpellID>64901</SpellID><Actions></Actions><Lua>if CooldownRemains(64901) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if getMana(&amp;quot;player&amp;quot;) &amp;lt; 20 and getHp(&amp;quot;player&amp;quot;) &amp;gt; 65 then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Use:Trinkets/Hands (PvP)</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+
+local _,cd,havecd = GetInventoryItemCooldown(&amp;quot;player&amp;quot;,10)
+if cd == 0 and havecd == 1 then
+  UseInventoryItem(10)
+  return true
+end
+
+local _,cd,havecd = GetInventoryItemCooldown(&amp;quot;player&amp;quot;,13)
+if cd == 0 and havecd == 1 then
+  local id13 = GetInventoryItemID(&amp;quot;player&amp;quot;,13)
+  local isPvPTrinket = id13 == 18854 or id13 == 18855 or id13 == 42364 or id13 == 42365 or id13 == 42126 or id13 == 61048
+  if isPvPTrinket then
+    local stuns = { 408, 1833, 20549, 24394, 44572, 46968, 47481, 5211, 22703, 25046, 39796, 8983, 22570 }
+    local fears = { 5782, 6358, 8122, 8143, 5484, 17928 }
+    local silences = { 15487, 18498, 25046, 47476, 34490, 55021, 31935 }
+    local roots = { 339, 26989, 53308, 122, 33395 }
+    local cced = false
+    for i=1,#stuns   do if UnitDebuffID(&amp;quot;player&amp;quot;, stuns[i])   then cced = true break end end
+    if not cced then for i=1,#fears    do if UnitDebuffID(&amp;quot;player&amp;quot;, fears[i])    then cced = true break end end end
+    if not cced then for i=1,#silences do if UnitDebuffID(&amp;quot;player&amp;quot;, silences[i]) then cced = true break end end end
+    if not cced then for i=1,#roots    do if UnitDebuffID(&amp;quot;player&amp;quot;, roots[i])    then cced = true break end end end
+    if cced then
+      UseInventoryItem(13)
+      return true
+    end
+  else
+    UseInventoryItem(13)
+    return true
+  end
+end
+
+local _,cd,havecd = GetInventoryItemCooldown(&amp;quot;player&amp;quot;,14)
+if cd == 0 and havecd == 1 then
+  local id14 = GetInventoryItemID(&amp;quot;player&amp;quot;,14)
+  local isPvPTrinket = id14 == 18854 or id14 == 18855 or id14 == 42364 or id14 == 42365 or id14 == 42126 or id14 == 61048
+  if isPvPTrinket then
+    local stuns = { 408, 1833, 20549, 24394, 44572, 46968, 47481, 5211, 22703, 25046, 39796, 8983, 22570 }
+    local fears = { 5782, 6358, 8122, 8143, 5484, 17928 }
+    local silences = { 15487, 18498, 25046, 47476, 34490, 55021, 31935 }
+    local roots = { 339, 26989, 53308, 122, 33395 }
+    local cced = false
+    for i=1,#stuns   do if UnitDebuffID(&amp;quot;player&amp;quot;, stuns[i])   then cced = true break end end
+    if not cced then for i=1,#fears    do if UnitDebuffID(&amp;quot;player&amp;quot;, fears[i])    then cced = true break end end end
+    if not cced then for i=1,#silences do if UnitDebuffID(&amp;quot;player&amp;quot;, silences[i]) then cced = true break end end end
+    if not cced then for i=1,#roots    do if UnitDebuffID(&amp;quot;player&amp;quot;, roots[i])    then cced = true break end end end
+    if cced then
+      UseInventoryItem(14)
+      return true
+    end
+  else
+    UseInventoryItem(14)
+    return true
+  end
+end
+
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability></PRIEST>

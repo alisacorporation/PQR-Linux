@@ -1,8 +1,43 @@
-<?xml version="1.0" encoding="utf-8" ?><PALADIN><Rotation><RotationName>Heal_Holy_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Functions --|-- Paladin Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- All:Mouseover --|H:Seal of Light|All:Cancel RFury|H:Beacon of Light|H:Sacred Shield|-- Offensive Spells (H) --|-- Heal Engine --|-- All:Racial --|-- All:Healthstone --|-- All:Potions --|H:Cleanse|H:Purify|H:Lay on Hands|All:Divine Shield|All:Divine Protection|R:Hand of Salvation|H:Divine Plea|H:Avenging Wrath|H:Divine Illumination|H:Hand of Freedom|H:Holy Shock|H:Holy Light|H:Flash of Light|H:Judgement of Light|H:Cleanse (Self)|H:Turn Evil|H:Hand of Sacrifice|Use:Trinkets/Hands</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Specific Function:
+<?xml version="1.0" encoding="utf-8" ?><PALADIN><Rotation><RotationName>Heal_Holy_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Functions --|-- Paladin Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- All:Mouseover --|All:Hand of Freedom (Player)|All:Mouseover Skill|H:Seal of Light|All:Cancel RFury|H:Beacon of Light|H:Sacred Shield|-- Offensive Spells (H) --|-- Heal Engine --|-- All:Racial --|-- All:Healthstone --|-- All:Potions --|H:Lay on Hands|All:Divine Shield|All:Divine Protection|R:Hand of Salvation|H:Divine Plea|H:Avenging Wrath|H:Divine Illumination|H:Hand of Freedom|H:Holy Shock|H:Holy Light|H:Flash of Light|R:Hammer of Wrath|R:Judgements (PRO)|H:Cleanse (Self)|H:Turn Evil|H:Hand of Sacrifice|H:Purify|H:Cleanse|R:Lay on Hands|Use:Trinkets/Hands (PvP)</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Specific Function:
      
 - Focus target to use Beacon of Light + Sacred Shield (Best on Tank);
 
 Notes:
 - DO NOT TARGET A FRIENDLY PLAYER;</RotationNotes></Rotation><Rotation><RotationName>Retri_DPS_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Functions --|-- Paladin Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- All:Mouseover --|R:Seal of Corruption/Vengeance|R:Seal of Command|All:Cancel RFury|-- Offensive Spells --|-- All:Healthstone --|-- All:Potions --|All:Hand of Freedom (Player)|R:Lay on Hands|All:Divine Shield|All:Divine Protection|R:Flash of Light|R:Crusader Strike (S)|R:Avenging Wrath|-- All:Racial --|R:Judgement of Wisdom|R:Consecration (A)|R:Divine Storm|R:Hammer of Wrath|H:Cleanse (Self)|H:Cleanse|R:Crusader Strike|R:Exorcism|R:Holy Wrath|R:Sacred Shield|R:Divine Plea</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Specific commands:
 - Press Right Alt for use AoE;</RotationNotes></Rotation><Rotation><RotationName>Proto_Tank_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Functions --|-- Paladin Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- All:Mouseover --|P:SoCr or SoV / SoL|R:Seal of Command|P:Righteous Fury|-- Offensive Spells --|-- All:Healthstone --|-- All:Potions --|All:Divine Protection|-- All:Racial --|R:Consecration (A)|P:Divine Plea|H:Cleanse (Self)|R:Sacred Shield|P:Avenger&amp;apos;s Shield|R:Judgements (PRO)|P:Holy Shield|P:Hammer of the Righteous|P:Shield of Righteousness|R:Holy Wrath</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Specific commands:
-- Press Right Alt for use AoE;</RotationNotes></Rotation></PALADIN>
+- Press Right Alt for use AoE;</RotationNotes></Rotation><Rotation><RotationName>Heal_Holy_PvP_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Functions --|-- Paladin Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- All:Mouseover --|H:Seal of Light|All:Cancel RFury|PvP:Beacon of Light (Self)|PvP:Sacred Shield (Self)|-- Heal Engine --|-- All:Racial --|-- All:Healthstone --|H:Cleanse (Self)|H:Cleanse|H:Purify|PvP:Aura Mastery|All:Divine Shield|All:Divine Protection|All:Hand of Freedom (Player)|H:Hand of Freedom|H:Hand of Sacrifice|PvP:Lay on Hands (Self)|H:Lay on Hands|PvP:Divine Plea (PvP)|H:Divine Illumination|H:Avenging Wrath|Use:Trinkets/Hands (PvP)|PvP:Hammer of Justice (Focus)|H:Holy Shock|H:Holy Light|H:Flash of Light|H:Judgement of Light|H:Turn Evil|PvP:Redemption (Raid)|PvP:Blessing of Kings (Raid)</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Holy Paladin PvP rotation for battlegrounds. Talent build: 51/5/15 (Holy/Prot/Ret) or similar with Beacon of Light, Sacred Shield, Aura Mastery, Divine Illumination, Improved Concentration Aura, Improved Hammer of Justice, Improved Blessing of Wisdom.
+
+STRATEGY: Beacon YOURSELF (not tank -- PvP has no tank focus). Every Holy Light on an ally then doubles onto you. Sacred Shield on self for extra absorb + reduced Flash of Light pushback. Heal Engine picks the ally target (do NOT target friendlies manually).
+
+DEFENSIVE / SELF-PRESERVATION (auto, in-combat only):
+- PvP:Beacon of Light (Self): keeps BoL up on you (refresh under 15s remaining);
+- PvP:Sacred Shield (Self): keeps SS absorb up on you (refresh under 8s remaining);
+- All:Divine Shield: bubble at HP &amp;lt; 20% (respects Forbearance 25771);
+- All:Divine Protection: 50% dmg reduction at HP &amp;lt; 30%;
+- All:Hand of Freedom (Player): auto self-cast on snare/root debuff table;
+- H:Cleanse (Self) / H:Cleanse: clears Magic/Poison/Disease on self and ally;
+- PvP:Aura Mastery: fires on silence/interrupt debuff on self (Silence, Kick, Counterspell, etc.);
+- PvP:Lay on Hands (Self): HP &amp;lt; 15% self-panic (respects Forbearance);
+- H:Hand of Sacrifice: on ally when your HP &amp;gt; 60% (redirects 30% dmg to you);
+- PvP:Divine Plea (PvP): mana &amp;lt; 40% AND HP &amp;gt; 70% (safe window -- Divine Plea reduces healing 50%);
+- H:Avenging Wrath: throughput cooldown chained with Divine Illumination.
+
+FOCUS PRESSURE (set /focus on enemy healer or kill target):
+- PvP:Hammer of Justice (Focus): 6s stun on focus while it casts an interruptible spell, or on an enemy healer at HP &amp;lt; 90% (setup peel).
+
+TRINKETS: Use:Trinkets/Hands (PvP) fires gloves tinker + on-use trinkets in combat. PvP medallions (18854/18855/42364/42365/42126/61048) fire only when actually CCed.
+
+KNOWN LIMITATIONS (from base pala profile, not fixed here):
+- Offensive racials (Blood Fury / Berserking / Stoneform / Gift of the Naaru) in -- All:Racial -- are IsBoss-gated -- won&amp;apos;t fire in BGs. Undead WotF DOES fire (no gate).
+- -- All:Potions -- is IsBoss-gated (no auto potion). Bind mana/healthstone potions to keys.
+- -- Offensive Spells (H) -- is intentionally NOT included in this rotation -- it short-circuits on non-boss targets.
+
+MANUAL:
+- Left Ctrl pauses rotation (via Hotkeys);
+- do NOT target a friendly player -- Heal Engine picks heal targets;
+- keep the enemy healer or focus-swap target as /focus for Hammer of Justice kicks.
+
+TEST MODE (dummy testing):
+- Enable:  /run PQR_TestMode = true
+- Disable: /run PQR_TestMode = nil
+- When ON, Hammer of Justice (Focus) bypasses UnitIsPlayer so it fires on training dummies. Defensive spells still need real damage / low HP / low mana to trigger.</RotationNotes></Rotation></PALADIN>

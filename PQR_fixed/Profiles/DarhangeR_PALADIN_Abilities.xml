@@ -905,4 +905,144 @@ _G.PQR_WriteToChat = function(msg)
 	if _G._PQR_WriteToChat_Original then
 		return _G._PQR_WriteToChat_Original(msg)
 	end
-end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability></PALADIN>
+end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Beacon of Light (Self)</Name><Default>false</Default><SpellID>53563</SpellID><Actions></Actions><Lua>local BofL, _, _, _, _, _, timer = UnitBuffID(&amp;quot;player&amp;quot;, 53563, &amp;quot;player&amp;quot;)
+if BofL and timer and (timer - GetTime()) &amp;gt; 15 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Sacred Shield (Self)</Name><Default>false</Default><SpellID>53601</SpellID><Actions></Actions><Lua>local SSH, _, _, _, _, _, timer = UnitBuffID(&amp;quot;player&amp;quot;, 53601, &amp;quot;player&amp;quot;)
+if SSH and timer and (timer - GetTime()) &amp;gt; 8 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Lay on Hands (Self)</Name><Default>false</Default><SpellID>48788</SpellID><Actions></Actions><Lua>if CooldownRemains(48788) then return false end
+if UnitDebuffID(&amp;quot;player&amp;quot;, 25771) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;lt; 15 then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Aura Mastery</Name><Default>false</Default><SpellID>31821</SpellID><Actions></Actions><Lua>if not IsSpellKnown(31821) then return false end
+if CooldownRemains(31821) then return false end
+if UnitBuffID(&amp;quot;player&amp;quot;, 31821) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+local silences = { 15487, 18498, 25046, 47476, 34490, 55021, 31935 }
+for i=1,#silences do if UnitDebuffID(&amp;quot;player&amp;quot;, silences[i]) then return true end end
+local interrupts = { 1766, 47528, 57994, 96231, 6552, 2139 }
+for i=1,#interrupts do if UnitDebuffID(&amp;quot;player&amp;quot;, interrupts[i]) then return true end end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Divine Plea (PvP)</Name><Default>false</Default><SpellID>54428</SpellID><Actions></Actions><Lua>if CooldownRemains(54428) then return false end
+if UnitBuffID(&amp;quot;player&amp;quot;, 54428) then return false end
+if getMana(&amp;quot;player&amp;quot;) &amp;gt; 40 then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;lt; 70 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Hammer of Justice (Focus)</Name><Default>false</Default><SpellID>10308</SpellID><Actions></Actions><Lua>if CooldownRemains(10308) then return false end
+if not UnitExists(&amp;quot;focus&amp;quot;) then return false end
+if UnitIsDeadOrGhost(&amp;quot;focus&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;focus&amp;quot;) and not PQR_TestMode then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;focus&amp;quot;) then return false end
+if not rangeCheck(10308, &amp;quot;focus&amp;quot;) then return false end
+if UnitDebuffID(&amp;quot;focus&amp;quot;, 25771) then return false end
+if PQR_TestMode then return true end
+local n, _, _, _, _, _, _, _, notInt = UnitCastingInfo(&amp;quot;focus&amp;quot;)
+if n and not notInt then return true end
+local cn, _, _, _, _, _, _, cNotInt = UnitChannelInfo(&amp;quot;focus&amp;quot;)
+if cn and not cNotInt then return true end
+local _, cls = UnitClass(&amp;quot;focus&amp;quot;)
+local isHealer = cls == &amp;quot;PRIEST&amp;quot; or cls == &amp;quot;DRUID&amp;quot; or cls == &amp;quot;PALADIN&amp;quot; or cls == &amp;quot;SHAMAN&amp;quot;
+if isHealer and getHp(&amp;quot;focus&amp;quot;) &amp;lt; 90 then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Focus</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Blessing of Kings (Raid)</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- Idle-only: never contest heal GCDs.
+if getHp(&amp;quot;player&amp;quot;) &amp;lt; 90 then return false end
+if getMana(&amp;quot;player&amp;quot;) &amp;lt; 40 then return false end
+if PQR_CustomTargetHP and PQR_CustomTargetHP &amp;lt; 90 then return false end
+
+if UnitBuffID(&amp;quot;player&amp;quot;, 20217) == nil and UnitBuffID(&amp;quot;player&amp;quot;, 25898) == nil then
+  CastSpellByID(20217, &amp;quot;player&amp;quot;)
+  return
+end
+
+local group = &amp;quot;party&amp;quot;
+local members = GetNumPartyMembers()
+if GetNumRaidMembers() &amp;gt; 0 then
+  group = &amp;quot;raid&amp;quot;
+  members = GetNumRaidMembers()
+end
+
+for i = 1, members do
+  local member = group..tostring(i)
+  if UnitExists(member)
+   and UnitIsFriend(&amp;quot;player&amp;quot;, member)
+   and UnitIsDeadOrGhost(member) == nil
+   and UnitInRange(member)
+   and UnitHasVehicleUI(member) == false
+   and UnitBuffID(member, 20217) == nil
+   and UnitBuffID(member, 25898) == nil then
+    CastSpellByID(20217, member)
+    return
+  end
+end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Redemption (Raid)</Name><Default>false</Default><SpellID>48950</SpellID><Actions></Actions><Lua>if UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if CooldownRemains(48950) then return false end
+
+local group = &amp;quot;party&amp;quot;
+local members = GetNumPartyMembers()
+if GetNumRaidMembers() &amp;gt; 0 then
+  group = &amp;quot;raid&amp;quot;
+  members = GetNumRaidMembers()
+end
+
+for i = 1, members do
+  local member = group..tostring(i)
+  if UnitExists(member)
+   and UnitIsFriend(&amp;quot;player&amp;quot;, member)
+   and UnitIsDeadOrGhost(member)
+   and UnitInRange(member) then
+    CastSpellByID(48950, member)
+    return true
+  end
+end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Use:Trinkets/Hands (PvP)</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+
+local _,cd,havecd = GetInventoryItemCooldown(&amp;quot;player&amp;quot;,10)
+if cd == 0 and havecd == 1 then
+  UseInventoryItem(10)
+  return true
+end
+
+local _,cd,havecd = GetInventoryItemCooldown(&amp;quot;player&amp;quot;,13)
+if cd == 0 and havecd == 1 then
+  local id13 = GetInventoryItemID(&amp;quot;player&amp;quot;,13)
+  local isPvPTrinket = id13 == 18854 or id13 == 18855 or id13 == 42364 or id13 == 42365 or id13 == 42126 or id13 == 61048
+  if isPvPTrinket then
+    local stuns = { 408, 1833, 20549, 24394, 44572, 46968, 47481, 5211, 22703, 25046, 39796, 8983, 22570 }
+    local fears = { 5782, 6358, 8122, 8143, 5484, 17928 }
+    local silences = { 15487, 18498, 25046, 47476, 34490, 55021, 31935 }
+    local roots = { 339, 26989, 53308, 122, 33395 }
+    local cced = false
+    for i=1,#stuns   do if UnitDebuffID(&amp;quot;player&amp;quot;, stuns[i])   then cced = true break end end
+    if not cced then for i=1,#fears    do if UnitDebuffID(&amp;quot;player&amp;quot;, fears[i])    then cced = true break end end end
+    if not cced then for i=1,#silences do if UnitDebuffID(&amp;quot;player&amp;quot;, silences[i]) then cced = true break end end end
+    if not cced then for i=1,#roots    do if UnitDebuffID(&amp;quot;player&amp;quot;, roots[i])    then cced = true break end end end
+    if cced then
+      UseInventoryItem(13)
+      return true
+    end
+  else
+    UseInventoryItem(13)
+    return true
+  end
+end
+
+local _,cd,havecd = GetInventoryItemCooldown(&amp;quot;player&amp;quot;,14)
+if cd == 0 and havecd == 1 then
+  local id14 = GetInventoryItemID(&amp;quot;player&amp;quot;,14)
+  local isPvPTrinket = id14 == 18854 or id14 == 18855 or id14 == 42364 or id14 == 42365 or id14 == 42126 or id14 == 61048
+  if isPvPTrinket then
+    local stuns = { 408, 1833, 20549, 24394, 44572, 46968, 47481, 5211, 22703, 25046, 39796, 8983, 22570 }
+    local fears = { 5782, 6358, 8122, 8143, 5484, 17928 }
+    local silences = { 15487, 18498, 25046, 47476, 34490, 55021, 31935 }
+    local roots = { 339, 26989, 53308, 122, 33395 }
+    local cced = false
+    for i=1,#stuns   do if UnitDebuffID(&amp;quot;player&amp;quot;, stuns[i])   then cced = true break end end
+    if not cced then for i=1,#fears    do if UnitDebuffID(&amp;quot;player&amp;quot;, fears[i])    then cced = true break end end end
+    if not cced then for i=1,#silences do if UnitDebuffID(&amp;quot;player&amp;quot;, silences[i]) then cced = true break end end end
+    if not cced then for i=1,#roots    do if UnitDebuffID(&amp;quot;player&amp;quot;, roots[i])    then cced = true break end end end
+    if cced then
+      UseInventoryItem(14)
+      return true
+    end
+  else
+    UseInventoryItem(14)
+    return true
+  end
+end
+
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability></PALADIN>

@@ -527,7 +527,6 @@ or threat(&amp;quot;player&amp;quot;) &amp;lt; 2 )
 then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Use:Trinkets/Hands</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>local _,cd,havecd = GetInventoryItemCooldown(&amp;quot;player&amp;quot;,13)
 
 if cd == 0 and havecd == 1
-and IsBoss()
 and CanAttack()
 and rangeCheck(49930, &amp;quot;target&amp;quot;)
 then 
@@ -538,7 +537,6 @@ end
 local _,cd,havecd = GetInventoryItemCooldown(&amp;quot;player&amp;quot;,14)
 
 if cd == 0 and havecd == 1
-and IsBoss()
 and CanAttack()
 and rangeCheck(49930, &amp;quot;target&amp;quot;)
 then 
@@ -549,7 +547,6 @@ end
 local _,cd,havecd = GetInventoryItemCooldown(&amp;quot;player&amp;quot;,10)
 
 if cd == 0 and havecd == 1
-and IsBoss()
 and CanAttack()
 and rangeCheck(49930, &amp;quot;target&amp;quot;)
 then 
@@ -780,4 +777,109 @@ return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChann
 if not UnitExists(&amp;quot;target&amp;quot;) then return false end
 if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) then return false end
 if not rangeCheck(49184, &amp;quot;target&amp;quot;) then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP_BG:Icy Touch</Name><Default>false</Default><SpellID>49909</SpellID><Actions></Actions><Lua>-- FIX: original else-branch had no range check (Out of range wall). Plus vehicle blacklist.
+local _vg = UnitGUID(&amp;quot;target&amp;quot;)
+if UnitHasVehicleUI(&amp;quot;target&amp;quot;) then return false end
+if _vg ~= nil and tonumber(_vg:sub(5,5),16) == 4 then return false end
+if UnitName(&amp;quot;target&amp;quot;) == &amp;quot;Battleground Demolisher&amp;quot; then return false end
+if not CanAttack() then return false end
+local ff,_,_,_,_,_,exp = UnitDebuffID(&amp;quot;target&amp;quot;, 55095, &amp;quot;player&amp;quot;)
+if ff ~= nil then
+  if exp - GetTime() &amp;lt; 2 and rangeCheck(49909, &amp;quot;target&amp;quot;) then return true end
+  return false
+end
+if rangeCheck(49909, &amp;quot;target&amp;quot;) then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP_BG:Plague Strike</Name><Default>false</Default><SpellID>49921</SpellID><Actions></Actions><Lua>-- FIX: 118 fails 0 lands in Sonaradk log. Range-guard both branches + vehicle blacklist.
+local _vg = UnitGUID(&amp;quot;target&amp;quot;)
+if UnitHasVehicleUI(&amp;quot;target&amp;quot;) then return false end
+if _vg ~= nil and tonumber(_vg:sub(5,5),16) == 4 then return false end
+if UnitName(&amp;quot;target&amp;quot;) == &amp;quot;Battleground Demolisher&amp;quot; then return false end
+if not CanAttack() then return false end
+local bp,_,_,_,_,_,exp = UnitDebuffID(&amp;quot;target&amp;quot;, 55078, &amp;quot;player&amp;quot;)
+if bp ~= nil then
+  if exp - GetTime() &amp;lt; 2 and rangeCheck(49921, &amp;quot;target&amp;quot;) then return true end
+  return false
+end
+if rangeCheck(49921, &amp;quot;target&amp;quot;) then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP_BG:Death Strike</Name><Default>false</Default><SpellID>49924</SpellID><Actions></Actions><Lua>-- FIX: original needed both diseases (0 DS while trained). Normal path + trained fallback.
+local _vg = UnitGUID(&amp;quot;target&amp;quot;)
+if UnitHasVehicleUI(&amp;quot;target&amp;quot;) then return false end
+if _vg ~= nil and tonumber(_vg:sub(5,5),16) == 4 then return false end
+if UnitName(&amp;quot;target&amp;quot;) == &amp;quot;Battleground Demolisher&amp;quot; then return false end
+if not CanAttack() then return false end
+if FrostFever and BloodPlague and rangeCheck(49924, &amp;quot;target&amp;quot;) then return true end
+local FR = select(2, FrostRuneCD()) or 0
+local UR = select(2, UnholyRuneCD()) or 0
+local DR = select(2, DeathRuneCD()) or 0
+local pairReady = (FR + UR + DR &amp;gt;= 2) and (FR + DR &amp;gt;= 1) and (UR + DR &amp;gt;= 1)
+if pairReady and getHp(&amp;quot;player&amp;quot;) ~= nil and getHp(&amp;quot;player&amp;quot;) &amp;lt; 85 and rangeCheck(49924, &amp;quot;target&amp;quot;) then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP_BG:Heart Strike</Name><Default>false</Default><SpellID>55262</SpellID><Actions></Actions><Lua>-- FIX: original needed both diseases. Falls back to rune-ready cleave without them.
+local _vg = UnitGUID(&amp;quot;target&amp;quot;)
+if UnitHasVehicleUI(&amp;quot;target&amp;quot;) then return false end
+if _vg ~= nil and tonumber(_vg:sub(5,5),16) == 4 then return false end
+if UnitName(&amp;quot;target&amp;quot;) == &amp;quot;Battleground Demolisher&amp;quot; then return false end
+if not CanAttack() then return false end
+local BR = select(2, BloodRuneCD()) or 0
+local DR = select(2, DeathRuneCD()) or 0
+if FrostFever and BloodPlague and (BR &amp;gt;= 1 or DR &amp;gt;= 1) and rangeCheck(49930, &amp;quot;target&amp;quot;) then return true end
+if (BR &amp;gt;= 1 or DR &amp;gt;= 1) and rangeCheck(49930, &amp;quot;target&amp;quot;) then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP_BG:Death Grip</Name><Default>false</Default><SpellID>49576</SpellID><Actions></Actions><Lua>-- Original + focus vehicle guard. Still holds grip when focus already in melee.
+if not UnitExists(&amp;quot;focus&amp;quot;) then return false end
+if UnitIsDeadOrGhost(&amp;quot;focus&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;focus&amp;quot;) and not PQR_TestMode then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;focus&amp;quot;) then return false end
+if UnitHasVehicleUI(&amp;quot;focus&amp;quot;) then return false end
+local _fg = UnitGUID(&amp;quot;focus&amp;quot;)
+if _fg ~= nil and tonumber(_fg:sub(5,5),16) == 4 then return false end
+if CooldownRemains(49576) then return false end
+if not rangeCheck(49576, &amp;quot;focus&amp;quot;) then return false end
+if rangeCheck(47528, &amp;quot;focus&amp;quot;) then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Focus</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP_BG:Chains of Ice</Name><Default>false</Default><SpellID>45524</SpellID><Actions></Actions><Lua>-- Copy of PvP:Chains of Ice + PQR_TestMode bypass for dummy testing + vehicle guard.
+if CooldownRemains(45524) then return false end
+if not UnitExists(&amp;quot;target&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) then return false end
+if UnitHasVehicleUI(&amp;quot;target&amp;quot;) then return false end
+local _vg = UnitGUID(&amp;quot;target&amp;quot;)
+if _vg ~= nil and tonumber(_vg:sub(5,5),16) == 4 then return false end
+if not UnitIsPlayer(&amp;quot;target&amp;quot;) and not PQR_TestMode then return false end
+if not rangeCheck(45524, &amp;quot;target&amp;quot;) then return false end
+local FR = select(2, FrostRuneCD()) or 0
+local DR = select(2, DeathRuneCD()) or 0
+if FR &amp;lt; 1 and DR &amp;lt; 1 then return false end
+if UnitDebuffID(&amp;quot;target&amp;quot;, 45524) then return false end
+if PQR_TestMode then return true end
+if rangeCheck(49930, &amp;quot;target&amp;quot;) then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP_BG:IsBoss Init</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- Defines nil-safe IsBoss() for the PvP rotation. Original lived in -- Offensive Spells -- (PvE-only, crashes on nil target). Returns false so it never steals a GCD.
+IsBoss = nil
+function IsBoss()
+  if not UnitExists(&amp;quot;target&amp;quot;) then return false end
+  local _g = UnitGUID(&amp;quot;target&amp;quot;)
+  if _g ~= nil and tonumber(_g:sub(5,5),16) == 4 then return true end
+  if UnitLevel(&amp;quot;target&amp;quot;) == -1 then return true end
+  return false
+end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP_BG:Pestilence (Spread)</Name><Default>false</Default><SpellID>50842</SpellID><Actions></Actions><Lua>-- AUTO-SPREAD for BG cleave: main target cooked (fresh 3s+), focus in YOUR melee missing a disease, Blood/Death rune ready. Sits after Renew (maintain first, spread second).
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if gcd() then return false end
+if not CanAttack() then return false end
+local _vg = UnitGUID(&amp;quot;target&amp;quot;)
+if UnitHasVehicleUI(&amp;quot;target&amp;quot;) then return false end
+if _vg ~= nil and tonumber(_vg:sub(5,5),16) == 4 then return false end
+if UnitName(&amp;quot;target&amp;quot;) == &amp;quot;Battleground Demolisher&amp;quot; then return false end
+local ff,_,_,_,_,_,ffexp = UnitDebuffID(&amp;quot;target&amp;quot;, 55095, &amp;quot;player&amp;quot;)
+local bp,_,_,_,_,_,bpexp = UnitDebuffID(&amp;quot;target&amp;quot;, 55078, &amp;quot;player&amp;quot;)
+if ff == nil or bp == nil then return false end
+if ffexp - GetTime() &amp;lt; 3 or bpexp - GetTime() &amp;lt; 3 then return false end
+local BR = select(2, BloodRuneCD()) or 0
+local DR = select(2, DeathRuneCD()) or 0
+if BR &amp;lt; 1 and DR &amp;lt; 1 then return false end
+if not rangeCheck2(49930, &amp;quot;target&amp;quot;) then return false end
+if not UnitExists(&amp;quot;focus&amp;quot;) then return false end
+if UnitIsDeadOrGhost(&amp;quot;focus&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;focus&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;focus&amp;quot;) and not PQR_TestMode then return false end
+if not rangeCheck2(49930, &amp;quot;focus&amp;quot;) then return false end
+local fff = UnitDebuffID(&amp;quot;focus&amp;quot;, 55095, &amp;quot;player&amp;quot;)
+local fbp = UnitDebuffID(&amp;quot;focus&amp;quot;, 55078, &amp;quot;player&amp;quot;)
+if fff ~= nil and fbp ~= nil then return false end
 return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability></DEATHKNIGHT>

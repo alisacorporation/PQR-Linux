@@ -6,4 +6,34 @@
 Notes:
 - DO NOT TARGET A FRIENDLY PLAYER;</RotationNotes></Rotation><Rotation><RotationName>Shadow_DPS_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Function --|-- Priest Stuff --|S:-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- Interrupt Engine --|-- All:Mouseover --|D:Inner Fire|D:Prayer of Fortitude|D:Prayer of Spirit|S:Prayer of Shadow Protection|D:Fear Ward|S:Vampiric Embrace|S:Shadowform|-- All:Auto Buff (Raid/Party) --|-- Offensive Spells --|-- All:Healthstone --|-- All:Potions --|D:Mass Dispel|S:Fade|S:Dispersion|S:Cancel Dispersion|-- All:Racial --|S:Shadowfiend|Use:Trinkets/Hands|S:Shadow Word: Death|S:Vampiric Touch|S:Shadow Word: Pain|D:Dispel Magic|D:Cure Disease|S:Mind Sear (AoE)|S:Devouring Plague|S:Mind Blast|S:Mind Flay</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Specific commands:
 - Hold Left Alt for use Mass Dispel;
-- Left Shift for enabled/disabled Mind Sear (AoE);</RotationNotes></Rotation></PRIEST>
+- Left Shift for enabled/disabled Mind Sear (AoE);</RotationNotes></Rotation><Rotation><RotationName>Disc_PvP_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Function --|-- Priest Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- Interrupt Engine --|-- All:Mouseover --|D:Mass Dispel|D:Inner Fire|D:Prayer of Fortitude|D:Prayer of Spirit|S:Prayer of Shadow Protection|D:Fear Ward|-- All:Auto Buff (Raid/Party) --|-- Heal Engine --|-- All:Racial --|-- All:Healthstone --|-- All:Potions --|PvP:Power Infusion (Self)|D:Pain Suppression (Self)|PvP:Psychic Scream (Panic)|PvP:Fade (Snare)|Use:Trinkets/Hands (PvP)|PvP:Silence (Focus)|PvP:Mass Dispel (Focus)|PvP:Dispel Magic (Focus)|PvP:Inner Focus|PvP:Power Word: Shield (Self)|PvP:Renew (Self)|D:Power Word: Shield|D:Power Word: Shield (Ally)|D:Penance|D:Prayer of Mending|D:Renew|D:Flash Heal|D:Dispel Magic|D:Cure Disease|H:Desperate Prayer|PvP:Hymn of Hope</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Discipline Priest PvP rotation for battlegrounds. Talent build: 57/14/0 (Disc/Holy/Shadow) with Silence, Pain Suppression, Power Infusion, Penance, Inner Focus, Improved PW:S, Reflective Shield, Renewed Hope.
+
+STRATEGY: shield uptime + Penance/Renew rolling, hard-cast Flash Heal for burst, Inner Focus into big heals. Heal Engine picks the ally target (do NOT target friendlies manually). Offensive dispel + Silence pressure the enemy healer via /focus.
+
+DEFENSIVE / SELF-PRESERVATION (auto, in-combat only):
+- PvP:Power Word: Shield (Self): keeps PW:S up on you, Weakened Soul aware (no reshield during 6788);
+- PvP:Renew (Self): rolling HoT on self &amp;lt; 95% HP;
+- D:Pain Suppression (Self): fires at HP &amp;lt;= 50% (40% dmg reduction, 8s, off-GCD);
+- H:Desperate Prayer: HP &amp;lt;= 12% panic self-heal;
+- PvP:Psychic Scream (Panic): HP &amp;lt; 50% AoE fear peel (8yd);
+- PvP:Fade (Snare): drops threat and (with glyph) breaks snares/roots automatically;
+- PvP:Power Infusion (Self): self-haste burst at HP &amp;lt; 50% for spam Flash Heal;
+- PvP:Hymn of Hope: mana &amp;lt; 20% and HP &amp;gt; 65% (safe to channel).
+
+FOCUS PRESSURE (set /focus on enemy healer or your kill target):
+- PvP:Silence (Focus): 5s silence on focus while it casts an interruptible spell (Poly, Heal, Fear, etc.);
+- PvP:Mass Dispel (Focus): removes Ice Block / Divine Shield / Cyclone / Hand of Protection / Divine Protection / Dispersion;
+- PvP:Dispel Magic (Focus): offensive dispel any Magic buff on focus (Bloodlust, Wings, Icy Veins, NS, Renewed Hope, etc.).
+
+TRINKETS: Use:Trinkets/Hands (PvP) fires gloves tinker + on-use trinkets in combat. PvP medallions (18854/18855/42364/42365/42126/61048) fire only when actually CCed (stun/fear/silence/root).
+
+MANUAL:
+- Left Ctrl pauses rotation;
+- Left Alt: D:Mass Dispel click-cast (from existing binding);
+- do NOT target a friendly player -- Heal Engine picks heal targets;
+- keep the enemy healer or focus-swap target as /focus for Silence + Dispel chains.
+
+TEST MODE (dummy testing):
+- Enable:  /run PQR_TestMode = true
+- Disable: /run PQR_TestMode = nil
+- When ON, Silence / Mass Dispel / Dispel Magic (Focus) bypass UnitIsPlayer so they fire on training dummies. Defensive spells still need real damage / low HP / low mana to trigger.</RotationNotes></Rotation></PRIEST>
