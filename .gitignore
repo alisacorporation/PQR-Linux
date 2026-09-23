@@ -9,3 +9,7 @@ obj/
 # MemPalace per-project files (issue #185)
 mempalace.yaml
 entities.json
+
+# local backups / debug artifacts under the runtime dir
+PQR_fixed/Profiles.zip
+PQR_fixed/Screenshot_*.png
