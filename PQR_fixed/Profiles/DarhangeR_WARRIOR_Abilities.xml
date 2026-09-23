@@ -31,39 +31,23 @@ if IsLeftShiftKeyDown() and not GetCurrentKeyBoardFocus() and GetTime() - modtim
 		PQR_WriteToChat(&amp;quot;AoE: \124cFF15E615Enabled&amp;quot;)
 	end
 end</Lua><RecastDelay>0</RecastDelay><Target>Click</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Offensive Spells --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>local buff = { 642, 45438, 31224, 23920, 33786, 19263, 21892, 40733 }
-local mob = { &amp;quot;Training Dummy&amp;quot;, &amp;quot;Raider&amp;apos;s Training Dummy&amp;quot; }
-local elite = {  }
+local mob = { "Training Dummy", "Raider's Training Dummy" }
 local noaggromobs = nil
 local immunity = nil
-local eliteboss = nil
 
 for i,v in ipairs(buff) do
-  if UnitBuffID(&amp;quot;target&amp;quot;,v) then immunity = 1 end
+  if UnitBuffID("target",v) then immunity = 1 end
 end
 
 for i,v in ipairs(mob) do
-  if UnitName(&amp;quot;target&amp;quot;) == v then noaggromobs = 1 end
+  if UnitName("target") == v then noaggromobs = 1 end
 end
 
+-- Pure BG: attack enemy players always (in or out of combat). No boss-only gate.
 if immunity
-or UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) == nil
-or (UnitAffectingCombat(&amp;quot;target&amp;quot;) == nil and noaggromobs == nil and UnitIsPlayer(&amp;quot;target&amp;quot;) == nil)
-or tonumber(UnitGUID(&amp;quot;target&amp;quot;):sub(5,5),16) == 4
-then return true end
-
-for i,v in ipairs(elite) do
-	  if UnitName(&amp;quot;target&amp;quot;) == v then eliteboss = 1 end
-	end
-
-IsBoss = nil
-function IsBoss()
-	if UnitExists(&amp;quot;target&amp;quot;)
-	and ( UnitLevel(&amp;quot;target&amp;quot;) == -1 or eliteboss )
-	or tonumber(UnitGUID(&amp;quot;target&amp;quot;):sub(5,5),16) == 4
-		then return 
-			true 
-		end
-	end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>True</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Start Fight --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if StopRota
+or UnitCanAttack("player","target") == nil
+or (UnitAffectingCombat("target") == nil and noaggromobs == nil and UnitIsPlayer("target") == nil)
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>True</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Start Fight --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if StopRota
 or IsMounted()
 or UnitInVehicle(&amp;quot;player&amp;quot;)
 or UnitIsDeadOrGhost(&amp;quot;target&amp;quot;) 
@@ -73,8 +57,7 @@ or UnitCastingInfo(&amp;quot;player&amp;quot;) ~= nil
 or UnitBuff(&amp;quot;target&amp;quot;, 59301)
 or UnitBuff(&amp;quot;player&amp;quot;, GetSpellInfo(430))
 or UnitBuff(&amp;quot;player&amp;quot;, GetSpellInfo(433))
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Berserker Rage</Name><Default>false</Default><SpellID>18499</SpellID><Actions></Actions><Lua>if IsBoss()
-and CanAttack()
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Berserker Rage</Name><Default>false</Default><SpellID>18499</SpellID><Actions></Actions><Lua>if CanAttack()
 and rangeCheck(47465, &amp;quot;target&amp;quot;)
 then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Execute</Name><Default>false</Default><SpellID>47471</SpellID><Actions></Actions><Lua>if valid(&amp;quot;target&amp;quot;, 47471)
 and CanAttack()
@@ -85,18 +68,33 @@ then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><Ca
 and ragecost(47475)
 and CanAttack()
 and rangeCheck(47465, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>150</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Heroic Strike</Name><Default>false</Default><SpellID>47450</SpellID><Actions></Actions><Lua>if ragecost(47450)
-and CanAttack()
-and rangeCheck2(47465, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Heroic Throw</Name><Default>false</Default><SpellID>57755</SpellID><Actions></Actions><Lua>if rangeCheck(57755, &amp;quot;target&amp;quot;)
-and CanAttack()
-and not CooldownRemains(12328) 
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Recklessness</Name><Default>false</Default><SpellID>1719</SpellID><Actions></Actions><Lua>if rangeCheck(47465, &amp;quot;target&amp;quot;)
-and IsBoss()
-and CanAttack()
-and not CooldownRemains(1719) 
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Bloodrage</Name><Default>false</Default><SpellID>2687</SpellID><Actions></Actions><Lua>if IsBoss()
-and UnitPower(&amp;quot;player&amp;quot;) &amp;lt; 65
+then return true end</Lua><RecastDelay>150</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Heroic Strike</Name><Default>false</Default><SpellID>47450</SpellID><Actions></Actions><Lua>-- Rage dump only when high (was dumping at any rage).
+if not CanAttack() then return false end
+if UnitPower("player") &lt; 45 then return false end
+if not rangeCheck2(47450, "target") then return false end
+if AoE == true then
+	if ragecost(47520) then
+		CastSpellByID(47520)
+		return true
+	end
+	return false
+end
+if ragecost(47450) then
+	CastSpellByID(47450)
+	return true
+end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Heroic Throw</Name><Default>false</Default><SpellID>57755</SpellID><Actions></Actions><Lua>-- Fixed CD was Sweeping Strikes (12328); pull only — not a kick. return true → app casts 57755.
+if not CanAttack() then return false end
+if CooldownRemains(57755) then return false end
+if IsSpellInRange(GetSpellInfo(57755), "target") ~= 1 then return false end
+if rangeCheck2(47465, "target") then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Recklessness</Name><Default>false</Default><SpellID>1719</SpellID><Actions></Actions><Lua>-- Gate on talent; aggressive only when target is wounded.
+if not IsSpellKnown(1719) then return false end
+if not CanAttack() then return false end
+if CooldownRemains(1719) then return false end
+if not rangeCheck(47465, "target") then return false end
+if getHp("target") &gt; 50 and getHp("player") &gt; 80 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Bloodrage</Name><Default>false</Default><SpellID>2687</SpellID><Actions></Actions><Lua>if UnitPower(&amp;quot;player&amp;quot;) &amp;lt; 65
 and CanAttack()
 and rangeCheck(47465, &amp;quot;target&amp;quot;)
 then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Cleave</Name><Default>false</Default><SpellID>47520</SpellID><Actions></Actions><Lua>if ragecost(47520)
@@ -106,72 +104,86 @@ then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><Ca
 and CanAttack()
 and not CooldownRemains(23881) 
 and rangeCheck(47465, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Use:Trinkets/Hands</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>local _,cd,havecd = GetInventoryItemCooldown(&amp;quot;player&amp;quot;,13)
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Use:Trinkets/Hands</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- Pure BG: no boss gate. Gloves haste -&gt; trinkets. PvP medallion only while CCed.
+if not UnitAffectingCombat("player") then return false end
 
-if cd == 0 and havecd == 1
-and IsBoss()
-and CanAttack()
-and rangeCheck(47465, &amp;quot;target&amp;quot;)
-then 
-  UseInventoryItem(13)
+local function trySlot(slot, pvpMedallionOnly)
+  local _, cd, havecd = GetInventoryItemCooldown("player", slot)
+  if not (cd == 0 and havecd == 1) then return false end
+  if pvpMedallionOnly then
+    local id = GetInventoryItemID("player", slot)
+    local isPvP = id == 18854 or id == 18855 or id == 42364 or id == 42365 or id == 42126 or id == 61048
+    if isPvP then
+      local cced = false
+      local stuns = { 408, 1833, 20549, 24394, 44572, 46968, 47481, 5211, 22703, 25046, 39796, 8983, 22570 }
+      local fears = { 5782, 6358, 8122, 8143, 5484, 17928 }
+      local silences = { 15487, 18498, 25046, 47476, 34490, 55021, 31935 }
+      local roots = { 339, 26989, 53308, 122, 33395 }
+      for i=1,#stuns   do if UnitDebuffID("player", stuns[i])   then cced = true break end end
+      if not cced then for i=1,#fears    do if UnitDebuffID("player", fears[i])    then cced = true break end end end
+      if not cced then for i=1,#silences do if UnitDebuffID("player", silences[i]) then cced = true break end end end
+      if not cced then for i=1,#roots    do if UnitDebuffID("player", roots[i])    then cced = true break end end end
+      if not cced then return false end
+    end
+  end
+  UseInventoryItem(slot)
   return true
 end
 
-local _,cd,havecd = GetInventoryItemCooldown(&amp;quot;player&amp;quot;,14)
+if trySlot(10, false) then return true end
+if trySlot(13, true) then return true end
+if trySlot(14, true) then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Battle Stance</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- Default Battle Stance. Skip while kick/CC-break window is open (don't yank Zerk).
+local castName, _, _, _, _, _, _, _, castNotInt = UnitCastingInfo("target")
+local chName, _, _, _, _, _, _, chNotInt = UnitChannelInfo("target")
+local kick = false
+if castName and castNotInt == false then kick = true end
+if chName and chNotInt == false then kick = true end
+if kick and IsSpellKnown(6552) and not CooldownRemains(6552) then return false end
 
-if cd == 0 and havecd == 1
-and IsBoss()
+if GetShapeshiftForm() ~= 1 then return true end
+return false</Lua><RecastDelay>2600</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Execute</Name><Default>false</Default><SpellID>47471</SpellID><Actions></Actions><Lua>-- Fixed: Sudden Death still needs valid/range/rage; HP gate OR proc (precedence was broken).
+if not valid("target", 47471) then return false end
+if not CanAttack() then return false end
+if not rangeCheck(47465, "target") then return false end
+if UnitPower("player") &lt; 30 then return false end
+if getHp("target") &gt; 20 and not sdeath then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Charge</Name><Default>false</Default><SpellID>11578</SpellID><Actions></Actions><Lua>-- Out-of-combat open. return true → app casts SpellID 11578 (no double CastSpellByID).
+if UnitAffectingCombat("player") then return false end
+if IsMounted() then return false end
+if not CanAttack() then return false end
+if not UnitIsPlayer("target") and not PQR_TestMode then return false end
+if CooldownRemains(11578) then return false end
+if IsSpellInRange(GetSpellInfo(11578), "target") ~= 1 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Slam</Name><Default>false</Default><SpellID>47475</SpellID><Actions></Actions><Lua>if ragecost(47475)
 and CanAttack()
 and rangeCheck(47465, &amp;quot;target&amp;quot;)
-then 
-  UseInventoryItem(14)
-  return true
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Rend</Name><Default>false</Default><SpellID>47465</SpellID><Actions></Actions><Lua>-- Early bleed. Battle Stance dance first; return true → app casts 47465.
+if not CanAttack() then return false end
+if not ragecost(47465) then return false end
+if not rangeCheck(47465, "target") then return false end
+local _, _, _, _, _, _, rtime = UnitDebuffID("target", 47465, "player")
+if rtime and rtime - GetTime() &gt; 3 then return false end
+if GetShapeshiftForm() ~= 1 then
+	CastShapeshiftForm(1)
+	return false
 end
-
-local _,cd,havecd = GetInventoryItemCooldown(&amp;quot;player&amp;quot;,10)
-
-if cd == 0 and havecd == 1
-and IsBoss()
-and CanAttack()
-and rangeCheck(47465, &amp;quot;target&amp;quot;)
-then 
-  UseInventoryItem(10)
-  return true
-end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Battle Stance</Name><Default>false</Default><SpellID>2457</SpellID><Actions></Actions><Lua>local DS = GetShapeshiftForm()
-
-if DS ~= 1
-then return true end</Lua><RecastDelay>2600</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Execute</Name><Default>false</Default><SpellID>47471</SpellID><Actions></Actions><Lua>if valid(&amp;quot;target&amp;quot;, 47471)
-and CanAttack()
-and getHp(&amp;quot;target&amp;quot;) &amp;lt;= 20
-and UnitPower(&amp;quot;player&amp;quot;) &amp;gt;= 30
-and rangeCheck(47465, &amp;quot;target&amp;quot;)
-or sdeath
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Charge</Name><Default>false</Default><SpellID>11578</SpellID><Actions></Actions><Lua>if IsShiftKeyDown()  and GetCurrentKeyBoardFocus() == nil then
-    RunMacroText(&amp;quot;/target [@mouseover]&amp;quot;)
-return true end</Lua><RecastDelay>0</RecastDelay><Target>Mouseover</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Slam</Name><Default>false</Default><SpellID>47475</SpellID><Actions></Actions><Lua>if ragecost(47475)
-and CanAttack()
-and rangeCheck(47465, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Rend</Name><Default>false</Default><SpellID>47465</SpellID><Actions></Actions><Lua>local rend,_,_,_,_,_,rtime = UnitDebuffID(&amp;quot;target&amp;quot;, 47465, &amp;quot;player&amp;quot;)
-
-if ragecost(47465)
-and CanAttack()
-and ( rend == nil
-or ( rend and rtime-GetTime() &amp;lt; 3 ) )
-and ( calc_time == nil
-or ( calc_time ~= nil and calc_time &amp;gt; 13 ) )
-and rangeCheck(47465, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Overpower</Name><Default>false</Default><SpellID>7384</SpellID><Actions></Actions><Lua>if valid(&amp;quot;target&amp;quot;, 7384)
-and ragecost(7384)
-and CanAttack()
-and rangeCheck(7384, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Berserker Stance</Name><Default>false</Default><SpellID>2458</SpellID><Actions></Actions><Lua>local DS = GetShapeshiftForm()
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Overpower</Name><Default>false</Default><SpellID>7384</SpellID><Actions></Actions><Lua>-- OP when usable (dodge/parry react). Battle dance then next tick cast via return true.
+if not CanAttack() then return false end
+if not ragecost(7384) then return false end
+if GetShapeshiftForm() ~= 1 then
+	CastShapeshiftForm(1)
+	return false
+end
+if not valid("target", 7384) then return false end
+if not rangeCheck(7384, "target") then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Berserker Stance</Name><Default>false</Default><SpellID>2458</SpellID><Actions></Actions><Lua>local DS = GetShapeshiftForm()
 
 if DS ~= 3
 then return true end</Lua><RecastDelay>2600</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Heroic Strike</Name><Default>false</Default><SpellID>47450</SpellID><Actions></Actions><Lua>if ragecost(47450)
 and CanAttack()
 and rangeCheck(47465, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Bloodrage</Name><Default>false</Default><SpellID>2687</SpellID><Actions></Actions><Lua>if IsBoss()
-and UnitPower(&amp;quot;player&amp;quot;) &amp;lt; 65
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Bloodrage</Name><Default>false</Default><SpellID>2687</SpellID><Actions></Actions><Lua>if UnitPower(&amp;quot;player&amp;quot;) &amp;lt; 65
 and CanAttack()
 and rangeCheck(47465, &amp;quot;target&amp;quot;)
 then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Whirlwind</Name><Default>false</Default><SpellID>1680</SpellID><Actions></Actions><Lua>if ragecost(1680)
@@ -181,42 +193,46 @@ and rangeCheck(47465, &amp;quot;target&amp;quot;)
 then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Cleave</Name><Default>false</Default><SpellID>47520</SpellID><Actions></Actions><Lua>if ragecost(47520)
 and CanAttack()
 and rangeCheck(47465, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Mortal Strike</Name><Default>false</Default><SpellID>47486</SpellID><Actions></Actions><Lua>if ragecost(47486)
-and CanAttack()
-and not CooldownRemains(47486) 
-and rangeCheck(47465, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Bladestorm</Name><Default>false</Default><SpellID>46924</SpellID><Actions></Actions><Lua>local sa, _, _, _, _, _, satime = UnitDebuffID(&amp;quot;target&amp;quot;, 7386) 
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Mortal Strike</Name><Default>false</Default><SpellID>47486</SpellID><Actions></Actions><Lua>-- Main nuke — before slows in priority (list order does this).
+if not CanAttack() then return false end
+if CooldownRemains(47486) then return false end
+if not ragecost(47486) then return false end
+if not rangeCheck(47465, "target") then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Bladestorm</Name><Default>false</Default><SpellID>46924</SpellID><Actions></Actions><Lua>local sa, _, _, _, _, _, satime = UnitDebuffID(&amp;quot;target&amp;quot;, 7386) 
 local _,_,_,count = UnitDebuffID(&amp;quot;target&amp;quot;, 7386)
 
 if (count == 5 and (sa and satime  - GetTime() &amp;gt;= 8 ))
-and IsBoss()
 and ragecost(46924)
 and CanAttack()
 and rangeCheck(47465, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Death Wish</Name><Default>false</Default><SpellID>12292</SpellID><Actions></Actions><Lua>if IsBoss()
-and CanAttack()
-and ragecost(12292)
-and not CooldownRemains(12292)
-and rangeCheck(47465, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>P:Shockwave</Name><Default>false</Default><SpellID>46968</SpellID><Actions></Actions><Lua>if ragecost(46968)
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Death Wish</Name><Default>false</Default><SpellID>12292</SpellID><Actions></Actions><Lua>-- Gate on talent — pure 21/5/5 Arms often lacks Death Wish.
+if not IsSpellKnown(12292) then return false end
+if not CanAttack() then return false end
+if CooldownRemains(12292) then return false end
+if not ragecost(12292) then return false end
+if not rangeCheck(47465, "target") then return false end
+-- Hold unless killing target or under pressure (don't blow on trash pull)
+if getHp("target") &gt; 60 and getHp("player") &gt; 70 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>P:Shockwave</Name><Default>false</Default><SpellID>46968</SpellID><Actions></Actions><Lua>if ragecost(46968)
 and CanAttack()
 and rangeCheck(47465, &amp;quot;target&amp;quot;)
 then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>P:Concussion Blow</Name><Default>false</Default><SpellID>12809</SpellID><Actions></Actions><Lua>if ragecost(12809)
 and CanAttack()
 and not CooldownRemains(12809) 
 and rangeCheck(47465, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Sweeping Strikes</Name><Default>false</Default><SpellID>12328</SpellID><Actions></Actions><Lua>if ragecost(12328)
-and CanAttack()
-and rangeCheck(47465, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Battle Shout</Name><Default>false</Default><SpellID>47436</SpellID><Actions></Actions><Lua>if not GBoM
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Sweeping Strikes</Name><Default>false</Default><SpellID>12328</SpellID><Actions></Actions><Lua>-- Sweeping Strikes: real cooldown gate (was spamming).
+if not IsSpellKnown(12328) then return false end
+if CooldownRemains(12328) then return false end
+if not CanAttack() then return false end
+if not ragecost(12328) then return false end
+if not rangeCheck(47465, "target") then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Battle Shout</Name><Default>false</Default><SpellID>47436</SpellID><Actions></Actions><Lua>if not GBoM
 and not bshout
 and not UnitIsDeadOrGhost(&amp;quot;player&amp;quot;)
 and not IsMounted()
 and ragecost(47436)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>P:Defensive Stance</Name><Default>false</Default><SpellID>71</SpellID><Actions></Actions><Lua>local DS = GetShapeshiftForm()
-
-if DS ~= 3
-then return true end</Lua><RecastDelay>2000</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Commanding Shout</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- Check Warlock in Party / Raid --   
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>P:Defensive Stance</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>local DS = GetShapeshiftForm()
+if DS ~= 2 then return true end</Lua><RecastDelay>2000</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Commanding Shout</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- Check Warlock in Party / Raid --   
 local group = &amp;quot;party&amp;quot;
 local members = GetNumPartyMembers()
 
@@ -249,33 +265,47 @@ return true end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelC
 and not CooldownRemains(12975) 
 then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>P:Shield Wall</Name><Default>false</Default><SpellID>871</SpellID><Actions></Actions><Lua>if getHp(&amp;quot;player&amp;quot;) &amp;lt; 50
 and not CooldownRemains(871)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Demoralizing Shout</Name><Default>false</Default><SpellID>47437</SpellID><Actions></Actions><Lua>if ragecost(47437)
-and CanAttack()
-and UnitDebuffID(&amp;quot;target&amp;quot;,47437,&amp;quot;player&amp;quot;) == nil
-and rangeCheck(47465, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Bladestorm (Sh)</Name><Default>false</Default><SpellID>46924</SpellID><Actions></Actions><Lua>if IsLeftShiftKeyDown() and GetCurrentKeyBoardFocus() == nil
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Thunder Clap</Name><Default>false</Default><SpellID>47502</SpellID><Actions></Actions><Lua>if AoE == true
-and ragecost(47502)
-and CanAttack()
-and rangeCheck(47465, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>P:Shield Block</Name><Default>false</Default><SpellID>2565</SpellID><Actions></Actions><Lua>if getHp(&amp;quot;player&amp;quot;) &amp;lt; 90
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Demoralizing Shout</Name><Default>false</Default><SpellID>47437</SpellID><Actions></Actions><Lua>-- Attack power shred vs melee train. Refresh when missing.
+if not ragecost(47437) then return false end
+if not CanAttack() then return false end
+if UnitDebuffID("target", 47437, "player") then return false end
+if not rangeCheck(47465, "target") then return false end
+if not PQR_TestMode and not UnitIsPlayer("target") then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Bladestorm (Sh)</Name><Default>false</Default><SpellID>46924</SpellID><Actions></Actions><Lua>-- Hold Left Shift = Bladestorm (manual BG pack/duel).
+if IsLeftShiftKeyDown() and GetCurrentKeyBoardFocus() == nil then
+	if CooldownRemains(46924) then return false end
+	if not CanAttack() then return false end
+	if not ragecost(46924) then return false end
+	return true
+end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Thunder Clap</Name><Default>false</Default><SpellID>47502</SpellID><Actions></Actions><Lua>-- Melee train slow — refresh when missing, or AoE mode, or 2+ nearby enemies optional via AoE.
+if not ragecost(47502) then return false end
+if not CanAttack() then return false end
+if CooldownRemains(47502) then return false end
+if UnitDebuffID("target", 47502, "player") and AoE ~= true then return false end
+if not rangeCheck2(47502, "target") then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>P:Shield Block</Name><Default>false</Default><SpellID>2565</SpellID><Actions></Actions><Lua>if getHp(&amp;quot;player&amp;quot;) &amp;lt; 90
 and not CooldownRemains(2565) 
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Enraged Regeneration</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>local enrage = { 18499, 12292, 29131, 14204, 57522 }
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Enraged Regeneration</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- Gate on Fury talent; Bloodrage → Enraged Regeneration panic heal.
+if not IsSpellKnown(55694) then return false end
+local enrage = { 18499, 12292, 29131, 14204, 57522 }
+local hp = getHp("player")
+if hp &gt; 30 then return false end
 
 for i = 1, #enrage do
-	if UnitBuffID(&amp;quot;player&amp;quot;, enrage[i])
-	and getHp(&amp;quot;player&amp;quot;) &amp;lt; 25
-	and not CooldownRemains(55694) then 
-		CastSpellByID(55694)
-	else
-		if not UnitBuffID(&amp;quot;player&amp;quot;, enrage[i])
-		and not CooldownRemains(2687) 
-		and getHp(&amp;quot;player&amp;quot;) &amp;lt; 25 then
-		CastSpellByID(2687)
-	return true
+	if UnitBuffID("player", enrage[i]) then
+		if not CooldownRemains(55694) then
+			CastSpellByID(55694)
+			return true
 		end
+		return false
 	end
-end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>P:Devastate</Name><Default>false</Default><SpellID>47498</SpellID><Actions></Actions><Lua>if ragecost(47498)
+end
+if not CooldownRemains(2687) then
+	CastSpellByID(2687)
+	return true
+end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>P:Devastate</Name><Default>false</Default><SpellID>47498</SpellID><Actions></Actions><Lua>if ragecost(47498)
 and CanAttack()
 and rangeCheck(47465, &amp;quot;target&amp;quot;)
 then return true end</Lua><RecastDelay>5000</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>P:Shield Slam</Name><Default>false</Default><SpellID>47488</SpellID><Actions></Actions><Lua>if ragecost(47488)
@@ -296,12 +326,13 @@ and ragecost(46968)
 and CanAttack()
 and not CooldownRemains(46968) 
 and rangeCheck(47465, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Hamstring</Name><Default>false</Default><SpellID>1715</SpellID><Actions></Actions><Lua>if ragecost(1715)
-and CanAttack()
-and not ham
-and rangeCheck(47465, &amp;quot;target&amp;quot;)
-and not IsBoss()
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>P:Vigilance</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if UnitAffectingCombat(&amp;quot;player&amp;quot;) == nil then
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Hamstring</Name><Default>false</Default><SpellID>1715</SpellID><Actions></Actions><Lua>-- Slow once (flag already in Warrior Stuff). After core damage in priority.
+if not ragecost(1715) then return false end
+if not CanAttack() then return false end
+if ham then return false end
+if not rangeCheck(47465, "target") then return false end
+if not PQR_TestMode and not UnitIsPlayer("target") then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>P:Vigilance</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if UnitAffectingCombat(&amp;quot;player&amp;quot;) == nil then
 
 local mytarget = nil
 local doneVG = nil
@@ -326,7 +357,6 @@ for i = 1, members, 1 do
     tophp = memberhp
   end
 end
-
 
 if mytarget and doneVG == nil and allinrange and UnitIsDead(mytarget) == nil then CastSpellByID(50720, mytarget) end
 
@@ -357,12 +387,21 @@ if IsLeftControlKeyDown()  and GetTime() - leftkeydown &amp;gt; 1 then
 		StopRota  = true 
 		PQR_WriteToChat(&amp;quot;Rotation \124cFFE61515stopped!&amp;quot;)
   	end
-end</Lua><RecastDelay>0</RecastDelay><Target>Click</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Berserker Rage (PvP)</Name><Default>false</Default><SpellID>18499</SpellID><Actions></Actions><Lua>local debuff = { 6215, 8122, 5484, 2637, 5246, 6358, 20066 }
-
-for i,v in ipairs(debuff) do
-  if UnitDebuffID(&amp;quot;player&amp;quot;,v) 
-  then return true end 
-end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Shattering Throw (PvP)</Name><Default>false</Default><SpellID>64382</SpellID><Actions></Actions><Lua>if bDS ~= nil or bBOP ~= nil or bIB ~= nil then
+end</Lua><RecastDelay>0</RecastDelay><Target>Click</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Berserker Rage (PvP)</Name><Default>false</Default><SpellID>18499</SpellID><Actions></Actions><Lua>-- CC break. Dance to Berserker first (BR is zerk-only); cast next tick if stance just changed.
+local fears = { 6215, 8122, 5484, 2637, 6358, 5782, 10890, 17928 }
+local stuns = { 5246, 20066, 34490, 31935, 47476, 853, 10326 }
+local cced = false
+for i = 1, #fears do if UnitDebuffID("player", fears[i]) then cced = true break end end
+if not cced then
+	for i = 1, #stuns do if UnitDebuffID("player", stuns[i]) then cced = true break end end
+end
+if not cced then return false end
+if CooldownRemains(18499) then return false end
+if GetShapeshiftForm() ~= 3 then
+	CastShapeshiftForm(3)
+	return false
+end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Shattering Throw (PvP)</Name><Default>false</Default><SpellID>64382</SpellID><Actions></Actions><Lua>if bDS ~= nil or bBOP ~= nil or bIB ~= nil then
 	return true
 end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Rend (DPS)</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if ragecost(47465)
 and CanAttack()
@@ -382,12 +421,13 @@ end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False
 and CanAttack()
 and ragecost(47520)
 and rangeCheck2(47465, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Piercing Howl</Name><Default>false</Default><SpellID>12323</SpellID><Actions></Actions><Lua>if ragecost(12323)
-and CanAttack()
-and not phowl
-and rangeCheck(47465, &amp;quot;target&amp;quot;)
-and not IsBoss()
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Interrupt Engine:D --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- New Interrupt Engine // Новый движок--
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Piercing Howl</Name><Default>false</Default><SpellID>12323</SpellID><Actions></Actions><Lua>-- AoE slow — once per target (phowl), Fury talent gate.
+if not IsSpellKnown(12323) then return false end
+if not ragecost(12323) then return false end
+if not CanAttack() then return false end
+if phowl then return false end
+if not rangeCheck(47465, "target") then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Interrupt Engine:D --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- New Interrupt Engine // Новый движок--
 if xelperInterruptInit == nil then
 		xelperInterruptInit = true
 		function PQR_InterruptSpell()
@@ -992,8 +1032,7 @@ for i = 1, #debuff do
 end
 
 	-- Horde race --
-if IsBoss()
- and CanAttack()
+ if CanAttack()
  and tContains(hrace, UnitRace(&amp;quot;player&amp;quot;)) then
   for i = 1, #hracial do
     if IsSpellKnown(hracial[i]) 
@@ -1015,8 +1054,7 @@ and tContains(alrace, UnitRace(&amp;quot;player&amp;quot;)) then
       return true
     end
   end
-end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>P:Sunder Armor</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if IsBoss()
-and CanAttack()
+end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>P:Sunder Armor</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if CanAttack()
 and not sa
 or (UnitDebuffID(&amp;quot;target&amp;quot;, 7386) and ( select(4, UnitDebuffID(&amp;quot;target&amp;quot;, 7386)) &amp;lt; 5 or select(7, UnitDebuffID(&amp;quot;target&amp;quot;, 7386)) - GetTime() &amp;lt; 5 )) 
 and rangeCheck(47465, &amp;quot;target&amp;quot;)
@@ -1145,4 +1183,72 @@ _G.PQR_WriteToChat = function(msg)
 	if _G._PQR_WriteToChat_Original then
 		return _G._PQR_WriteToChat_Original(msg)
 	end
-end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability></WARRIOR>
+end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Intercept</Name><Default>false</Default><SpellID>20252</SpellID><Actions></Actions><Lua>-- In-combat gap when target not in melee (Charge is OOC only).
+if not UnitAffectingCombat("player") then return false end
+if not IsSpellKnown(20252) then return false end
+if not CanAttack() then return false end
+if CooldownRemains(20252) then return false end
+if UnitPower("player") &lt; 25 then return false end
+if rangeCheck2(47465, "target") then return false end
+if IsSpellInRange(GetSpellInfo(20252), "target") ~= 1 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Pummel (Kick)</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- Real kick (Heroic Throw does NOT interrupt). SpellID 0 — cast manual after Zerk dance.
+if not IsSpellKnown(6552) then return false end
+if not CanAttack() then return false end
+if CooldownRemains(6552) then return false end
+
+local castName, _, _, _, _, _, _, _, castNotInt = UnitCastingInfo("target")
+local chName, _, _, _, _, _, _, chNotInt = UnitChannelInfo("target")
+local kick = false
+if castName and castNotInt == false then kick = true end
+if chName and chNotInt == false then kick = true end
+if not kick then return false end
+
+if GetShapeshiftForm() ~= 3 then
+	CastShapeshiftForm(3)
+	return false
+end
+if not rangeCheck2(6552, "target") then return false end
+CastSpellByID(6552)
+return false</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Spell Reflection</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- Spell Reflection vs casters / panic magic. SpellID 0 — manual cast after Battle dance.
+if not IsSpellKnown(23920) then return false end
+if CooldownRemains(23920) then return false end
+if not UnitAffectingCombat("player") then return false end
+if not CanAttack() then return false end
+
+local _, class = UnitClass("target")
+local caster = class == "MAGE" or class == "PRIEST" or class == "WARLOCK"
+	or class == "SHAMAN" or class == "DRUID"
+local castName, _, _, _, _, _, _, _, castNotInt = UnitCastingInfo("target")
+local casting = castName ~= nil and castNotInt == false
+local hp = getHp("player")
+
+local want = false
+if caster and casting then want = true end
+if caster and hp &lt; 75 then want = true end
+if hp &lt; 40 then want = true end
+if not want then return false end
+
+if GetShapeshiftForm() ~= 1 then
+	CastShapeshiftForm(1)
+	return false
+end
+CastSpellByID(23920)
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Disarm</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- Disarm (Battle) vs melee in range — BG peel. SpellID 0 — manual cast.
+if not IsSpellKnown(676) then return false end
+if CooldownRemains(676) then return false end
+if not UnitAffectingCombat("player") then return false end
+if not CanAttack() then return false end
+
+local _, class = UnitClass("target")
+local melee = class == "WARRIOR" or class == "ROGUE" or class == "DEATHKNIGHT"
+	or class == "PALADIN" or class == "SHAMAN" or class == "DRUID"
+if not melee then return false end
+if not PQR_TestMode and not UnitIsPlayer("target") then return false end
+if not rangeCheck2(676, "target") then return false end
+
+if GetShapeshiftForm() ~= 1 then
+	CastShapeshiftForm(1)
+	return false
+end
+CastSpellByID(676)
+return false</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability></WARRIOR>

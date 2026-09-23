@@ -1,87 +1,30 @@
-<?xml version="1.0" encoding="utf-8" ?><DRUID><Rotation><RotationName>Resto_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Functions --|-- Druid Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- Stats Buffs / Flask --|-- All:Mouseover --|R:Tree of Life|R:Gift of the Wild|B:Thorns|-- All:Auto Buff (Raid/Party) --|-- Offensive Spells (H) --|-- Heal Engine --|-- All:Racial --|-- All:Healthstone --|-- All:Potions --|Use:Trinket (Heal)|B:Innervate|B:Barkskin|R:Tranquility|R:Wild Growth|R:Swiftmend|R:Nourish|R:Abolish Poison|R:Remove Curse|R:Healing Touch|R:Regrowth|R:Regrowth (All)|R:Rejuvenation (All)|R:Lifebloom|Use:Trinkets/Hands</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Notes:
-- DO NOT TARGET A FRIENDLY PLAYER;</RotationNotes></Rotation><Rotation><RotationName>FeralBear_Tank_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Feral Function --|-- Druid Stuff --|F:-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- Stats Buffs / Flask --|-- All:Mouseover --|R:Gift of the Wild|-- All:Auto Buff (Raid/Party) --|B:Thorns|F:Bear Form|-- Offensive Spells --|-- All:Racial --|-- All:Healthstone --|-- All:Potions --|B:Barkskin|F:Frenzied Regeneration|F:Survival Instincts|F:Berserk (Bear)|F:Swipe (Bear)|F:Bash|F:Faerie Fire|F:Enrage|F:Mangle (Bear)|F:Lacerate|F:Maul</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Specific commands:
+<?xml version="1.0" encoding="utf-8" ?><DRUID><Rotation><RotationName>Resto_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Functions --|-- Druid Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- All:Mouseover --|-- Arena Functions --|-- Arena Heal Engine --|R:Tree of Life|R:Gift of the Wild|R:Thorns|-- All:Auto Buff (Raid/Party) --|-- All:Racial --|-- All:Healthstone --|-- All:Potions --|R:PvP Trinket (Break)|R:Barkskin|R:NS + Healing Touch (Self)|R:Swiftmend (Self)|R:Nature's Grasp|R:Berserker Rage|R:NS + Healing Touch (Ally)|R:Swiftmend|R:Wild Growth (Emergency)|R:Nourish (Emergency)|R:Abolish Poison|R:Remove Curse|R:Shapeshift Break|R:Rejuvenation|R:Lifebloom|R:Regrowth|R:Wild Growth|Use:Trinkets/Hands (PvP)|R:Innervate|R:War Stomp|R:Tranquility|R:Healing Touch|R:Nourish|R:Cyclone (Focus)|R:Entangling Roots (Focus)|R:Faerie Fire (Anti-Stealth)</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Resto BG/arena (merged from Arena profile you liked). Talent 11/0/60.
 
-- Press Right Alt for use Auto Swipe;
-- Hold Left Alt for use Bash;</RotationNotes></Rotation><Rotation><RotationName>Balance_DPS_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Functions --|-- Druid Stuff --|B:-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- Stats Buffs / Flask --|-- All:Mouseover --|R:Gift of the Wild|B:Thorns|B:Moonkin Form|-- All:Auto Buff (Raid/Party) --|-- Offensive Spells --|-- All:Racial --|-- All:Healthstone --|-- All:Potions --|B:Barkskin|B:Nature&amp;apos;s Grasp|B:Innervate|B:Typhoon|B:Hurricane|Use:Trinkets/Hands|B:Force of Nature|B:Faerie Fire|B:Insect Swarm|B:Moonfire|B:Eclipse|B:Wrath|B:Starfire</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Specific commands:
+LAYERS (top → bottom — order IS priority):
+1. Self: PvP trinket break, Barkskin (HP/burst/stun/silence), NS+HT self, Swiftmend self, Nature's Grasp, Berserker Rage fear-break.
+2. Ally emergency: NS+HT save, Swiftmend, Wild Growth, Nourish.
+3. Dispels + peel: Abolish/Remove Curse on pressured unit only, Bear powershift roots/snares.
+4. HoTs: pandemic Rejuv (&amp;lt;3s refresh), Lifebloom stack, Regrowth only if HoT missing.
+5. Support: WG maintenance (2+ low), on-use trinkets/gloves, Innervate &amp;lt;50% mana, War Stomp.
+6. Defaults: Tranquility (5+ low / self panic), Healing Touch (no HoT), Nourish (any HoT).
+7. Focus: Cyclone, Roots, Faerie Fire — only if layers 1–6 did not need a GCD; skipped while ArenaSelfDanger.
 
-- Hold Left Shift for use Force of Nature;
-- Hold Left Alt for use Typhoon;
-- Hold Right Alt for use Hurricane;</RotationNotes></Rotation><Rotation><RotationName>FeralCat_DPS_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Feral Function --|-- Druid Stuff --|F:-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- All:Mouseover --|R:Gift of the Wild|-- All:Auto Buff (Raid/Party) --|B:Thorns|F:Cat Form|-- Offensive Spells --|-- All:Racial --|-- All:Healthstone --|-- All:Potions --|F:Swipe (Cat)|F:Rejuvenation (Cat)|B:Barkskin|F:Survival Instincts|F:Faerie Fire|F:Tiger&amp;apos;s Fury|Use:Trinkets/Hands|F:Berserk|F:Ferocious Bite|F:Savage Roar|F:Rip|F:Savage Roar()|F:Mangle (Cat)|F:Rake|F:Shred</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Specific commands:
+HEAL ENGINE: incoming-damage scoring (5s HP window), self-override at HP&amp;lt;40 / &amp;lt;65+drop&amp;gt;25 / &amp;lt;80+drop&amp;gt;40. LoS via IsSpellInRange(Healing Touch).
 
-- Hold Left Alt for use Rejuvenation;
-- Press Right Alt for use Auto Swipe;</RotationNotes></Rotation><Rotation><RotationName>Resto25_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Functions --|-- Druid Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- Stats Buffs / Flask --|-- All:Mouseover --|R:Tree of Life|R:Gift of the Wild|B:Thorns|-- All:Auto Buff (Raid/Party) --|-- Offensive Spells (H) --|-- Heal Engine --|-- All:Racial --|-- All:Healthstone --|-- All:Potions --|Use:Trinket (Heal)|B:Barkskin|R:Tranquility|B:Innervate|R:Wild Growth|R:Rejuvenation|R:Swiftmend|R:Abolish Poison|R:Remove Curse|R:Healing Touch|R:Regrowth|R:Regrowth (All)|R:Rejuvenation (All)|R:Nourish|R:Lifebloom</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Notes:
-- DO NOT TARGET A FRIENDLY PLAYER;</RotationNotes></Rotation><Rotation><RotationName>Resto_PvP_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Functions --|-- Druid Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- Stats Buffs / Flask --|-- All:Mouseover --|R:Tree of Life|R:Gift of the Wild|B:Thorns|-- All:Auto Buff (Raid/Party) --|-- Offensive Spells (H) --|-- Heal Engine --|-- All:Racial --|-- All:Healthstone --|-- All:Potions --|PvP:Barkskin|PvP:NS + Healing Touch|PvP:Innervate (PvP)|PvP:War Stomp (Tauren)|PvP:Nature&amp;apos;s Grasp (PvP)|Use:Trinkets/Hands (PvP)|PvP:Wild Growth|R:Swiftmend|PvP:Nourish|PvP:Rejuvenation|PvP:Lifebloom|PvP:Regrowth|R:Healing Touch|R:Abolish Poison|R:Remove Curse|PvP:Tranquility|R:Regrowth (All)|R:Rejuvenation (All)|PvP:Entangling Roots (Focus)|PvP:Cyclone (Focus)|PvP:Faerie Fire (Anti-Stealth)</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Resto Druid PvP rotation. Talent build: 11/0/60 (Balance/Feral/Resto).
+DO NOT TARGET A FRIENDLY. Left Ctrl pauses. /focus enemy healer.
 
-KEY TALENTS ASSUMED: Nature&amp;apos;s Focus 3/3 (70% pushback resist on Healing Touch / Nourish / Regrowth / Tranquility / Cyclone -- vital), Nature&amp;apos;s Swiftness, Tree of Life, Wild Growth, Swiftmend, Improved Barkskin, Nature&amp;apos;s Grasp.
+TEST: /run PQR_TestMode = true. Disable: /run PQR_TestMode = nil. Watch [Arena] chat tags.</RotationNotes></Rotation><Rotation><RotationName>Balance_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Functions --|-- Druid Stuff --|B:-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- All:Mouseover --|B:Gift of the Wild|B:Thorns|B:Moonkin Form|-- All:Auto Buff (Raid/Party) --|-- Offensive Spells --|-- All:Racial --|-- All:Healthstone --|-- All:Potions --|B:Barkskin|B:Nature's Grasp|B:Innervate|B:War Stomp|Use:Trinkets/Hands (PvP)|B:Cyclone (Focus)|B:Typhoon|B:Hurricane|B:Force of Nature|B:Faerie Fire (Anti-Stealth)|B:Insect Swarm|B:Moonfire|B:Eclipse|B:Wrath|B:Starfire|B:Entangling Roots (Focus)|B:Shapeshift Break</RotationList><RequireCombat>false</RequireCombat><RotationNotes>BG moonkin. Dots + Eclipse Wrath/Starfire, Typhoon cliff/flag knockback (Left Alt), Hurricane AoE toggle (Right Alt), Force of Nature (Left Shift).
 
-STRATEGY: heal yourself + ally through pressure, CC focus on the side. Heal Engine handles target selection for HoT/direct heals.
+DEFENSE: Barkskin &amp;lt;65/stun/silence, Nature's Grasp &amp;lt;80, War Stomp, Innervate &amp;lt;40% mana, Shapeshift Break roots, Cyclone focus casts.
 
-FOCUS SETUP: set /focus on the enemy healer or the DPS training you.
-- Cyclone (Focus) fires aggressively: on focus cast/channel (interrupts Poly/Fear/big heals), on a healer over 95% HP as a setup peel, or on any melee-class focus when player HP &amp;lt; 65% (emergency peel).
-- Entangling Roots (Focus) fires on any melee focus not already CCed: Warr/Rogue/DK/Ret Pala/Enh Shaman/Feral Druid/Hunter.
-- Faerie Fire keeps armor debuff + anti-stealth on Rogue/Druid targets.
+FF anti-stealth. Trinkets fire in combat (PvP medallion only when CCed).
 
-DEFENSIVE AUTO:
-- Barkskin: HP &amp;lt; 65%, or on stun / silence table (uninterruptible casts under stun/silence);
-- NS + Healing Touch: HP &amp;lt; 35% -- Nature&amp;apos;s Swiftness + instant max-rank HT on self, one-shot panic button (3 min CD, 2 min glyphed);
-- Nature&amp;apos;s Grasp: proactive at HP &amp;lt; 80% for melee peel;
-- Innervate: existing threshold from B:Innervate.
+TEST: /run PQR_TestMode = true. Disable: /run PQR_TestMode = nil.</RotationNotes></Rotation><Rotation><RotationName>Feral_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Feral Function --|-- Druid Stuff --|F:-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- All:Mouseover --|F:Gift of the Wild|F:Thorns|F:Cat Form|-- All:Auto Buff (Raid/Party) --|-- Offensive Spells --|-- All:Racial --|-- All:Healthstone --|-- All:Potions --|F:Barkskin|F:Survival Instincts|F:Frenzied Regeneration|F:Nature's Grasp|F:War Stomp|Use:Trinkets/Hands (PvP)|F:Rejuvenation (Cat)|F:Faerie Fire|F:Bash|F:Swipe (Cat)|F:Tiger&amp;apos;s Fury|F:Berserk|F:Ferocious Bite|F:Savage Roar|F:Rip|F:Mangle (Cat)|F:Rake|F:Shred|F:Shapeshift Break</RotationList><RequireCombat>false</RequireCombat><RotationNotes>BG feral (cat primary + peels).
 
-MANUAL:
-- Left Ctrl pauses rotation;
-- do NOT target a friendly player (heal engine picks targets);
-- keep the enemy healer as /focus for Cyclone chains, or the melee training you for lockdown.
+CAT: Savage Roar ≥1 CP, Rip at 5 CP, FB finisher, Mangle/Rake maintenance, Shred behind (Mangle fallback), Swipe only AoE (Right Alt), Tiger's Fury ≤30 energy outside Berserk, Berserk when CP/finishers ready.
 
-TEST MODE (dummy testing):
-- Enable:  /run PQR_TestMode = true
-- Disable: /run PQR_TestMode = nil
-- When ON, Cyclone/Roots/Faerie Fire/War Stomp bypass UnitIsPlayer and class-filter checks so they fire on training dummies. Target the dummy and /focus it (or another dummy) to see focus abilities trigger.
-- Defensive spells (Barkskin, NS+HT, Nature&amp;apos;s Grasp, Innervate) are NOT bypassed -- they need real damage / low HP / low mana to trigger; test them by taking damage in a duel or from mobs.
+DEFENSE: Barkskin &amp;lt;65/stun/silence, Survival Instincts + Frenzied Regen &amp;lt;40, Nature's Grasp &amp;lt;80, War Stomp, Shapeshift Break roots/snares, Rejuv + Bash hotkey Left Alt (Bash needs Bear).
 
-HEAL-FIRST REWORK (arena):
-- Shared R: heals are PvE-tuned and wrong for arena (WG always-true, Nourish 3-HoT never-fires, Tranquility 8+ never-fires, Regrowth refresh-spam, Rejuv/Lifebloom unconditioned) -- replaced in this list by PvP: clones with arena gates: WG HP below 90, Rejuv HP below 92, Lifebloom HP below 85, Nourish any-HoT HP below 70, Regrowth only-if-missing, Tranquility 2+ low. PvE rotations untouched.
-- Dispels moved BELOW direct heals (HT/Regrowth) so combat GCDs heal first; Cyclone/Roots stay last (heals outrank CC here).</RotationNotes></Rotation><Rotation><RotationName>PvP_BG_Resto_PvP_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Functions --|-- Druid Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- All:Mouseover --|PvP_BG:Tree of Life|R:Gift of the Wild|B:Thorns|-- All:Auto Buff (Raid/Party) --|-- Offensive Spells (H) --|-- Heal Engine --|-- All:Racial --|-- All:Healthstone --|-- All:Potions --|PvP:Barkskin|PvP_BG:NS + Healing Touch|PvP:Innervate (PvP)|PvP:War Stomp (Tauren)|PvP:Nature&amp;apos;s Grasp (PvP)|Use:Trinkets/Hands (PvP)|PvP:Cyclone (Focus)|PvP_BG:Nourish|PvP_BG:Swiftmend|PvP_BG:Wild Growth|PvP_BG:Rejuvenation|PvP_BG:Lifebloom|PvP_BG:Tranquility|PvP_BG:Regrowth|R:Healing Touch|R:Abolish Poison|R:Regrowth (All)|R:Rejuvenation (All)|PvP_BG:Shapeshift Break|PvP:Entangling Roots (Focus)|PvP:Faerie Fire (Anti-Stealth)|R:Remove Curse</RotationList><RequireCombat>false</RequireCombat><RotationNotes>PvP_BG copy of Resto_PvP for BG/5v5 Tauren + caster cleave. Talent 11/0/60.
+FF anti-stealth. Trinkets fire in combat.
 
-FIXES vs original Resto_PvP_DarhangeR:
-- Removed dead -- Stats Buffs / Flask -- (missing ability, PvE only).
-- PvP_BG:Wild Growth: was HP&amp;lt;=100 always-true starvation, now HP&amp;lt;90 + 2+ low or target&amp;lt;75 + CD + range + no re-apply.
-- PvP_BG:Nourish: was 3-HoT AND (never fires), now any-HoT + HP&amp;lt;70.
-- PvP_BG:Tree of Life: was OR bug (always true), now AND (both forms missing) + no Dash.
-- PvP_BG:NS + Healing Touch: was same-frame double cast (HT fails to GCD), now 2-step: PQR casts NS, next tick HT via buff check, HP&amp;lt;35.
-- PvP_BG:Swiftmend 60% (was 50%), PvP_BG:Rejuvenation HP-gated 92% (was unconditioned spam), PvP_BG:Lifebloom nil-safe + HP&amp;lt;85 (was unconditioned).
-- PvP_BG:Tranquility: 3+ low for BG (was 8, never fires in 5v5).
-- PvP_BG:Shapeshift Break NEW: Bear powershift to break roots/snares (druid has no magic dispel in 3.3.5a - no Nature&amp;apos;s Cure).
-- ORDER: Cyclone interrupt sits ABOVE heals so focus casts get sniped, BUT it now carries a HEAL-FIRST veto (skipped while any teammate below 60% -- healing outranks CC); (All) blankets stay LAST so they never steal emergency GCDs.
-- HEAL-FIRST REWORK: R:Abolish Poison moved below direct heals (was above WG -- group dispel scans stole combat GCDs); R:Regrowth replaced by PvP_BG:Regrowth (only re-applies missing HoT, Nourish does fast healing when any HoT is up); R:Remove Curse stays dead last.
-
-STRATEGY BG/5v5: blanket Rejuv on push, WG on 2+, Lifebloom only &amp;lt;85%, Swiftmend &amp;lt;60%, Nourish &amp;lt;70%, NS+HT &amp;lt;35% panic, Barkskin &amp;lt;65%/stun/silence, War Stomp melee peel, Roots focus melee, Cyclone focus casts, FF rogues/druids, Tranquility only 3+ low + standing still.
-
-TEST: /run PQR_TestMode = true to test Cyclone/Roots/FF/War Stomp on dummies (/focus dummy). Defensives need real damage. Disable: /run PQR_TestMode = nil</RotationNotes></Rotation><Rotation><RotationName>Resto_Arena_DarhangeR</RotationName><RotationDefault>false</RotationDefault><RotationList>-- All:HOOK --|-- Functions --|-- Druid Stuff --|-- Hotkeys --|-- Start Fight --|-- Autotarget script --|-- All:Mouseover --|-- Arena Functions --|-- Arena Heal Engine --|R:Tree of Life|R:Gift of the Wild|B:Thorns|-- All:Auto Buff (Raid/Party) --|-- All:Racial --|-- All:Healthstone --|-- All:Potions --|Arena:PvP Trinket (Break)|Arena:Barkskin (Reactive)|Arena:NS + HT (Panic Self)|Arena:Swiftmend (Panic Self)|Arena:Natures Grasp (Panic)|Arena:Berserker Rage (Fear Break)|Arena:NS + HT (Save Ally)|Arena:Swiftmend (Emergency)|Arena:Wild Growth (Emergency)|Arena:Nourish (Emergency)|Arena:Abolish Poison (Priority)|Arena:Remove Curse (Priority)|Arena:Shapeshift Break|Arena:Rejuvenation (Refresh)|Arena:Lifebloom (Stack)|Arena:Regrowth (HoT Missing)|Arena:Wild Growth (Maintenance)|Use:Trinkets/Hands (PvP)|Arena:Innervate (Smart)|Arena:War Stomp (Tauren)|Arena:Healing Touch (Regular)|Arena:Nourish (Regular)|Arena:Cyclone (Focus)|Arena:Entangling Roots (Focus)|Arena:Faerie Fire (Anti-Stealth)</RotationList><RequireCombat>false</RequireCombat><RotationNotes>Resto_Arena_DarhangeR: layered PvP decision system for arena / small-group play. Talent 11/0/60 (Nature&apos;s Focus, NS, ToL, WG, Swiftmend, Improved Barkskin, Nature&apos;s Grasp).
-
-DECISION LAYERS (top to bottom in the rotation list):
-1. Self survival: PvP trinket break, Barkskin, NS+HT panic, Swiftmend panic, Nature&apos;s Grasp, Berserker Rage fear-break.
-2. Teammate emergency: NS+HT save, Swiftmend emergency, Wild Growth emergency, Nourish emergency.
-3. Dispels + peel: Abolish Poison / Remove Curse (only on pressured unit), Bear-powershift root/snare break.
-4. HoT maintenance: pandemic Rejuv refresh, Lifebloom stack (pressured only), Regrowth (only if HoT missing).
-5. Support cooldowns: Wild Growth maintenance, on-use trinkets/gloves, Innervate, War Stomp.
-6. Default heals: Healing Touch (no HoT), Nourish (any HoT).
-7. Focus utility: Cyclone, Entangling Roots, Faerie Fire. Priority is enforced by ORDER: if any layer 1-6 heal was needed this tick, it already fired and the tick ended. Focus utility runs only when nothing else needed a GCD, so it fires against enemy healers / focus targets even during ongoing BG fights (as long as I&apos;m not in danger).
-
-KEY MECHANICS:
-- Incoming-damage detection is HP-sampled every tick (5s rolling window). No combat-log parsing. ArenaGetDrop(unit) = pct HP lost.
-- Self-override in the heal engine: if player HP &lt; 40, OR HP &lt; 65 with &gt; 25% drop, OR HP &lt; 80 with &gt; 40% drop, PQR_CustomTarget is forced to player. Panic Self spells target player directly and bypass the engine.
-- Every heal LoS-checks via IsSpellInRange(&amp;quot;Healing Touch&amp;quot;, unit) which returns 1 only if range AND LoS OK on 3.3.5a.
-- Cast-time heals (Nourish/Regrowth/HT) skip when silenced/stunned/feared/polyd. Instants stay eligible.
-- HoT refresh is pandemic (only when missing or &amp;lt; 3s remain) - no clipping.
-- Dispels target the pressured unit only (highest recent HP drop), not the first party iteration match.
-
-USING IT:
-- Set /focus on the enemy healer or the DPS training you.
-- Do NOT target a friendly player (heal engine picks targets).
-- Left Ctrl pauses rotation.
-- /run PQR_TestMode = true to test Cyclone/Roots/FF/War Stomp on training dummies. Disable: /run PQR_TestMode = nil
-- Watch the [Arena] tag in chat/debug frame for decision announcements (barkskin trigger, NS+HT panic, dispels, etc).
-
-WHY THIS PROFILE VS Resto_PvP_DarhangeR:
-- Resto_PvP: single target chosen by lowest HP, no self-override, static thresholds, NS+HT double-cast bug wastes the CD.
-- Resto_Arena: incoming-damage-aware target scoring, forced self-preservation, fixed two-tick NS+HT, LoS gates, silence-aware casts, pandemic HoTs, pressured-target dispels.</RotationNotes></Rotation></DRUID>
+TEST: /run PQR_TestMode = true. Disable: /run PQR_TestMode = nil.</RotationNotes></Rotation></DRUID>

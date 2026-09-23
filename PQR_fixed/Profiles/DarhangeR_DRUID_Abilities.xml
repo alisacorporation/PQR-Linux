@@ -1,131 +1,84 @@
-<?xml version="1.0" encoding="utf-8" ?><DRUID><Ability><Name>-- Hotkeys --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if not leftkeydown then leftkeydown = 0 end
+<?xml version="1.0" encoding="utf-8" ?><DRUID><Ability><Name>-- All:HOOK --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>local PQR_DebugFrame = UIParent.PQR_DebugFrame
 
-if modtime == nil then
-	modtime = 0
+if not _G._PQR_WriteToChat_Original then
+	_G._PQR_WriteToChat_Original = _G.PQR_WriteToChat
 end
 
-if IsLeftControlKeyDown() and GetTime() - leftkeydown &amp;gt; 1 then
-	leftkeydown = GetTime()
-  	if StopRota then
-		StopRota = false 
-		PQR_WriteToChat(&amp;quot;Rotation \124cFF15E615reenabled!&amp;quot;)
-  	else 
-		StopRota = true 
-		PQR_WriteToChat(&amp;quot;Rotation \124cFFE61515stopped!&amp;quot;)
-  	end
-end</Lua><RecastDelay>0</RecastDelay><Target>Click</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Offensive Spells --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>local buff = { 642, 45438, 31224, 23920, 33786, 19263, 21892, 40733 }
-local mob = { &amp;quot;Training Dummy&amp;quot;, &amp;quot;Raider&amp;apos;s Training Dummy&amp;quot; }
-local elite = {  }
-local noaggromobs = nil
-local immunity = nil
-local eliteboss = nil
+if not PQR_DebugFrame then
+	local frame = CreateFrame(&amp;quot;Frame&amp;quot;, nil, UIParent)
+	frame:SetSize(math.random(370, 420), 140)
+	frame:SetPoint(&amp;quot;BOTTOMLEFT&amp;quot;, ChatFrame1, &amp;quot;TOPLEFT&amp;quot;, 0, 8)
 
-for i,v in ipairs(buff) do
-  if UnitBuffID(&amp;quot;target&amp;quot;,v) then immunity = 1 end
-end
+	frame:SetBackdrop({
+		bgFile = &amp;quot;Interface\\Buttons\\WHITE8X8&amp;quot;,
+		edgeFile = &amp;quot;Interface\\Buttons\\WHITE8X8&amp;quot;,
+		edgeSize = 1,
+	})
 
-for i,v in ipairs(mob) do
-  if UnitName(&amp;quot;target&amp;quot;) == v then noaggromobs = 1 end
-end
+	frame:SetBackdropColor(0, 0, 0, 0.75)
+	frame:SetBackdropBorderColor(0.25, 0.25, 0.25, 1)
 
-if immunity
-or UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) == nil
-or (UnitAffectingCombat(&amp;quot;target&amp;quot;) == nil and noaggromobs == nil and UnitIsPlayer(&amp;quot;target&amp;quot;) == nil)
-or tonumber(UnitGUID(&amp;quot;target&amp;quot;):sub(5,5),16) == 4
-then return true end
+	frame:SetMovable(true)
+	frame:EnableMouse(true)
+	frame:RegisterForDrag(&amp;quot;LeftButton&amp;quot;)
+	frame:SetScript(&amp;quot;OnDragStart&amp;quot;, frame.StartMoving)
+	frame:SetScript(&amp;quot;OnDragStop&amp;quot;, frame.StopMovingOrSizing)
 
-for i,v in ipairs(elite) do
-	  if UnitName(&amp;quot;target&amp;quot;) == v then eliteboss = 1 end
+	local title = frame:CreateFontString(nil, &amp;quot;OVERLAY&amp;quot;, &amp;quot;GameFontNormalSmall&amp;quot;)
+	title:SetPoint(&amp;quot;TOPLEFT&amp;quot;, 6, -5)
+	title:SetText(&amp;quot;PQR Debug&amp;quot;)
+
+	local text = frame:CreateFontString(nil, &amp;quot;OVERLAY&amp;quot;, &amp;quot;GameFontHighlightSmall&amp;quot;)
+	text:SetPoint(&amp;quot;TOPLEFT&amp;quot;, 6, -22)
+	text:SetPoint(&amp;quot;BOTTOMRIGHT&amp;quot;, -6, 6)
+	text:SetJustifyH(&amp;quot;LEFT&amp;quot;)
+	text:SetJustifyV(&amp;quot;TOP&amp;quot;)
+	text:SetText(&amp;quot;&amp;quot;)
+
+	frame.lines = {}
+	frame.text = text
+	frame.maxLines = 8
+	frame.rotationModeEnabled = true
+
+	function frame:AddLine(msg)
+		local lines = self.lines
+
+		lines[#lines + 1] = &amp;quot;|r&amp;quot; .. tostring(msg) .. &amp;quot;|r&amp;quot;
+
+		while #lines &amp;gt; self.maxLines do
+			table.remove(lines, 1)
+		end
+
+		self.text:SetText(table.concat(lines, &amp;quot;\n&amp;quot;))
 	end
 
-IsBoss = nil
-function IsBoss()
-	if UnitExists(&amp;quot;target&amp;quot;)
-	and ( UnitLevel(&amp;quot;target&amp;quot;) == -1 or eliteboss )
-	or tonumber(UnitGUID(&amp;quot;target&amp;quot;):sub(5,5),16) == 4
-		then return 
-			true 
-		end
-	end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>True</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Start Fight --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if StopRota
-or IsMounted()
-or UnitInVehicle(&amp;quot;player&amp;quot;)
-or UnitIsDeadOrGhost(&amp;quot;target&amp;quot;) 
-or UnitIsDeadOrGhost(&amp;quot;player&amp;quot;)
-or UnitChannelInfo(&amp;quot;player&amp;quot;) ~= nil
-or UnitCastingInfo(&amp;quot;player&amp;quot;) ~= nil
-or UnitBuff(&amp;quot;target&amp;quot;, 59301)
-or UnitBuff(&amp;quot;player&amp;quot;, GetSpellInfo(430))
-or UnitBuff(&amp;quot;player&amp;quot;, GetSpellInfo(433))
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Heal Engine (Pet also) --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- Simplest Heal Eng --
-if UnitExists(&amp;quot;target&amp;quot;) 
-  and UnitIsDead(&amp;quot;target&amp;quot;) == nil
-  and UnitIsFriend(&amp;quot;player&amp;quot;, &amp;quot;target&amp;quot;) 
-  and UnitCanCooperate(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;)
-  and UnitHasVehicleUI(&amp;quot;target&amp;quot;) == false
-  and UnitDebuffID(&amp;quot;target&amp;quot;, 69065) == nil
-  and UnitDebuffID(&amp;quot;target&amp;quot;, 70157) == nil
-  then PQR_CustomTarget = &amp;quot;target&amp;quot;
-       PQR_CustomTargetHP = 100 * UnitHealth(&amp;quot;target&amp;quot;) / UnitHealthMax(&amp;quot;target&amp;quot;)
-else 
+	frame:AddLine(&amp;quot;|cff00ff00Rotation Mode Enabled|r&amp;quot;)
 
-PQR_CustomTarget = &amp;quot;player&amp;quot;
-PQR_CustomTargetHP = 100 * UnitHealth(&amp;quot;player&amp;quot;) / UnitHealthMax(&amp;quot;player&amp;quot;)
-local group = &amp;quot;party&amp;quot;
-local members = GetNumPartyMembers()
-lowhpmembers = 0
-lowhpmemberspets = 0
-
-if GetNumRaidMembers() &amp;gt; 0 then
-  group = &amp;quot;raid&amp;quot;
-  members = GetNumRaidMembers()
+	PQR_DebugFrame = frame
+	UIParent.PQR_DebugFrame = frame
 end
 
-for i = 1, members, 1 do
-  local member = group..tostring(i)
-  local memberhp = 100 * UnitHealth(member) / UnitHealthMax(member)
-  if UnitInRange(member) 
-  and UnitIsFriend(&amp;quot;player&amp;quot;, member)
-  and UnitIsDeadOrGhost(member) == nil  then
-    if UnitGroupRolesAssigned(member) == &amp;quot;TANK&amp;quot; then memberhp = memberhp - 1 end
-    if UnitThreatSituation(member) == 3 then memberhp = memberhp - 3 end
-    if UnitBuffID(member, 53563) ~= nil then memberhp = memberhp + 7 end
-    if memberhp &amp;lt; 85 then lowhpmembers = lowhpmembers +1 end
-	if memberhp &amp;lt; PQR_CustomTargetHP then
-		  PQR_CustomTarget = member
-		  PQR_CustomTargetHP = memberhp
+_G.PQR_WriteToChat = function(msg)
+	msg = tostring(msg)
+
+	if msg:find(&amp;quot;Rotation Mode Disabled&amp;quot;, 1, true) then
+		PQR_DebugFrame.rotationModeEnabled = false
+		PQR_DebugFrame:AddLine(msg)
+
+	elseif msg:find(&amp;quot;Rotation Mode Enabled&amp;quot;, 1, true) then
+		if not PQR_DebugFrame.rotationModeEnabled then
+			PQR_DebugFrame.rotationModeEnabled = true
+			PQR_DebugFrame:AddLine(msg)
 		end
-	  end
+
+	else
+		PQR_DebugFrame:AddLine(msg)
 	end
 
-if lowhpmembers == 0 then
-  for i = 1, members, 1 do
-  local memberpet = group..tostring&amp;quot;pet&amp;quot;..tostring(i)
-  local memberpethp = 100 * UnitHealth(memberpet) / UnitHealthMax(memberpet)
-  if UnitInRange(memberpet) 
-  and UnitIsFriend(&amp;quot;player&amp;quot;, memberpet)
-  and UnitIsDeadOrGhost(memberpet) == nil  then
-    if memberpethp &amp;lt; 85 then lowhpmemberspets = lowhpmemberspets +1 end
-		  PQR_CustomTarget = memberpet
-		  PQR_CustomTargetHP = memberpethp
-		  PQR_CustomTargetHP = 100 * UnitHealth(PQR_CustomTarget) / UnitHealthMax(PQR_CustomTarget)
-		  end
-	   end
-    end
-end
-
-if view == nil then 
-	view = true
-	local eventframe = CreateFrame(&amp;quot;FRAME&amp;quot;)
-	print(&amp;quot;\124cFFE61515DO NOT TARGET A FRIENDLY PLAYER!&amp;quot;)
-	print(&amp;quot;\124cFFE61515НЕ ВЫБИРАТЬ В КАЧЕСТВИ ЦЕЛИ СОЮЗНИКА!&amp;quot;)
-	eventframe:RegisterEvent(&amp;quot;EXECUTE_CHAT_LINE&amp;quot;)	
-end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- All:Mouseover --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if UnitAffectingCombat(&amp;quot;player&amp;quot;) and IsMouseButtonDown()
-	then RunMacroText(&amp;quot;/click &amp;quot;..GetMouseFocus():GetName()) end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Eclipse</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if not eclipse then eclipse = &amp;quot;solar&amp;quot; end
-
-if UnitBuffID(&amp;quot;player&amp;quot;, 48517)
-then eclipse = &amp;quot;solar&amp;quot;
-elseif UnitBuffID(&amp;quot;player&amp;quot;, 48518)
-then eclipse = &amp;quot;lunar&amp;quot; end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Functions --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if not FuncLoaded then
+	if _G._PQR_WriteToChat_Original then
+		return _G._PQR_WriteToChat_Original(msg)
+	end
+end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Functions --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if not FuncLoaded then
 	FuncLoaded = true
 
 	GotClearCast = 0
@@ -620,320 +573,7 @@ if not FrameCreated then
 		end
 	end
 
-end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Moonkin Form</Name><Default>false</Default><SpellID>24858</SpellID><Actions></Actions><Lua>if not moonkin
-and not dash
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Moonfire</Name><Default>false</Default><SpellID>48463</SpellID><Actions></Actions><Lua>local mfire, _, _, _, _, _, timer = UnitDebuffID(&amp;quot;target&amp;quot;, 48463, &amp;quot;player&amp;quot;)
-
-if ( mfire == nil or ( mfire and timer - GetTime() &amp;lt; 2 ) or pMove() )
-and CanAttack()
-and rangeCheck(48463, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Insect Swarm</Name><Default>false</Default><SpellID>48468</SpellID><Actions></Actions><Lua>local iswarm, _, _, _, _, _, timer = UnitDebuffID(&amp;quot;target&amp;quot;, 48468, &amp;quot;player&amp;quot;)
-
-if ( iswarm == nil or ( iswarm and timer - GetTime() &amp;lt; 2.5 ) )
-and CanAttack()
-and rangeCheck(48468, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Wrath</Name><Default>false</Default><SpellID>48461</SpellID><Actions></Actions><Lua>if eclipse == &amp;quot;solar&amp;quot;
-and CanAttack()
-and pStay()
-and rangeCheck(48461, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Starfire</Name><Default>false</Default><SpellID>48465</SpellID><Actions></Actions><Lua>if eclipse == &amp;quot;lunar&amp;quot;
-and CanAttack()
-and pStay()
-and rangeCheck(48465, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Tree of Life</Name><Default>false</Default><SpellID>33891</SpellID><Actions></Actions><Lua>if (not UnitBuffID(&amp;quot;player&amp;quot;, 33891, &amp;quot;player&amp;quot;) or not UnitBuffID(&amp;quot;player&amp;quot;, 34123, &amp;quot;player&amp;quot;))
-and UnitBuffID(&amp;quot;player&amp;quot;, 33357, &amp;quot;player&amp;quot;) == nil
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Lifebloom</Name><Default>false</Default><SpellID>48451</SpellID><Actions></Actions><Lua>lb,_,_,count,_,_,expire = UnitBuffID(PQR_CustomTarget, 48451)
-
-if count ~= 3
-or expire - GetTime() &amp;lt; 3
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Remove Curse</Name><Default>false</Default><SpellID>2782</SpellID><Actions></Actions><Lua>local buff = { 30108, 34914, 74562, 74792 }
-local group = &amp;quot;party&amp;quot;
-local members = GetNumPartyMembers()
-if GetNumRaidMembers() &amp;gt; 0 then
-  group = &amp;quot;raid&amp;quot;
-  members = GetNumRaidMembers()
-end
-
-for i = 0, members, 1 do
-  if i==0 then mem = &amp;quot;player&amp;quot; else mem = group..tostring(i) end
-  if UnitInRange(mem) and UnitIsDeadOrGhost(mem) == nil then
-   local candispel = 1
-   for k,v in ipairs(buff) do
-    if UnitDebuffID(mem,v) then candispel = nil end
-   end
-   local j = 1
-   local debuff,_,_,count,bufftype,dur = UnitDebuff(mem, j)
-   while debuff do
-    if (bufftype == &amp;quot;Curse&amp;quot;) and dur &amp;gt; 1 and candispel then
-     CastSpellByID(2782,mem)
-     return true
-    end
-    j = j + 1;
-    debuff,_,_,count,bufftype,duration = UnitDebuff(mem, j)
-    end
-  end
-end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Regrowth</Name><Default>false</Default><SpellID>48443</SpellID><Actions></Actions><Lua>if PQR_CustomTargetHP &amp;lt; 75
-and pStay()
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Nourish</Name><Default>false</Default><SpellID>50464</SpellID><Actions></Actions><Lua>if PQR_CustomTargetHP &amp;lt; 75
-and UnitBuffID(PQR_CustomTarget, 48451)
-and UnitBuffID(PQR_CustomTarget, 48443)
-and UnitBuffID(PQR_CustomTarget, 48441)
-and pStay()
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Swiftmend</Name><Default>false</Default><SpellID>18562</SpellID><Actions></Actions><Lua>if PQR_CustomTargetHP &amp;lt; 50
-and not CooldownRemains(18562)
-and UnitDebuffID(&amp;quot;player&amp;quot;, 69762) == nil
-and (UnitBuffID(PQR_CustomTarget, 48441) or UnitBuffID(PQR_CustomTarget, 48443))
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Abolish Poison</Name><Default>false</Default><SpellID>2893</SpellID><Actions></Actions><Lua>local buff = { 30108, 34914, 74562, 74792 }
-local group = &amp;quot;party&amp;quot;
-local members = GetNumPartyMembers()
-
-if GetNumRaidMembers() &amp;gt; 0 then
-  group = &amp;quot;raid&amp;quot;
-  members = GetNumRaidMembers()
-end
-
-for i = 0, members, 1 do
-	if i==0 then mem = &amp;quot;player&amp;quot; else mem = group..tostring(i) end
-	 if UnitInRange(mem) and UnitIsDeadOrGhost(mem) == nil then
-	 local candispel = 1
-	 for k,v in ipairs(buff) do
-	 if UnitDebuffID(mem,v) then candispel = nil end
-	end
-	local j = 1
-	local debuff,_,_,count,bufftype,dur = UnitDebuff(mem, j)
-	while debuff do
-	if (bufftype == &amp;quot;Poison&amp;quot;) and dur &amp;gt; 1 and candispel and UnitBuffID(mem, 2893) == nil then
-	 CastSpellByID(2893,mem)
-	 return true
-	end
-	j = j + 1;
-	debuff,_,_,count,bufftype,duration = UnitDebuff(mem, j)
-	      end
-	end
-end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Rejuvenation</Name><Default>false</Default><SpellID>48441</SpellID><Actions></Actions><Lua>if UnitBuffID(PQR_CustomTarget, 48441, &amp;quot;player&amp;quot;) == nil
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Rejuvenation (All)</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>local group = &amp;quot;party&amp;quot;
-local members = GetNumPartyMembers()
-
-if UnitBuffID(PQR_CustomTarget, 48441, &amp;quot;player&amp;quot;) == nil
-then CastSpellByID(48441, &amp;quot;player&amp;quot;)
-end
-
-if GetNumRaidMembers() &amp;gt; 0 then
-  group = &amp;quot;raid&amp;quot;
-  members = GetNumRaidMembers()
-end
-
-for i = 1, members, 1 do
-  local member = group..tostring(i)
-    if UnitBuffID(member, 48441, &amp;quot;player&amp;quot;) == nil
-    and UnitInRange(member)
-    and UnitIsFriend(&amp;quot;player&amp;quot;, member)
-    and UnitIsDeadOrGhost(member) == nil 
-    and UnitHasVehicleUI(member) == false
-    and UnitDebuffID(member, 69065) == nil
-    and UnitDebuffID(member, 70157) == nil
-    then
-        CastSpellByID(48441, member)
-    end
-end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Wild Growth</Name><Default>false</Default><SpellID>53251</SpellID><Actions></Actions><Lua>if PQR_CustomTargetHP &amp;lt;= 100
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Berserk</Name><Default>false</Default><SpellID>50334</SpellID><Actions></Actions><Lua>local mangle, _, _, _, _, _, time = UnitDebuffID(&amp;quot;target&amp;quot;, 48566)
-
-if IsBoss()
-and rangeCheck(48574, &amp;quot;target&amp;quot;)
-and CooldownRemains(50334) ~= nil
-and not berserk
-and not tigers
-and savage(10)
-and rip(10)
-and ( mangle or CantMangle() == true )
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Cat Form</Name><Default>false</Default><SpellID>768</SpellID><Actions></Actions><Lua>if not catform
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Rake</Name><Default>false</Default><SpellID>48574</SpellID><Actions></Actions><Lua>local rake, _, _, _, _, _, rtime = UnitDebuffID(&amp;quot;target&amp;quot;, 48574, &amp;quot;player&amp;quot;)
-local mangle, _, _, _, _, _, time = UnitDebuffID(&amp;quot;target&amp;quot;, 48566)
-
-if rake == nil
-and energycost(48574)
-and CanAttack()
-and AOE() == false
-and ( mangle or CantMangle() == true )
-and (( calc_time ~= nil and calc_time &amp;gt;= 9 ) or calc_time == nil )
-and rangeCheck(48574, &amp;quot;target&amp;quot;)
- then
-	--CastSpellByID(48574)
-	return true
-end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Shred</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if cp &amp;lt; 5
-and energycost(48572)
-and ( mangle or CantMangle() == true )
-and rake
-and CanAttack()
-then
-	if NotBehindCheck() == false then
-		CastSpellByID(48572)
-		return true
-	elseif NotBehindCheck() == true then
-		CastSpellByID(48566)
-		return true
-	end
-end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Savage Roar()</Name><Default>false</Default><SpellID>52610</SpellID><Actions></Actions><Lua>local savage, _, _, _, _, _, time = UnitBuffID(&amp;quot;player&amp;quot;, 52610)
-local rip, _, _, _, _, _, rtime = UnitDebuffID(&amp;quot;target&amp;quot;, 49800, &amp;quot;player&amp;quot;)
-local mangle, _, _, _, _, _, mtime = UnitDebuffID(&amp;quot;target&amp;quot;, 48566)
-
-if energycost(52610)
-and cp &amp;gt;= 3
-and ( (calc_time ~= nil
-and calc_time &amp;gt;= 9)
-or calc_time == nil )
-and ( mangle or CantMangle() == true )
-and ( savage == nil or ( savage and time - GetTime() &amp;lt;= 8 ) )
-and ( savage == nil or ( savage and rip == nil ) or ( savage and rip and rtime - time &amp;gt;= -3 ) ) 
-and CanAttack()
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Tiger&amp;apos;s Fury</Name><Default>false</Default><SpellID>50213</SpellID><Actions></Actions><Lua>local berserk = select(11, UnitBuffID(&amp;quot;player&amp;quot;, 50334))
-
-if ( berserk ~= 50334 or berserk == nil )
-and CanAttack()
-and rangeCheck(48574, &amp;quot;target&amp;quot;)
-and CooldownRemains(50213) == false
-and energy &amp;lt;= 30 
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Ferocious Bite</Name><Default>false</Default><SpellID>48577</SpellID><Actions></Actions><Lua>local mangle, _, _, _, _, _, time = UnitDebuffID(&amp;quot;target&amp;quot;, 48566)
-
-if energycost(48577)
- and CanAttack()
- and rangeCheck(48574, &amp;quot;target&amp;quot;)
- and ( mangle or CantMangle() == true )
- and ( ( calc_time ~= nil and calc_time &amp;lt;= 6 and cp &amp;gt;= 5 )
- or ( calc_time ~= nil and calc_time &amp;lt;= 1 and cp &amp;gt;= 4 )
- or ( cp &amp;gt;= 5 and rip(8) and savage(11) ) )
- then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Savage Roar</Name><Default>false</Default><SpellID>52610</SpellID><Actions></Actions><Lua>local savage, _, _, _, _, _, time = UnitBuffID(&amp;quot;player&amp;quot;, 52610)
-local rip, _, _, _, _, _, rtime = UnitDebuffID(&amp;quot;target&amp;quot;, 49800, &amp;quot;player&amp;quot;)
-local mangle, _, _, _, _, _, mtime = UnitDebuffID(&amp;quot;target&amp;quot;, 48566)
-
-if energycost(52610)
-and cp &amp;gt;= 1
-and ( mangle or CantMangle() == true )
-and ( savage == nil or ( savage and time - GetTime() &amp;lt;= 1 ) )
-and CanAttack()
-then
-	--CastSpellByID(52610)
-	return true
-end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Rip</Name><Default>false</Default><SpellID>49800</SpellID><Actions></Actions><Lua>local rip, _, _, _, _, _, time = UnitDebuffID(&amp;quot;target&amp;quot;, 49800, &amp;quot;player&amp;quot;)
-local rip = UnitDebuffID(&amp;quot;target&amp;quot;, 49800, &amp;quot;player&amp;quot;)
-local mangle, _, _, _, _, _, time = UnitDebuffID(&amp;quot;target&amp;quot;, 48566)
-
-if cp &amp;gt;= 5
-and ( ( calc_time ~= nil
-and calc_time &amp;gt;= 6 )
-or calc_time == nil )
-and AOE() == false
-and Wait() == false
-and CanAttack()
-and ( mangle or CantMangle() == true )
-and rangeCheck(48574, &amp;quot;target&amp;quot;)
- then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Mangle (Cat)</Name><Default>false</Default><SpellID>48566</SpellID><Actions></Actions><Lua>local mangle, _, _, _, _, _, time = UnitDebuffID(&amp;quot;target&amp;quot;, 48566)
-
-if CantMangle() == false
-and CanAttack()
-and energycost(48566)
-and AOE() == false
-and ( mangle == nil
-or time - GetTime() &amp;lt; 1 )
-and rangeCheck(48574, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Tranquility</Name><Default>false</Default><SpellID>48447</SpellID><Actions></Actions><Lua>if lowhpmembers &amp;gt;= 8
-and not CooldownRemains(48447)
-and PQR_IsCastingSpell(48447) == false
-and UnitChannelInfo(&amp;quot;player&amp;quot;) == nil
-and pStay()
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Force of Nature</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if IsLeftShiftKeyDown() 
-and not GetCurrentKeyBoardFocus() 
-and not UnitChannelInfo(&amp;quot;player&amp;quot;) 
-then
-  CastSpellByID(33831)
-  if SpellIsTargeting() then CameraOrSelectOrMoveStart() CameraOrSelectOrMoveStop() end  
-  return true
-end
-
-if not UnitIsUnit(&amp;quot;target&amp;quot;,&amp;quot;pettarget&amp;quot;) then
-	PetAttack()
-end</Lua><RecastDelay>0</RecastDelay><Target>Click</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Faerie Fire</Name><Default>false</Default><SpellID>770</SpellID><Actions></Actions><Lua>if IsBoss()
-and CanAttack()
-and not FaFire
-and not fFaFire
-and rangeCheck(770, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Barkskin</Name><Default>false</Default><SpellID>22812</SpellID><Actions></Actions><Lua>if getHp(&amp;quot;player&amp;quot;) &amp;lt; 40
-and not CooldownRemains(22812)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Nature&amp;apos;s Grasp</Name><Default>false</Default><SpellID>53312</SpellID><Actions></Actions><Lua>if getHp(&amp;quot;player&amp;quot;) &amp;lt; 65
-and rangeCheck(48574, &amp;quot;target&amp;quot;)
-and not CooldownRemains(53312)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Typhoon</Name><Default>false</Default><SpellID>61384</SpellID><Actions></Actions><Lua>if IsLeftAltKeyDown() and GetCurrentKeyBoardFocus() == nil
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Hurricane</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if HN == true
-and CanAttack()
-and pStay()
-and UnitChannelInfo(&amp;quot;player&amp;quot;) == nil
-then
-	CastSpellByID(48467)
-	if SpellIsTargeting() then
-		CameraOrSelectOrMoveStart()
-		CameraOrSelectOrMoveStop()
-	end
-	return true
-end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Faerie Fire</Name><Default>false</Default><SpellID>16857</SpellID><Actions></Actions><Lua>if not fFaFire
-and CanAttack()
-and rangeCheck(16857, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Swipe (Cat)</Name><Default>false</Default><SpellID>62078</SpellID><Actions></Actions><Lua>if AOE() == true
-and CanAttack()
-and rangeCheck(48574, &amp;quot;target&amp;quot;)
-and ( energycost(62078) )
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Rejuvenation (Cat)</Name><Default>false</Default><SpellID>48441</SpellID><Actions></Actions><Lua>if IsLeftAltKeyDown() and GetCurrentKeyBoardFocus() == nil
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Bear Form</Name><Default>false</Default><SpellID>9634</SpellID><Actions></Actions><Lua>if not bearform
-and not dash
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Enrage</Name><Default>false</Default><SpellID>5229</SpellID><Actions></Actions><Lua>if UnitPower(&amp;quot;player&amp;quot;) &amp;lt;= 75
-and IsBoss()
-and UnX()
-and not CooldownRemains(5229)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Mangle (Bear)</Name><Default>false</Default><SpellID>48564</SpellID><Actions></Actions><Lua>if ragecost(48564)
-and CanAttack()
-and not CooldownRemains(48564)
-and rangeCheck(48564, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Maul</Name><Default>false</Default><SpellID>48480</SpellID><Actions></Actions><Lua>if ragecost(48480)
-and AOE() == false
-and rangeCheck(48568, &amp;quot;target&amp;quot;)
-and CanAttack()
-and not CooldownRemains(48480)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Survival Instincts</Name><Default>false</Default><SpellID>61336</SpellID><Actions></Actions><Lua>if getHp(&amp;quot;player&amp;quot;) &amp;lt; 40
-and UnX()
-and not CooldownRemains(61336)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Frenzied Regeneration</Name><Default>false</Default><SpellID>22842</SpellID><Actions></Actions><Lua>if getHp(&amp;quot;player&amp;quot;) &amp;lt; 40
-and not CooldownRemains(22842)
-and UnX()
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Swipe (Bear)</Name><Default>false</Default><SpellID>48562</SpellID><Actions></Actions><Lua>if AOE() == true
-and ragecost(48562)
-and CanAttack()
-and rangeCheck(48564, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Berserk (Bear)</Name><Default>false</Default><SpellID>50334</SpellID><Actions></Actions><Lua>if getHp(&amp;quot;player&amp;quot;) &amp;lt; 50
-and UnX()
-and not CooldownRemains(50334)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Bash</Name><Default>false</Default><SpellID>8983</SpellID><Actions></Actions><Lua>if IsLeftAltKeyDown() and GetCurrentKeyBoardFocus() == nil
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Lacerate</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if not lacerate
-or (lacerate and ( select(4, UnitDebuffID(&amp;quot;target&amp;quot;, 48568, &amp;quot;player&amp;quot;)) &amp;lt; 5 or select(7, UnitDebuffID(&amp;quot;target&amp;quot;, 48568, &amp;quot;player&amp;quot;)) - GetTime() &amp;lt; 3 ))
-and CanAttack()
-and AOE() == false
-then
-	if rage &amp;gt; 30
-	and rangeCheck(48564, &amp;quot;target&amp;quot;)  then
-		CastSpellByID(48480)
-	end	
-		CastSpellByID(48568)
-	return true
-end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Gift of the Wild</Name><Default>false</Default><SpellID>48470</SpellID><Actions></Actions><Lua>if not GotW
-and UnitAffectingCombat(&amp;quot;player&amp;quot;) == nil
-and (GetSpellInfo(48470) or GetItemCount(44605) &amp;gt;= 1)
-and not UnitIsDeadOrGhost(&amp;quot;player&amp;quot;)
-and not IsMounted()
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Thorns</Name><Default>false</Default><SpellID>53307</SpellID><Actions></Actions><Lua>if not thorns
-and inCombat() == nil
-and not UnitIsDeadOrGhost(&amp;quot;player&amp;quot;)
-and not IsMounted()
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Healing Touch</Name><Default>false</Default><SpellID>48378</SpellID><Actions></Actions><Lua>if PQR_CustomTargetHP &amp;lt; 65
-and pStay()
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Feral Function --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if not FuncLoaded then
+end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Feral Function --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if not FuncLoaded then
 	FuncLoaded = true
 	GotClearCast = 0
 	
@@ -1426,35 +1066,1155 @@ if not FrameCreated then
 		end
 	end
 
-end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Use:Trinkets/Hands</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>local _,cd,havecd = GetInventoryItemCooldown(&amp;quot;player&amp;quot;,13)
+end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Druid Stuff --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- Druid Stuff --
+-- Dots / Debuffs --
+FaFire = UnitDebuffID(&amp;quot;target&amp;quot;,770)
+fFaFire = UnitDebuffID(&amp;quot;target&amp;quot;,16857)
+iswarm = UnitDebuffID(&amp;quot;target&amp;quot;, 48468, &amp;quot;player&amp;quot;)
+mfire = UnitDebuffID(&amp;quot;target&amp;quot;, 48463, &amp;quot;player&amp;quot;)
+mangle = UnitDebuffID(&amp;quot;target&amp;quot;, 48566)
+rake = UnitDebuffID(&amp;quot;target&amp;quot;, 48574, &amp;quot;player&amp;quot;)
+lacerate = UnitDebuffID(&amp;quot;target&amp;quot;, 48568, &amp;quot;player&amp;quot;)
+-- Procs --
+clearcast = UnitBuffID(&amp;quot;player&amp;quot;, 16870)
+pswitness = UnitBuffID(&amp;quot;player&amp;quot;, 69369)
+-- Forms --
+moonkin = UnitBuffID(&amp;quot;player&amp;quot;, 24858)
+bearform = UnitBuffID(&amp;quot;player&amp;quot;, 9634)
+catform = UnitBuffID(&amp;quot;player&amp;quot;, 768) 
+-- Buffs -- 
+GotW = UnitBuffID(&amp;quot;player&amp;quot;, 48470)
+thorns = UnitBuffID(&amp;quot;player&amp;quot;,53307)
+dash = UnitBuffID(&amp;quot;player&amp;quot;, 33357, &amp;quot;player&amp;quot;)
+berserk = select(11, UnitBuffID(&amp;quot;player&amp;quot;, 50334))
+berserk = UnitBuffID(&amp;quot;player&amp;quot;, 50334)
+tigers = UnitBuffID(&amp;quot;player&amp;quot;, 50213)
+innervate = UnitBuffID(&amp;quot;player&amp;quot;, 29166)
+-- Healing --
+regrowth = UnitBuffID(&amp;quot;player&amp;quot;, 48443)
+-- Other --
+energy = UnitPower(&amp;quot;player&amp;quot;)
+rage = UnitPower(&amp;quot;player&amp;quot;)
+cp = GetComboPoints(&amp;quot;player&amp;quot;)</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Hotkeys --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if not leftkeydown then leftkeydown = 0 end
 
-if cd == 0 and havecd == 1
-and IsBoss()
+if modtime == nil then
+	modtime = 0
+end
+
+if IsLeftControlKeyDown() and GetTime() - leftkeydown &amp;gt; 1 then
+	leftkeydown = GetTime()
+  	if StopRota then
+		StopRota = false 
+		PQR_WriteToChat(&amp;quot;Rotation \124cFF15E615reenabled!&amp;quot;)
+  	else 
+		StopRota = true 
+		PQR_WriteToChat(&amp;quot;Rotation \124cFFE61515stopped!&amp;quot;)
+  	end
+end</Lua><RecastDelay>0</RecastDelay><Target>Click</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:-- Hotkeys --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if not leftkeydown then leftkeydown = 0 end
+
+if modtime == nil then
+	modtime = 0
+end
+
+if IsLeftControlKeyDown() and GetTime() - leftkeydown &amp;gt; 1 then
+	leftkeydown = GetTime()
+  	if StopRota then
+		StopRota  = false 
+		PQR_WriteToChat(&amp;quot;Rotation \124cFF15E615reenabled!&amp;quot;)
+  	else 
+		StopRota = true 
+		PQR_WriteToChat(&amp;quot;Rotation \124cFFE61515stopped!&amp;quot;)
+  	end
+end
+
+if not AOE then
+	function AOE()
+		if AoE == true then
+			return true
+		else
+			return false
+		end
+	end
+end
+
+if not rightkeydown then rightkeydown = 0 end
+
+if modtime == nil then
+	modtime = 0
+end
+
+if IsRightAltKeyDown() and not GetCurrentKeyBoardFocus() and GetTime() - modtime &amp;gt; 0.3 then
+	modtime = GetTime()
+	if AoE then
+		AoE = false
+		PQR_WriteToChat(&amp;quot;AoE: \124cFFE61515Disabled&amp;quot;)
+	else
+		AoE = true
+		PQR_WriteToChat(&amp;quot;AoE: \124cFF15E615Enabled&amp;quot;)
+	end
+end</Lua><RecastDelay>0</RecastDelay><Target>Click</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:-- Hotkeys --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if not leftkeydown then leftkeydown = 0 end
+
+if modtime == nil then
+	modtime = 0
+end
+
+if IsLeftControlKeyDown() and GetTime() - leftkeydown &amp;gt; 1 then
+	leftkeydown = GetTime()
+  	if StopRota then
+		StopRota = false 
+		PQR_WriteToChat(&amp;quot;Rotation \124cFF15E615reenabled!&amp;quot;)
+  	else 
+		StopRota = true 
+		PQR_WriteToChat(&amp;quot;Rotation \124cFFE61515stopped!&amp;quot;)
+  	end
+end
+
+if not rightkeydown then rightkeydown = 0 end
+
+if modtime == nil then
+	modtime = 0
+end
+
+if IsRightAltKeyDown() and not GetCurrentKeyBoardFocus() and GetTime() - modtime &amp;gt; 0.3 then
+	modtime = GetTime()
+	if HN then
+		HN = false
+		PQR_WriteToChat(&amp;quot;Hurricane \124cFFE61515Disabled&amp;quot;)
+	else
+		HN = true
+		PQR_WriteToChat(&amp;quot;Hurricane \124cFF15E615Enabled&amp;quot;)
+	end
+end</Lua><RecastDelay>0</RecastDelay><Target>Click</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Start Fight --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if StopRota
+or IsMounted()
+or UnitInVehicle(&amp;quot;player&amp;quot;)
+or UnitIsDeadOrGhost(&amp;quot;target&amp;quot;) 
+or UnitIsDeadOrGhost(&amp;quot;player&amp;quot;)
+or UnitChannelInfo(&amp;quot;player&amp;quot;) ~= nil
+or UnitCastingInfo(&amp;quot;player&amp;quot;) ~= nil
+or UnitBuff(&amp;quot;target&amp;quot;, 59301)
+or UnitBuff(&amp;quot;player&amp;quot;, GetSpellInfo(430))
+or UnitBuff(&amp;quot;player&amp;quot;, GetSpellInfo(433))
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Autotarget script --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if UnitAffectingCombat(&amp;quot;player&amp;quot;)
+and not UnitExists(&amp;quot;target&amp;quot;)
+and not SpellIsTargeting() then
+    RunMacroText(&amp;quot;/targetenemy&amp;quot;)
+    return true
+end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- All:Mouseover --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if UnitAffectingCombat(&amp;quot;player&amp;quot;) and IsMouseButtonDown()
+	then RunMacroText(&amp;quot;/click &amp;quot;..GetMouseFocus():GetName()) end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- All:Auto Buff (Raid/Party) --</Name><Default>false</Default><SpellID>48470</SpellID><Actions></Actions><Lua>local group = &amp;quot;party&amp;quot;
+local members = GetNumPartyMembers()
+
+if GetNumRaidMembers() &amp;gt; 0 then
+  group = &amp;quot;raid&amp;quot;
+  members = GetNumRaidMembers()
+end
+
+-- Change true/false for auto buff raid
+AutoRaidBuff = true
+
+if AutoRaidBuff then
+for i = 1, members, 1 do
+  local member = group..tostring(i)
+ 
+	-- Gift of the Wild
+	if not UnitBuffID(member, 48470)
+	and (GetSpellInfo(48470) or GetItemCount(44605) &amp;gt;= 1)
+	and UnitInRange(member)
+	and UnitIsFriend(&amp;quot;player&amp;quot;, member)
+	and UnitIsDeadOrGhost(member) == nil
+	and UnitHasVehicleUI(member) == false
+	and UnitAffectingCombat(&amp;quot;player&amp;quot;) == nil
+	then
+		CastSpellByID(48470, member)
+	end
+  end
+end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Offensive Spells --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>local buff = { 642, 45438, 31224, 23920, 33786, 19263, 21892, 40733 }
+local mob = { &amp;quot;Training Dummy&amp;quot;, &amp;quot;Raider&amp;apos;s Training Dummy&amp;quot; }
+local elite = {  }
+local noaggromobs = nil
+local immunity = nil
+local eliteboss = nil
+
+for i,v in ipairs(buff) do
+  if UnitBuffID(&amp;quot;target&amp;quot;,v) then immunity = 1 end
+end
+
+for i,v in ipairs(mob) do
+  if UnitName(&amp;quot;target&amp;quot;) == v then noaggromobs = 1 end
+end
+
+if immunity
+or UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) == nil
+or (UnitAffectingCombat(&amp;quot;target&amp;quot;) == nil and noaggromobs == nil and UnitIsPlayer(&amp;quot;target&amp;quot;) == nil)
+or tonumber(UnitGUID(&amp;quot;target&amp;quot;):sub(5,5),16) == 4
+then return true end
+
+for i,v in ipairs(elite) do
+	  if UnitName(&amp;quot;target&amp;quot;) == v then eliteboss = 1 end
+	end
+
+IsBoss = nil
+function IsBoss()
+	if UnitExists(&amp;quot;target&amp;quot;)
+	and ( UnitLevel(&amp;quot;target&amp;quot;) == -1 or eliteboss )
+	or tonumber(UnitGUID(&amp;quot;target&amp;quot;):sub(5,5),16) == 4
+		then return 
+			true 
+		end
+	end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>True</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Offensive Spells (H) --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>local mob = { &amp;quot;Training Dummy&amp;quot;, &amp;quot;Raider&amp;apos;s Training Dummy&amp;quot; }
+local elite = { }
+local noaggromobs = nil
+local eliteboss = nil
+
+for i,v in ipairs(mob) do
+  if UnitName(&amp;quot;target&amp;quot;) == v then noaggromobs = 1 end
+end
+
+if UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) == nil
+or (UnitAffectingCombat(&amp;quot;target&amp;quot;) == nil and noaggromobs == nil and UnitIsPlayer(&amp;quot;target&amp;quot;) == nil)
+then return true end
+
+for i,v in ipairs(elite) do
+  if UnitName(&amp;quot;target&amp;quot;) == v then eliteboss = 1 end
+end
+
+IsBoss = nil
+function IsBoss()
+	if UnitExists(&amp;quot;target&amp;quot;)
+	and ( UnitLevel(&amp;quot;target&amp;quot;) == -1 or eliteboss )
+	then return 
+		true 
+	end
+end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>True</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Heal Engine --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- Simplest Heal Eng --
+if UnitExists(&amp;quot;target&amp;quot;) 
+  and UnitIsDead(&amp;quot;target&amp;quot;) == nil
+  and UnitIsFriend(&amp;quot;player&amp;quot;, &amp;quot;target&amp;quot;) 
+  and UnitCanCooperate(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;)
+  and UnitHasVehicleUI(&amp;quot;target&amp;quot;) == false
+  and UnitDebuffID(&amp;quot;target&amp;quot;, 69065) == nil
+  and UnitDebuffID(&amp;quot;target&amp;quot;, 70157) == nil
+  then PQR_CustomTarget = &amp;quot;target&amp;quot;
+       PQR_CustomTargetHP = 100 * UnitHealth(&amp;quot;target&amp;quot;) / UnitHealthMax(&amp;quot;target&amp;quot;)
+else 
+
+PQR_CustomTarget = &amp;quot;player&amp;quot;
+PQR_CustomTargetHP = 100 * UnitHealth(&amp;quot;player&amp;quot;) / UnitHealthMax(&amp;quot;player&amp;quot;)
+local group = &amp;quot;party&amp;quot;
+local members = GetNumPartyMembers()
+lowhpmembers = 0
+
+if GetNumRaidMembers() &amp;gt; 0 then
+  group = &amp;quot;raid&amp;quot;
+  members = GetNumRaidMembers()
+end
+
+for i = 1, members, 1 do
+  local member = group..tostring(i)
+  local memberhp = 100 * UnitHealth(member) / UnitHealthMax(member)
+  if UnitInRange(member) 
+  and UnitIsFriend(&amp;quot;player&amp;quot;, member)
+  and UnitIsDeadOrGhost(member) == nil  then
+    if UnitGroupRolesAssigned(member) == &amp;quot;TANK&amp;quot; then memberhp = memberhp - 1 end
+    if UnitThreatSituation(member) == 3 then memberhp = memberhp - 3 end
+    if UnitBuffID(member, 53563) ~= nil then memberhp = memberhp + 7 end
+		if memberhp &amp;lt; 85 then lowhpmembers = lowhpmembers +1 end
+		if memberhp &amp;lt; PQR_CustomTargetHP then
+		  PQR_CustomTarget = member
+		  PQR_CustomTargetHP = memberhp
+		end
+	  end
+	end
+end
+
+if view == nil then 
+	view = true
+	local eventframe = CreateFrame(&amp;quot;FRAME&amp;quot;)
+	print(&amp;quot;\124cFFE61515DO NOT TARGET A FRIENDLY PLAYER!&amp;quot;)
+	print(&amp;quot;\124cFFE61515НЕ ВЫБИРАТЬ В КАЧЕСТВИ ЦЕЛИ СОЮЗНИКА!&amp;quot;)
+	eventframe:RegisterEvent(&amp;quot;EXECUTE_CHAT_LINE&amp;quot;)	
+end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Arena Functions --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- Arena helpers, loaded once via FuncLoadedArena guard. Runs every tick but body is idempotent.
+if not FuncLoadedArena then
+	FuncLoadedArena = true
+
+	-- Rolling HP samples per unit for burst detection (no combat-log parsing).
+	ArenaHPHist = ArenaHPHist or {}
+	ArenaDmgWindow = 5
+
+	function ArenaSampleHP(unit)
+		if not UnitExists(unit) or UnitIsDeadOrGhost(unit) then return end
+		local guid = UnitGUID(unit)
+		if not guid then return end
+		local hp = 100 * UnitHealth(unit) / UnitHealthMax(unit)
+		local t = GetTime()
+		local hist = ArenaHPHist[guid]
+		if not hist then hist = {}; ArenaHPHist[guid] = hist end
+		hist[#hist + 1] = { t = t, hp = hp }
+		while hist[1] and (t - hist[1].t) &gt; ArenaDmgWindow do
+			table.remove(hist, 1)
+		end
+	end
+
+	-- Percent HP lost across the current sample window.
+	function ArenaGetDrop(unit)
+		if not UnitExists(unit) then return 0 end
+		local guid = UnitGUID(unit)
+		if not guid then return 0 end
+		local hist = ArenaHPHist[guid]
+		if not hist or #hist &lt; 2 then return 0 end
+		local first = hist[1].hp
+		local last  = hist[#hist].hp
+		local d = first - last
+		if d &lt; 0 then return 0 end
+		return d
+	end
+
+	-- CC id tables. Kept small on purpose; covers the common 3.3.5a arena/BG suite.
+	ArenaStuns     = { 408, 1833, 20549, 24394, 44572, 46968, 47481, 5211, 22703, 25046, 39796, 8983, 22570, 6789, 9005 }
+	ArenaFears     = { 5782, 6358, 8122, 8143, 5484, 17928 }
+	ArenaSilences  = { 15487, 18498, 25046, 47476, 34490, 55021, 31935, 18425 }
+	ArenaRootIds   = { 339, 26989, 53308, 122, 33395, 12494, 4167, 54706, 19675 }
+	ArenaSnareIds  = { 45524, 1715, 12323, 3409, 26679, 29793, 61391, 3600, 8034 }
+	ArenaPolyIds   = { 118, 12824, 12825, 12826, 28271, 28272, 61305, 61721, 61780, 51514 }
+
+	function ArenaHasDebuffList(unit, list)
+		for i = 1, #list do
+			if UnitDebuffID(unit, list[i]) then return true end
+		end
+		return false
+	end
+	function ArenaStunned(u)  return ArenaHasDebuffList(u, ArenaStuns) end
+	function ArenaFeared(u)   return ArenaHasDebuffList(u, ArenaFears) end
+	function ArenaSilenced(u) return ArenaHasDebuffList(u, ArenaSilences) end
+	function ArenaRooted(u)   return ArenaHasDebuffList(u, ArenaRootIds) end
+	function ArenaSnared(u)   return ArenaHasDebuffList(u, ArenaSnareIds) end
+	function ArenaPolyd(u)    return ArenaHasDebuffList(u, ArenaPolyIds) end
+	function ArenaCCed(u)     return ArenaStunned(u) or ArenaFeared(u) or ArenaSilenced(u) or ArenaPolyd(u) end
+
+	-- Can I hardcast right now? (stun/fear/silence/poly block cast-time heals)
+	function ArenaCanHardcast()
+		if ArenaStunned("player") or ArenaFeared("player") or ArenaSilenced("player") or ArenaPolyd("player") then return false end
+		return true
+	end
+
+	-- HoT presence (mine) and remaining seconds.
+	function ArenaMyHoT(unit, spellId)
+		local n, _, _, _, _, _, expire = UnitBuffID(unit, spellId, "player")
+		if not n then return false, 0 end
+		return true, (expire or 0) - GetTime()
+	end
+
+	function ArenaHasAnyHoT(unit)
+		return (ArenaMyHoT(unit, 48441)) or (ArenaMyHoT(unit, 48443))
+		    or (ArenaMyHoT(unit, 48451)) or (ArenaMyHoT(unit, 53251))
+	end
+
+	-- Range + LoS proxy: IsSpellInRange returns 1 only when both range AND LoS OK.
+	function ArenaReachable(unit)
+		if not UnitExists(unit) then return false end
+		if UnitIsDeadOrGhost(unit) then return false end
+		local ht = GetSpellInfo(48378)
+		if not ht then return false end
+		return IsSpellInRange(ht, unit) == 1
+	end
+
+	function ArenaValidAlly(unit)
+		if not UnitExists(unit) then return false end
+		if UnitIsDeadOrGhost(unit) then return false end
+		if not UnitIsFriend("player", unit) then return false end
+		if UnitIsCharmed(unit) then return false end
+		if UnitHasVehicleUI(unit) then return false end
+		if UnitDebuffID(unit, 69065) then return false end
+		if UnitDebuffID(unit, 70157) then return false end
+		return true
+	end
+
+	-- Lower score = more urgent to heal. Projects damage forward and rewards HoT coverage.
+	function ArenaScore(unit)
+		local hp = 100 * UnitHealth(unit) / UnitHealthMax(unit)
+		local drop = ArenaGetDrop(unit)
+		local projected = drop * (3 / ArenaDmgWindow)
+		local score = hp - projected
+		local hots = 0
+		if UnitBuffID(unit, 48441, "player") then hots = hots + 1 end
+		if UnitBuffID(unit, 48443, "player") then hots = hots + 1 end
+		if UnitBuffID(unit, 48451, "player") then hots = hots + 1 end
+		if UnitBuffID(unit, 53251, "player") then hots = hots + 1 end
+		score = score + (hots * 2)
+		if not ArenaReachable(unit) then score = score + 100 end
+		if ArenaPolyd(unit) and hp &gt; 40 then score = score + 50 end
+		return score
+	end
+
+	-- Skip healing if the target is currently heal-immune / cannot be affected.
+	ArenaHealImmunities = { 45438, 642, 33786, 6940, 46924 }
+	function ArenaBuffedOut(unit)
+		for i = 1, #ArenaHealImmunities do
+			if UnitBuffID(unit, ArenaHealImmunities[i]) then return true end
+		end
+		return false
+	end
+
+	-- Rate-limited chat print for decisions (2s per key).
+	ArenaLastMsg = ArenaLastMsg or {}
+	function ArenaSay(key, msg)
+		local t = GetTime()
+		if (ArenaLastMsg[key] or 0) + 2 &gt; t then return end
+		ArenaLastMsg[key] = t
+		if PQR_WriteToChat then PQR_WriteToChat("|cff88ff88[Arena]|r " .. tostring(msg)) end
+	end
+end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Arena Heal Engine --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- Builds ally list, samples HP for burst tracker, picks PQR_CustomTarget with self-danger override.
+local list = { "player" }
+local group = GetNumRaidMembers() &gt; 0 and "raid" or "party"
+local n = group == "raid" and GetNumRaidMembers() or GetNumPartyMembers()
+for i = 1, n do list[#list + 1] = group .. i end
+
+for i = 1, #list do ArenaSampleHP(list[i]) end
+
+local playerHP = 100 * UnitHealth("player") / UnitHealthMax("player")
+local playerDrop = ArenaGetDrop("player") or 0
+
+ArenaSelfDanger = false
+if playerHP &lt; 40 then ArenaSelfDanger = true end
+if playerHP &lt; 65 and playerDrop &gt; 25 then ArenaSelfDanger = true end
+if playerHP &lt; 80 and playerDrop &gt; 40 then ArenaSelfDanger = true end
+
+if ArenaSelfDanger then
+	PQR_CustomTarget = "player"
+	PQR_CustomTargetHP = playerHP
+else
+	local best, bestScore = "player", ArenaScore("player")
+	for i = 1, #list do
+		local u = list[i]
+		if ArenaValidAlly(u) and not ArenaBuffedOut(u) then
+			local s = ArenaScore(u)
+			if s &lt; bestScore then bestScore = s; best = u end
+		end
+	end
+	PQR_CustomTarget = best
+	PQR_CustomTargetHP = 100 * UnitHealth(best) / UnitHealthMax(best)
+end
+
+ArenaLowMembers = 0
+ArenaCritMembers = 0
+for i = 1, #list do
+	local u = list[i]
+	if ArenaValidAlly(u) then
+		local hp = 100 * UnitHealth(u) / UnitHealthMax(u)
+		if hp &lt; 85 then ArenaLowMembers = ArenaLowMembers + 1 end
+		if hp &lt; 45 then ArenaCritMembers = ArenaCritMembers + 1 end
+	end
+end
+
+ArenaPressured = "player"
+local pressuredDrop = playerDrop
+for i = 1, #list do
+	local u = list[i]
+	if ArenaValidAlly(u) then
+		local d = ArenaGetDrop(u) or 0
+		if d &gt; pressuredDrop then pressuredDrop = d; ArenaPressured = u end
+	end
+end
+ArenaPressuredDrop = pressuredDrop</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- All:Racial --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>local debuff = { 6215, 8122, 5484, 2637, 5246, 6358 }
+local hracial = { 33697, 20572, 33702, 26297 }
+local alracial = { 20594, 28880 }
+local hrace = { &amp;quot;Troll&amp;quot;, &amp;quot;Orc&amp;quot; }
+local alrace = { &amp;quot;Dwarf&amp;quot;, &amp;quot;Draenei&amp;quot; }
+local myrace = UnitRace(&amp;quot;player&amp;quot;)
+
+	-- Undead --
+for i = 1, #debuff do
+  if UnitDebuffID(&amp;quot;player&amp;quot;,debuff[i])
+   and UnitRace(&amp;quot;player&amp;quot;) == &amp;quot;Undead&amp;quot; 
+   and IsSpellKnown(7744) 
+   and not CooldownRemains(7744)
+   and CanAttack() then
+    CastSpellByID(7744)
+    return true
+  end
+end
+
+	-- Horde race --
+if IsBoss()
+ and CanAttack()
+ and tContains(hrace, UnitRace(&amp;quot;player&amp;quot;)) then
+  for i = 1, #hracial do
+    if IsSpellKnown(hracial[i]) 
+     and not CooldownRemains(hracial[i]) then 
+      CastSpellByID(hracial[i])
+      return true
+    end
+  end
+end
+
+	-- Ally race -- 
+if CanAttack() 
+and getHp(&amp;quot;player&amp;quot;) &amp;lt;= 35 
+and tContains(alrace, UnitRace(&amp;quot;player&amp;quot;)) then
+  for i = 1, #alracial do
+    if IsSpellKnown(alracial[i]) 
+     and not CooldownRemains(alracial[i]) then
+      CastSpellByID(alracial[i])
+      return true
+    end
+  end
+end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- All:Healthstone --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>local stones = { 36892, 36893, 36894 }
+
+for i = 1, #stones do
+   	 if getHp(&amp;quot;player&amp;quot;) &amp;lt;= 25
+	and GetItemCount(stones[i]) &amp;gt;= 1 
+	and not ItemCooldownRemains(stones[i]) then
+       		UseItemByName(stones[i])
+	end
+end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- All:Potions --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>hpot = { 33447, 43569, 40087, 41166, 40067 }
+
+for i = 1, #hpot do
+   	if getHp(&amp;quot;player&amp;quot;) &amp;lt;= 12
+	and GetItemCount(hpot[i]) &amp;gt;= 1 
+	and not ItemCooldownRemains(hpot[i]) then
+       		UseItemByName(hpot[i])
+	end
+end
+
+mpot = { 33448, 43570, 40087, 42545, 39671 }
+
+for i = 1, #mpot do
+   	if getMana(&amp;quot;player&amp;quot;) &amp;lt;= 20
+	and IsBoss()
+	and GetItemCount(mpot[i]) &amp;gt;= 1 
+	and not ItemCooldownRemains(mpot[i]) then
+       		UseItemByName(mpot[i])
+	end
+end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Tree of Life</Name><Default>false</Default><SpellID>33891</SpellID><Actions></Actions><Lua>-- FIX: original used OR (always true). AND = only cast when neither ToL buff present.
+if (UnitBuffID("player", 33891, "player") == nil and UnitBuffID("player", 34123, "player") == nil)
+and UnitBuffID("player", 33357, "player") == nil
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Tranquility</Name><Default>false</Default><SpellID>48447</SpellID><Actions></Actions><Lua>-- BG Tranquility: 5+ low members (ArenaLowMembers) or self panic.
+if CooldownRemains(48447) then return false end
+if UnitChannelInfo("player") ~= nil then return false end
+if PQR_IsCastingSpell(48447) then return false end
+if not pStay() then return false end
+if not ArenaCanHardcast() then return false end
+if (ArenaLowMembers or 0) &gt;= 5 then return true end
+if getHp("player") &lt; 40 then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Gift of the Wild</Name><Default>false</Default><SpellID>48470</SpellID><Actions></Actions><Lua>if not GotW
+and UnitAffectingCombat(&amp;quot;player&amp;quot;) == nil
+and (GetSpellInfo(48470) or GetItemCount(44605) &amp;gt;= 1)
+and not UnitIsDeadOrGhost(&amp;quot;player&amp;quot;)
+and not IsMounted()
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Thorns</Name><Default>false</Default><SpellID>53307</SpellID><Actions></Actions><Lua>if not thorns
+and inCombat() == nil
+and not UnitIsDeadOrGhost(&amp;quot;player&amp;quot;)
+and not IsMounted()
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:PvP Trinket (Break)</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- PvP trinket break only. On-use trinkets/gloves stay in Use:Trinkets/Hands (PvP) at layer 5.
+if not UnitAffectingCombat("player") then return false end
+
+local function isCCd()
+	return ArenaStunned("player") or ArenaFeared("player") or ArenaSilenced("player") or ArenaPolyd("player")
+end
+
+local function tryPvPTrinket(slot)
+	local _, cd, havecd = GetInventoryItemCooldown("player", slot)
+	if not (cd == 0 and havecd == 1) then return false end
+	local id = GetInventoryItemID("player", slot)
+	local isPvP = id == 18854 or id == 18855 or id == 42364 or id == 42365 or id == 42126 or id == 61048
+	if isPvP and isCCd() then
+		UseInventoryItem(slot)
+		ArenaSay("trinket_break", "PvP trinket -&gt; break CC")
+		return true
+	end
+	return false
+end
+
+if tryPvPTrinket(13) then return true end
+if tryPvPTrinket(14) then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Barkskin</Name><Default>false</Default><SpellID>22812</SpellID><Actions></Actions><Lua>-- Reactive + proactive Barkskin: low HP, big burst, or need pushback resist under stun/silence.
+if CooldownRemains(22812) then return false end
+if UnitBuffID("player", 22812) then return false end
+if not UnitAffectingCombat("player") then return false end
+
+local hp = getHp("player")
+local drop = ArenaGetDrop("player") or 0
+
+if hp &lt; 55 then ArenaSay("bs_hp", "Barkskin reactive HP"); return true end
+if drop &gt; 25 then ArenaSay("bs_burst", "Barkskin burst detected"); return true end
+if (ArenaStunned("player") or ArenaFeared("player")) and hp &lt; 80 then
+	ArenaSay("bs_stun", "Barkskin under stun/fear"); return true
+end
+if ArenaSilenced("player") and hp &lt; 70 then ArenaSay("bs_sil", "Barkskin under silence"); return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:NS + Healing Touch (Self)</Name><Default>false</Default><SpellID>17116</SpellID><Actions></Actions><Lua>-- Two-tick NS+HT panic on self. tick1 casts NS via SpellID; tick2 with NS buff up casts HT.
+if not IsSpellKnown(17116) then return false end
+if CooldownRemains(17116) and UnitBuffID("player", 17116) == nil then return false end
+if ArenaPolyd("player") or ArenaFeared("player") then return false end
+
+local hp = getHp("player")
+local drop = ArenaGetDrop("player") or 0
+
+if hp &gt; 35 and not (hp &lt; 55 and drop &gt; 30) then return false end
+
+if UnitBuffID("player", 17116) then
+	if UnitCastingInfo("player") == nil and UnitChannelInfo("player") == nil then
+		local ht = GetSpellInfo(48378)
+		if ht then CastSpellByName(ht, "player") end
+	end
+	ArenaSay("nsht_self_cast", "NS+HT self cast at " .. math.floor(hp) .. "%")
+	return true
+end
+ArenaSay("nsht_self_arm", "arming NS for self")
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Swiftmend (Self)</Name><Default>false</Default><SpellID>18562</SpellID><Actions></Actions><Lua>-- Instant Swiftmend on self. Requires my Rejuv or Regrowth on player.
+if CooldownRemains(18562) then return false end
+if UnitDebuffID("player", 69762) then return false end
+if not (UnitBuffID("player", 48441, "player") or UnitBuffID("player", 48443, "player")) then return false end
+local hp = getHp("player")
+local drop = ArenaGetDrop("player") or 0
+if hp &gt; 40 and not (hp &lt; 60 and drop &gt; 25) then return false end
+ArenaSay("sm_self", "Swiftmend self at " .. math.floor(hp) .. "%")
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Nature's Grasp</Name><Default>false</Default><SpellID>53312</SpellID><Actions></Actions><Lua>-- Nature's Grasp melee peel + fallback if HP dropping fast.
+if not IsSpellKnown(53312) then return false end
+if CooldownRemains(53312) then return false end
+if UnitBuffID("player", 53312) or UnitBuffID("player", 19975) then return false end
+if not UnitAffectingCombat("player") then return false end
+if getHp("player") &gt; 70 then return false end
+if UnitExists("target") and UnitCanAttack("player", "target") == 1 and UnitIsUnit("targettarget", "player") then
+	return true
+end
+if (ArenaGetDrop("player") or 0) &gt; 25 then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Berserker Rage</Name><Default>false</Default><SpellID>50334</SpellID><Actions></Actions><Lua>-- Break fear via Berserker Rage. 30s CD, works while feared.
+if not IsSpellKnown(50334) then return false end
+if CooldownRemains(50334) then return false end
+if not UnitAffectingCombat("player") then return false end
+if not ArenaFeared("player") then return false end
+ArenaSay("brage", "Berserker Rage -&gt; break fear")
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:NS + Healing Touch (Ally)</Name><Default>false</Default><SpellID>17116</SpellID><Actions></Actions><Lua>-- Two-tick NS+HT save on ally chosen by the heal engine. Only when self is NOT in danger.
+if not IsSpellKnown(17116) then return false end
+if CooldownRemains(17116) and UnitBuffID("player", 17116) == nil then return false end
+if ArenaPolyd("player") or ArenaFeared("player") then return false end
+if ArenaSelfDanger then return false end
+
+local t = PQR_CustomTarget
+if not t or t == "player" then return false end
+if not ArenaValidAlly(t) then return false end
+if not ArenaReachable(t) then return false end
+
+local hp = 100 * UnitHealth(t) / UnitHealthMax(t)
+local drop = ArenaGetDrop(t) or 0
+if hp &gt; 25 and not (hp &lt; 45 and drop &gt; 30) then return false end
+
+if UnitBuffID("player", 17116) then
+	if UnitCastingInfo("player") == nil and UnitChannelInfo("player") == nil then
+		local ht = GetSpellInfo(48378)
+		if ht then CastSpellByName(ht, t) end
+	end
+	ArenaSay("nsht_ally_cast", "NS+HT save " .. (UnitName(t) or "?"))
+	return true
+end
+ArenaSay("nsht_ally_arm", "arming NS for ally")
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Swiftmend</Name><Default>false</Default><SpellID>18562</SpellID><Actions></Actions><Lua>-- Instant Swiftmend on emergency ally. Requires an existing Rejuv/Regrowth on target.
+if CooldownRemains(18562) then return false end
+if UnitDebuffID("player", 69762) then return false end
+local t = PQR_CustomTarget
+if not t then return false end
+if not ArenaValidAlly(t) then return false end
+if not ArenaReachable(t) then return false end
+local hp = 100 * UnitHealth(t) / UnitHealthMax(t)
+local drop = ArenaGetDrop(t) or 0
+if hp &gt; 45 and not (hp &lt; 65 and drop &gt; 25) then return false end
+if not (UnitBuffID(t, 48441, "player") or UnitBuffID(t, 48443, "player")) then return false end
+ArenaSay("sm_ally", "Swiftmend " .. (UnitName(t) or "?"))
+return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Wild Growth (Emergency)</Name><Default>false</Default><SpellID>53251</SpellID><Actions></Actions><Lua>-- Emergency Wild Growth: 2+ crit members or chosen target below 55%.
+if not IsSpellKnown(53251) then return false end
+if CooldownRemains(53251) then return false end
+local t = PQR_CustomTarget
+if not t then return false end
+if not ArenaReachable(t) then return false end
+if UnitBuffID(t, 53251, "player") then return false end
+local hp = 100 * UnitHealth(t) / UnitHealthMax(t)
+if hp &lt; 55 or (ArenaCritMembers or 0) &gt;= 2 then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Nourish (Emergency)</Name><Default>false</Default><SpellID>50464</SpellID><Actions></Actions><Lua>-- Fast heal 1.5s cast. Requires HoT on target for the talent bonus and can-cast state.
+local t = PQR_CustomTarget
+if not t then return false end
+if not ArenaValidAlly(t) then return false end
+if not ArenaCanHardcast() then return false end
+if not pStay() then return false end
+if not ArenaReachable(t) then return false end
+if UnitCastingInfo("player") or UnitChannelInfo("player") then return false end
+local hp = 100 * UnitHealth(t) / UnitHealthMax(t)
+if hp &gt; 55 then return false end
+if not (UnitBuffID(t, 48441, "player") or UnitBuffID(t, 48443, "player") or UnitBuffID(t, 48451, "player") or UnitBuffID(t, 53251, "player")) then
+	return false
+end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Abolish Poison</Name><Default>false</Default><SpellID>2893</SpellID><Actions></Actions><Lua>-- Poison dispel on the pressured unit only. Saves GCDs vs whole-party scan.
+local t = ArenaPressured
+if not t then return false end
+if not ArenaValidAlly(t) then return false end
+if not ArenaReachable(t) then return false end
+if UnitBuffID(t, 2893) then return false end
+local j = 1
+while true do
+	local name, _, _, _, dtype, dur = UnitDebuff(t, j)
+	if not name then return false end
+	if dtype == "Poison" and (dur or 0) &gt; 1 then
+		CastSpellByID(2893, t)
+		ArenaSay("abol", "Abolish Poison on " .. (UnitName(t) or "?"))
+		return true
+	end
+	j = j + 1
+end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Remove Curse</Name><Default>false</Default><SpellID>2782</SpellID><Actions></Actions><Lua>-- Curse dispel on the pressured unit only.
+local t = ArenaPressured
+if not t then return false end
+if not ArenaValidAlly(t) then return false end
+if not ArenaReachable(t) then return false end
+local j = 1
+while true do
+	local name, _, _, _, dtype, dur = UnitDebuff(t, j)
+	if not name then return false end
+	if dtype == "Curse" and (dur or 0) &gt; 1 then
+		CastSpellByID(2782, t)
+		ArenaSay("curse", "Remove Curse on " .. (UnitName(t) or "?"))
+		return true
+	end
+	j = j + 1
+end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Shapeshift Break</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- Bear powershift to break roots (always) or snares (only when HP-safe, since it costs a GCD + leaves ToL).
+if not UnitAffectingCombat("player") then return false end
+if UnitChannelInfo("player") then return false end
+local rooted = ArenaRooted("player")
+local snared = ArenaSnared("player")
+if not rooted and not snared then return false end
+if snared and not rooted and getHp("player") &lt; 60 then return false end
+if not UnitBuffID("player", 9634) then CastSpellByID(9634) end
+ArenaSay("bear", "Bear powershift break")
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Rejuvenation</Name><Default>false</Default><SpellID>48441</SpellID><Actions></Actions><Lua>-- Pandemic Rejuv: refresh when missing or &lt; 3s remain. Skip overhealing at 92%+.
+local t = PQR_CustomTarget
+if not t then return false end
+if not ArenaValidAlly(t) then return false end
+if not ArenaReachable(t) then return false end
+local hp = 100 * UnitHealth(t) / UnitHealthMax(t)
+if hp &gt; 92 then return false end
+local up, rem = ArenaMyHoT(t, 48441)
+if up and rem &gt; 3 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Lifebloom</Name><Default>false</Default><SpellID>48451</SpellID><Actions></Actions><Lua>-- Stack Lifebloom on pressured target only. Nil-safe count/expire check.
+local t = PQR_CustomTarget
+if not t then return false end
+if not ArenaValidAlly(t) then return false end
+if not ArenaReachable(t) then return false end
+local hp = 100 * UnitHealth(t) / UnitHealthMax(t)
+local drop = ArenaGetDrop(t) or 0
+if hp &gt; 85 and drop &lt; 10 then return false end
+local _, _, _, count, _, _, expire = UnitBuffID(t, 48451, "player")
+if count == 3 and expire and (expire - GetTime()) &gt; 3 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Regrowth</Name><Default>false</Default><SpellID>48443</SpellID><Actions></Actions><Lua>-- Only (re)apply Regrowth when its HoT is missing. Nourish handles subsequent fast heals.
+local t = PQR_CustomTarget
+if not t then return false end
+if not ArenaValidAlly(t) then return false end
+if not ArenaCanHardcast() then return false end
+if not pStay() then return false end
+if not ArenaReachable(t) then return false end
+if UnitCastingInfo("player") or UnitChannelInfo("player") then return false end
+local hp = 100 * UnitHealth(t) / UnitHealthMax(t)
+if hp &gt; 80 then return false end
+if UnitBuffID(t, 48443, "player") then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Wild Growth</Name><Default>false</Default><SpellID>53251</SpellID><Actions></Actions><Lua>-- Maintenance WG: only when 2+ members are low. Chosen target must not already carry my WG.
+if not IsSpellKnown(53251) then return false end
+if CooldownRemains(53251) then return false end
+local t = PQR_CustomTarget
+if not t then return false end
+if not ArenaReachable(t) then return false end
+if (ArenaLowMembers or 0) &lt; 2 then return false end
+if UnitBuffID(t, 53251, "player") then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Innervate</Name><Default>false</Default><SpellID>29166</SpellID><Actions></Actions><Lua>-- Smart Innervate: mana below 50% AND player is currently able to channel/cast.
+if CooldownRemains(29166) then return false end
+if UnitBuffID("player", 29166) then return false end
+if not UnitAffectingCombat("player") then return false end
+if getMana("player") &gt; 50 then return false end
+if ArenaStunned("player") or ArenaFeared("player") or ArenaSilenced("player") or ArenaPolyd("player") then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:War Stomp</Name><Default>false</Default><SpellID>20549</SpellID><Actions></Actions><Lua>-- Tauren racial melee peel. HP-gated so we don't burn a GCD off-cooldown when safe.
+if not IsSpellKnown(20549) then return false end
+if CooldownRemains(20549) then return false end
+if not UnitAffectingCombat("player") then return false end
+if not UnitExists("target") then return false end
+if UnitCanAttack("player","target") ~= 1 then return false end
+if not UnitIsPlayer("target") and not PQR_TestMode then return false end
+if not rangeCheck(20549, "target") then return false end
+if PQR_TestMode then return true end
+local _, cls = UnitClass("target")
+local isMelee = cls == "WARRIOR" or cls == "ROGUE" or cls == "DEATHKNIGHT" or cls == "PALADIN" or cls == "SHAMAN" or cls == "HUNTER"
+if not isMelee then return false end
+if getHp("player") &gt; 70 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Healing Touch</Name><Default>false</Default><SpellID>48378</SpellID><Actions></Actions><Lua>-- Default cast-time heal when no HoT is up (Nourish would be weaker without HoT).
+local t = PQR_CustomTarget
+if not t then return false end
+if not ArenaValidAlly(t) then return false end
+if not ArenaCanHardcast() then return false end
+if not pStay() then return false end
+if not ArenaReachable(t) then return false end
+if UnitCastingInfo("player") or UnitChannelInfo("player") then return false end
+local hp = 100 * UnitHealth(t) / UnitHealthMax(t)
+if hp &gt; 70 then return false end
+if UnitBuffID(t, 48441, "player") or UnitBuffID(t, 48443, "player") or UnitBuffID(t, 48451, "player") then
+	return false
+end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Nourish</Name><Default>false</Default><SpellID>50464</SpellID><Actions></Actions><Lua>-- Default fast heal when any HoT is up. Cheap 1.5s cast with the talent bonus.
+local t = PQR_CustomTarget
+if not t then return false end
+if not ArenaValidAlly(t) then return false end
+if not ArenaCanHardcast() then return false end
+if not pStay() then return false end
+if not ArenaReachable(t) then return false end
+if UnitCastingInfo("player") or UnitChannelInfo("player") then return false end
+local hp = 100 * UnitHealth(t) / UnitHealthMax(t)
+if hp &gt; 80 then return false end
+if not (UnitBuffID(t, 48441, "player") or UnitBuffID(t, 48443, "player") or UnitBuffID(t, 48451, "player") or UnitBuffID(t, 53251, "player")) then
+	return false
+end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Cyclone (Focus)</Name><Default>false</Default><SpellID>33786</SpellID><Actions></Actions><Lua>-- Cyclone focus. Heal-first priority is enforced by ROTATION ORDER (default heals run before this).
+-- Only self-danger blocks; ordering handles the rest so we still fire against enemy healers/melee even during BG fights.
+if not UnitExists("focus") then return false end
+if UnitIsDeadOrGhost("focus") then return false end
+if not UnitIsPlayer("focus") and not PQR_TestMode then return false end
+if not UnitCanAttack("player", "focus") then return false end
+if not rangeCheck(33786, "focus") then return false end
+if UnitDebuffID("focus", 33786) then return false end
+if PQR_IsCastingSpell(33786) then return false end
+if not ArenaCanHardcast() then return false end
+if PQR_TestMode then return true end
+if ArenaSelfDanger then return false end
+local n, _, _, _, _, _, _, _, notInt = UnitCastingInfo("focus")
+if n and not notInt then return true end
+local cn, _, _, _, _, _, _, cNotInt = UnitChannelInfo("focus")
+if cn and not cNotInt then return true end
+local _, cls = UnitClass("focus")
+local isHealer = cls == "PRIEST" or cls == "DRUID" or cls == "PALADIN" or cls == "SHAMAN"
+if isHealer and getHp("focus") &lt; 95 then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Focus</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Entangling Roots (Focus)</Name><Default>false</Default><SpellID>53308</SpellID><Actions></Actions><Lua>-- Entangling Roots focus: melee focus not already CCed. Heal-first via rotation order (default heals run first).
+if not UnitExists("focus") then return false end
+if UnitIsDeadOrGhost("focus") then return false end
+if not UnitIsPlayer("focus") and not PQR_TestMode then return false end
+if not UnitCanAttack("player", "focus") then return false end
+if not rangeCheck(53308, "focus") then return false end
+if UnitDebuffID("focus", 339) or UnitDebuffID("focus", 26989) or UnitDebuffID("focus", 53308) then return false end
+if UnitDebuffID("focus", 33786) then return false end
+if PQR_IsCastingSpell(53308) then return false end
+if not ArenaCanHardcast() then return false end
+if PQR_TestMode then return true end
+if ArenaSelfDanger then return false end
+local _, cls = UnitClass("focus")
+local isMelee = cls == "WARRIOR" or cls == "ROGUE" or cls == "DEATHKNIGHT" or cls == "PALADIN" or cls == "SHAMAN" or cls == "DRUID" or cls == "HUNTER"
+if not isMelee then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Focus</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Faerie Fire (Anti-Stealth)</Name><Default>false</Default><SpellID>770</SpellID><Actions></Actions><Lua>-- Anti-stealth FF for Rogue/Druid target. Heal-first via rotation order.
+if CooldownRemains(770) then return false end
+if not UnitExists("target") then return false end
+if not UnitIsPlayer("target") and not PQR_TestMode then return false end
+if not UnitCanAttack("player", "target") then return false end
+if not rangeCheck(770, "target") then return false end
+if UnitDebuffID("target", 770) or UnitDebuffID("target", 91565) or UnitDebuffID("target", 26993) then return false end
+if not ArenaCanHardcast() then return false end
+if PQR_TestMode then return true end
+if ArenaSelfDanger then return false end
+local _, cls = UnitClass("target")
+if cls ~= "ROGUE" and cls ~= "DRUID" then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Moonkin Form</Name><Default>false</Default><SpellID>24858</SpellID><Actions></Actions><Lua>if not moonkin
+and not dash
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Typhoon</Name><Default>false</Default><SpellID>61384</SpellID><Actions></Actions><Lua>if IsLeftAltKeyDown() and GetCurrentKeyBoardFocus() == nil
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Hurricane</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if HN == true
 and CanAttack()
-then 
-  UseInventoryItem(13)
+and pStay()
+and UnitChannelInfo(&amp;quot;player&amp;quot;) == nil
+then
+	CastSpellByID(48467)
+	if SpellIsTargeting() then
+		CameraOrSelectOrMoveStart()
+		CameraOrSelectOrMoveStop()
+	end
+	return true
+end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Force of Nature</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if IsLeftShiftKeyDown() 
+and not GetCurrentKeyBoardFocus() 
+and not UnitChannelInfo(&amp;quot;player&amp;quot;) 
+then
+  CastSpellByID(33831)
+  if SpellIsTargeting() then CameraOrSelectOrMoveStart() CameraOrSelectOrMoveStop() end  
   return true
 end
 
-local _,cd,havecd = GetInventoryItemCooldown(&amp;quot;player&amp;quot;,14)
+if not UnitIsUnit(&amp;quot;target&amp;quot;,&amp;quot;pettarget&amp;quot;) then
+	PetAttack()
+end</Lua><RecastDelay>0</RecastDelay><Target>Click</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Insect Swarm</Name><Default>false</Default><SpellID>48468</SpellID><Actions></Actions><Lua>local iswarm, _, _, _, _, _, timer = UnitDebuffID(&amp;quot;target&amp;quot;, 48468, &amp;quot;player&amp;quot;)
 
-if cd == 0 and havecd == 1
-and IsBoss()
+if ( iswarm == nil or ( iswarm and timer - GetTime() &amp;lt; 2.5 ) )
 and CanAttack()
-then 
-  UseInventoryItem(14)
-  return true
+and rangeCheck(48468, &amp;quot;target&amp;quot;)
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Moonfire</Name><Default>false</Default><SpellID>48463</SpellID><Actions></Actions><Lua>local mfire, _, _, _, _, _, timer = UnitDebuffID(&amp;quot;target&amp;quot;, 48463, &amp;quot;player&amp;quot;)
+
+if ( mfire == nil or ( mfire and timer - GetTime() &amp;lt; 2 ) or pMove() )
+and CanAttack()
+and rangeCheck(48463, &amp;quot;target&amp;quot;)
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Eclipse</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if not eclipse then eclipse = &amp;quot;solar&amp;quot; end
+
+if UnitBuffID(&amp;quot;player&amp;quot;, 48517)
+then eclipse = &amp;quot;solar&amp;quot;
+elseif UnitBuffID(&amp;quot;player&amp;quot;, 48518)
+then eclipse = &amp;quot;lunar&amp;quot; end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Wrath</Name><Default>false</Default><SpellID>48461</SpellID><Actions></Actions><Lua>if eclipse == &amp;quot;solar&amp;quot;
+and CanAttack()
+and pStay()
+and rangeCheck(48461, &amp;quot;target&amp;quot;)
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Starfire</Name><Default>false</Default><SpellID>48465</SpellID><Actions></Actions><Lua>if eclipse == &amp;quot;lunar&amp;quot;
+and CanAttack()
+and pStay()
+and rangeCheck(48465, &amp;quot;target&amp;quot;)
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Thorns</Name><Default>false</Default><SpellID>53307</SpellID><Actions></Actions><Lua>if not thorns
+and inCombat() == nil
+and not UnitIsDeadOrGhost(&amp;quot;player&amp;quot;)
+and not IsMounted()
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Barkskin</Name><Default>false</Default><SpellID>22812</SpellID><Actions></Actions><Lua>if CooldownRemains(22812) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if UnitBuffID(&amp;quot;player&amp;quot;, 22812) then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;lt; 65 then return true end
+local stuns = { 408, 1833, 20549, 24394, 44572, 46968, 47481, 5211, 22703, 25046, 39796, 8983, 22570 }
+for i=1,#stuns do
+  if UnitDebuffID(&amp;quot;player&amp;quot;, stuns[i]) then return true end
 end
+local silences = { 15487, 18498, 25046, 47476, 34490, 55021, 31935 }
+for i=1,#silences do
+  if UnitDebuffID(&amp;quot;player&amp;quot;, silences[i]) then return true end
+end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Innervate</Name><Default>false</Default><SpellID>29166</SpellID><Actions></Actions><Lua>if CooldownRemains(29166) then return false end
+if UnitBuffID(&amp;quot;player&amp;quot;, 29166) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+local m = getMana(&amp;quot;player&amp;quot;)
+if m &amp;lt; 40 then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:War Stomp</Name><Default>false</Default><SpellID>20549</SpellID><Actions></Actions><Lua>if not IsSpellKnown(20549) then return false end
+if CooldownRemains(20549) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if not UnitExists(&amp;quot;target&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;target&amp;quot;) and not PQR_TestMode then return false end
+if not rangeCheck(20549, &amp;quot;target&amp;quot;) then return false end
+if PQR_TestMode then return true end
+local _, cls = UnitClass(&amp;quot;target&amp;quot;)
+local isMelee = cls == &amp;quot;WARRIOR&amp;quot; or cls == &amp;quot;ROGUE&amp;quot; or cls == &amp;quot;DEATHKNIGHT&amp;quot; or cls == &amp;quot;PALADIN&amp;quot; or cls == &amp;quot;SHAMAN&amp;quot; or cls == &amp;quot;HUNTER&amp;quot;
+if not isMelee then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;gt; 70 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Nature's Grasp</Name><Default>false</Default><SpellID>53312</SpellID><Actions></Actions><Lua>if CooldownRemains(53312) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if UnitBuffID(&amp;quot;player&amp;quot;, 53312) or UnitBuffID(&amp;quot;player&amp;quot;, 19975) then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;gt; 80 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Shapeshift Break</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- NEW BG tech: druids cannot dispel magic in 3.3.5a (no Nature's Cure until Cata). Powershift Bear to break roots/snares.
+if not UnitAffectingCombat("player") then return false end
+if UnitBuffID("player", 33891) then return false end
+if UnitChannelInfo("player") ~= nil then return false end
+local roots = { 339, 26989, 53308, 122, 33395, 12494, 4167, 54706, 19675 }
+for i=1,#roots do
+  if UnitDebuffID("player", roots[i]) then
+    if bearform == nil or bearform == false then CastSpellByID(9634) end
+    return true
+  end
+end
+local snares = { 45524, 1715, 12323, 3409, 26679, 29793 }
+for i=1,#snares do
+  if UnitDebuffID("player", snares[i]) and getHp("player") &gt; 50 then
+    if bearform == nil or bearform == false then CastSpellByID(9634) end
+    return true
+  end
+end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Cyclone (Focus)</Name><Default>false</Default><SpellID>33786</SpellID><Actions></Actions><Lua>if not UnitExists(&amp;quot;focus&amp;quot;) then return false end
+if UnitIsDeadOrGhost(&amp;quot;focus&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;focus&amp;quot;) and not PQR_TestMode then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;focus&amp;quot;) then return false end
+if not rangeCheck(33786, &amp;quot;focus&amp;quot;) then return false end
+if UnitDebuffID(&amp;quot;focus&amp;quot;, 33786) then return false end
+if PQR_IsCastingSpell(33786) then return false end
+if PQR_TestMode then return true end
+-- HEAL-FIRST veto: teammate dying -&gt; skip CC, heal instead (PvP_BG Cyclone sits above heals).
+if (PQR_CustomTargetHP or 100) &lt; 60 then return false end
+local n, _, _, _, _, _, _, _, notInt = UnitCastingInfo(&amp;quot;focus&amp;quot;)
+if n and not notInt then return true end
+local cn, _, _, _, _, _, _, cNotInt = UnitChannelInfo(&amp;quot;focus&amp;quot;)
+if cn and not cNotInt then return true end
+local _, cls = UnitClass(&amp;quot;focus&amp;quot;)
+local isHealer = cls == &amp;quot;PRIEST&amp;quot; or cls == &amp;quot;DRUID&amp;quot; or cls == &amp;quot;PALADIN&amp;quot; or cls == &amp;quot;SHAMAN&amp;quot;
+if isHealer and getHp(&amp;quot;focus&amp;quot;) &amp;lt; 95 then return true end
+local isMelee = cls == &amp;quot;WARRIOR&amp;quot; or cls == &amp;quot;ROGUE&amp;quot; or cls == &amp;quot;DEATHKNIGHT&amp;quot; or cls == &amp;quot;PALADIN&amp;quot; or cls == &amp;quot;SHAMAN&amp;quot; or cls == &amp;quot;DRUID&amp;quot; or cls == &amp;quot;HUNTER&amp;quot;
+if isMelee and getHp(&amp;quot;player&amp;quot;) &amp;lt; 65 then return true end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Focus</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Entangling Roots (Focus)</Name><Default>false</Default><SpellID>53308</SpellID><Actions></Actions><Lua>if not UnitExists(&amp;quot;focus&amp;quot;) then return false end
+if UnitIsDeadOrGhost(&amp;quot;focus&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;focus&amp;quot;) and not PQR_TestMode then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;focus&amp;quot;) then return false end
+if not rangeCheck(53308, &amp;quot;focus&amp;quot;) then return false end
+if UnitDebuffID(&amp;quot;focus&amp;quot;, 339) or UnitDebuffID(&amp;quot;focus&amp;quot;, 26989) or UnitDebuffID(&amp;quot;focus&amp;quot;, 53308) then return false end
+if UnitDebuffID(&amp;quot;focus&amp;quot;, 33786) then return false end
+if PQR_IsCastingSpell(53308) then return false end
+if PQR_TestMode then return true end
+local _, cls = UnitClass(&amp;quot;focus&amp;quot;)
+local isMelee = cls == &amp;quot;WARRIOR&amp;quot; or cls == &amp;quot;ROGUE&amp;quot; or cls == &amp;quot;DEATHKNIGHT&amp;quot; or cls == &amp;quot;PALADIN&amp;quot; or cls == &amp;quot;SHAMAN&amp;quot; or cls == &amp;quot;DRUID&amp;quot; or cls == &amp;quot;HUNTER&amp;quot;
+if not isMelee then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Focus</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Faerie Fire (Anti-Stealth)</Name><Default>false</Default><SpellID>770</SpellID><Actions></Actions><Lua>if CooldownRemains(770) then return false end
+if not UnitExists(&amp;quot;target&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;target&amp;quot;) and not PQR_TestMode then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) then return false end
+if not rangeCheck(770, &amp;quot;target&amp;quot;) then return false end
+if UnitDebuffID(&amp;quot;target&amp;quot;, 770) or UnitDebuffID(&amp;quot;target&amp;quot;, 91565) or UnitDebuffID(&amp;quot;target&amp;quot;, 26993) then return false end
+if PQR_TestMode then return true end
+local _, cls = UnitClass(&amp;quot;target&amp;quot;)
+if cls ~= &amp;quot;ROGUE&amp;quot; and cls ~= &amp;quot;DRUID&amp;quot; then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Gift of the Wild</Name><Default>false</Default><SpellID>48470</SpellID><Actions></Actions><Lua>if not GotW
+and UnitAffectingCombat(&amp;quot;player&amp;quot;) == nil
+and (GetSpellInfo(48470) or GetItemCount(44605) &amp;gt;= 1)
+and not UnitIsDeadOrGhost(&amp;quot;player&amp;quot;)
+and not IsMounted()
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Cat Form</Name><Default>false</Default><SpellID>768</SpellID><Actions></Actions><Lua>if not catform
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Swipe (Cat)</Name><Default>false</Default><SpellID>62078</SpellID><Actions></Actions><Lua>if AOE() == true
+and CanAttack()
+and rangeCheck(48574, &amp;quot;target&amp;quot;)
+and ( energycost(62078) )
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Rejuvenation (Cat)</Name><Default>false</Default><SpellID>48441</SpellID><Actions></Actions><Lua>if IsLeftAltKeyDown() and GetCurrentKeyBoardFocus() == nil
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Faerie Fire</Name><Default>false</Default><SpellID>16857</SpellID><Actions></Actions><Lua>if not fFaFire
+and CanAttack()
+and rangeCheck(16857, &amp;quot;target&amp;quot;)
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Tiger&amp;apos;s Fury</Name><Default>false</Default><SpellID>50213</SpellID><Actions></Actions><Lua>local berserk = select(11, UnitBuffID(&amp;quot;player&amp;quot;, 50334))
 
-local _,cd,havecd = GetInventoryItemCooldown(&amp;quot;player&amp;quot;,10)
+if ( berserk ~= 50334 or berserk == nil )
+and CanAttack()
+and rangeCheck(48574, &amp;quot;target&amp;quot;)
+and CooldownRemains(50213) == false
+and energy &amp;lt;= 30 
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Berserk</Name><Default>false</Default><SpellID>50334</SpellID><Actions></Actions><Lua>local mangle, _, _, _, _, _, time = UnitDebuffID(&amp;quot;target&amp;quot;, 48566)
 
-if cd == 0 and havecd == 1
-and IsBoss()
+if IsBoss()
+and rangeCheck(48574, &amp;quot;target&amp;quot;)
+and CooldownRemains(50334) ~= nil
+and not berserk
+and not tigers
+and savage(10)
+and rip(10)
+and ( mangle or CantMangle() == true )
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Ferocious Bite</Name><Default>false</Default><SpellID>48577</SpellID><Actions></Actions><Lua>local mangle, _, _, _, _, _, time = UnitDebuffID(&amp;quot;target&amp;quot;, 48566)
+
+if energycost(48577)
+ and CanAttack()
+ and rangeCheck(48574, &amp;quot;target&amp;quot;)
+ and ( mangle or CantMangle() == true )
+ and ( ( calc_time ~= nil and calc_time &amp;lt;= 6 and cp &amp;gt;= 5 )
+ or ( calc_time ~= nil and calc_time &amp;lt;= 1 and cp &amp;gt;= 4 )
+ or ( cp &amp;gt;= 5 and rip(8) and savage(11) ) )
+ then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Savage Roar</Name><Default>false</Default><SpellID>52610</SpellID><Actions></Actions><Lua>local savage, _, _, _, _, _, time = UnitBuffID(&amp;quot;player&amp;quot;, 52610)
+local rip, _, _, _, _, _, rtime = UnitDebuffID(&amp;quot;target&amp;quot;, 49800, &amp;quot;player&amp;quot;)
+local mangle, _, _, _, _, _, mtime = UnitDebuffID(&amp;quot;target&amp;quot;, 48566)
+
+if energycost(52610)
+and cp &amp;gt;= 1
+and ( mangle or CantMangle() == true )
+and ( savage == nil or ( savage and time - GetTime() &amp;lt;= 1 ) )
 and CanAttack()
 then
-  UseInventoryItem(10)
-  return true
-end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Use:Trinkets/Hands (PvP)</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- PvP variant: fire on-use trinkets and engineer gloves tinker in combat.
+	--CastSpellByID(52610)
+	return true
+end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Rip</Name><Default>false</Default><SpellID>49800</SpellID><Actions></Actions><Lua>local rip, _, _, _, _, _, time = UnitDebuffID(&amp;quot;target&amp;quot;, 49800, &amp;quot;player&amp;quot;)
+local rip = UnitDebuffID(&amp;quot;target&amp;quot;, 49800, &amp;quot;player&amp;quot;)
+local mangle, _, _, _, _, _, time = UnitDebuffID(&amp;quot;target&amp;quot;, 48566)
+
+if cp &amp;gt;= 5
+and ( ( calc_time ~= nil
+and calc_time &amp;gt;= 6 )
+or calc_time == nil )
+and AOE() == false
+and Wait() == false
+and CanAttack()
+and ( mangle or CantMangle() == true )
+and rangeCheck(48574, &amp;quot;target&amp;quot;)
+ then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Mangle (Cat)</Name><Default>false</Default><SpellID>48566</SpellID><Actions></Actions><Lua>local mangle, _, _, _, _, _, time = UnitDebuffID(&amp;quot;target&amp;quot;, 48566)
+
+if CantMangle() == false
+and CanAttack()
+and energycost(48566)
+and AOE() == false
+and ( mangle == nil
+or time - GetTime() &amp;lt; 1 )
+and rangeCheck(48574, &amp;quot;target&amp;quot;)
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Rake</Name><Default>false</Default><SpellID>48574</SpellID><Actions></Actions><Lua>local rake, _, _, _, _, _, rtime = UnitDebuffID(&amp;quot;target&amp;quot;, 48574, &amp;quot;player&amp;quot;)
+local mangle, _, _, _, _, _, time = UnitDebuffID(&amp;quot;target&amp;quot;, 48566)
+
+if rake == nil
+and energycost(48574)
+and CanAttack()
+and AOE() == false
+and ( mangle or CantMangle() == true )
+and (( calc_time ~= nil and calc_time &amp;gt;= 9 ) or calc_time == nil )
+and rangeCheck(48574, &amp;quot;target&amp;quot;)
+ then
+	--CastSpellByID(48574)
+	return true
+end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Shred</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if cp &amp;lt; 5
+and energycost(48572)
+and ( mangle or CantMangle() == true )
+and rake
+and CanAttack()
+then
+	if NotBehindCheck() == false then
+		CastSpellByID(48572)
+		return true
+	elseif NotBehindCheck() == true then
+		CastSpellByID(48566)
+		return true
+	end
+end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Survival Instincts</Name><Default>false</Default><SpellID>61336</SpellID><Actions></Actions><Lua>if getHp(&amp;quot;player&amp;quot;) &amp;lt; 40
+and UnX()
+and not CooldownRemains(61336)
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Frenzied Regeneration</Name><Default>false</Default><SpellID>22842</SpellID><Actions></Actions><Lua>if getHp(&amp;quot;player&amp;quot;) &amp;lt; 40
+and not CooldownRemains(22842)
+and UnX()
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Bash</Name><Default>false</Default><SpellID>8983</SpellID><Actions></Actions><Lua>if IsLeftAltKeyDown() and GetCurrentKeyBoardFocus() == nil
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Barkskin</Name><Default>false</Default><SpellID>22812</SpellID><Actions></Actions><Lua>if CooldownRemains(22812) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if UnitBuffID(&amp;quot;player&amp;quot;, 22812) then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;lt; 65 then return true end
+local stuns = { 408, 1833, 20549, 24394, 44572, 46968, 47481, 5211, 22703, 25046, 39796, 8983, 22570 }
+for i=1,#stuns do
+  if UnitDebuffID(&amp;quot;player&amp;quot;, stuns[i]) then return true end
+end
+local silences = { 15487, 18498, 25046, 47476, 34490, 55021, 31935 }
+for i=1,#silences do
+  if UnitDebuffID(&amp;quot;player&amp;quot;, silences[i]) then return true end
+end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:War Stomp</Name><Default>false</Default><SpellID>20549</SpellID><Actions></Actions><Lua>if not IsSpellKnown(20549) then return false end
+if CooldownRemains(20549) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if not UnitExists(&amp;quot;target&amp;quot;) then return false end
+if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) then return false end
+if not UnitIsPlayer(&amp;quot;target&amp;quot;) and not PQR_TestMode then return false end
+if not rangeCheck(20549, &amp;quot;target&amp;quot;) then return false end
+if PQR_TestMode then return true end
+local _, cls = UnitClass(&amp;quot;target&amp;quot;)
+local isMelee = cls == &amp;quot;WARRIOR&amp;quot; or cls == &amp;quot;ROGUE&amp;quot; or cls == &amp;quot;DEATHKNIGHT&amp;quot; or cls == &amp;quot;PALADIN&amp;quot; or cls == &amp;quot;SHAMAN&amp;quot; or cls == &amp;quot;HUNTER&amp;quot;
+if not isMelee then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;gt; 70 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Nature's Grasp</Name><Default>false</Default><SpellID>53312</SpellID><Actions></Actions><Lua>if CooldownRemains(53312) then return false end
+if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
+if UnitBuffID(&amp;quot;player&amp;quot;, 53312) or UnitBuffID(&amp;quot;player&amp;quot;, 19975) then return false end
+if getHp(&amp;quot;player&amp;quot;) &amp;gt; 80 then return false end
+return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Shapeshift Break</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- NEW BG tech: druids cannot dispel magic in 3.3.5a (no Nature's Cure until Cata). Powershift Bear to break roots/snares.
+if not UnitAffectingCombat("player") then return false end
+if UnitBuffID("player", 33891) then return false end
+if UnitChannelInfo("player") ~= nil then return false end
+local roots = { 339, 26989, 53308, 122, 33395, 12494, 4167, 54706, 19675 }
+for i=1,#roots do
+  if UnitDebuffID("player", roots[i]) then
+    if bearform == nil or bearform == false then CastSpellByID(9634) end
+    return true
+  end
+end
+local snares = { 45524, 1715, 12323, 3409, 26679, 29793 }
+for i=1,#snares do
+  if UnitDebuffID("player", snares[i]) and getHp("player") &gt; 50 then
+    if bearform == nil or bearform == false then CastSpellByID(9634) end
+    return true
+  end
+end
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Gift of the Wild</Name><Default>false</Default><SpellID>48470</SpellID><Actions></Actions><Lua>if not GotW
+and UnitAffectingCombat(&amp;quot;player&amp;quot;) == nil
+and (GetSpellInfo(48470) or GetItemCount(44605) &amp;gt;= 1)
+and not UnitIsDeadOrGhost(&amp;quot;player&amp;quot;)
+and not IsMounted()
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Thorns</Name><Default>false</Default><SpellID>53307</SpellID><Actions></Actions><Lua>if not thorns
+and inCombat() == nil
+and not UnitIsDeadOrGhost(&amp;quot;player&amp;quot;)
+and not IsMounted()
+then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Use:Trinkets/Hands (PvP)</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- PvP variant: fire on-use trinkets and engineer gloves tinker in combat.
 -- No IsBoss gate, no target requirement. Priority: gloves (haste) then trinkets.
 if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
 
@@ -1516,1083 +2276,4 @@ if cd == 0 and havecd == 1 then
   end
 end
 
-return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:-- Hotkeys --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if not leftkeydown then leftkeydown = 0 end
-
-if modtime == nil then
-	modtime = 0
-end
-
-if IsLeftControlKeyDown() and GetTime() - leftkeydown &amp;gt; 1 then
-	leftkeydown = GetTime()
-  	if StopRota then
-		StopRota  = false 
-		PQR_WriteToChat(&amp;quot;Rotation \124cFF15E615reenabled!&amp;quot;)
-  	else 
-		StopRota = true 
-		PQR_WriteToChat(&amp;quot;Rotation \124cFFE61515stopped!&amp;quot;)
-  	end
-end
-
-if not AOE then
-	function AOE()
-		if AoE == true then
-			return true
-		else
-			return false
-		end
-	end
-end
-
-if not rightkeydown then rightkeydown = 0 end
-
-if modtime == nil then
-	modtime = 0
-end
-
-if IsRightAltKeyDown() and not GetCurrentKeyBoardFocus() and GetTime() - modtime &amp;gt; 0.3 then
-	modtime = GetTime()
-	if AoE then
-		AoE = false
-		PQR_WriteToChat(&amp;quot;AoE: \124cFFE61515Disabled&amp;quot;)
-	else
-		AoE = true
-		PQR_WriteToChat(&amp;quot;AoE: \124cFF15E615Enabled&amp;quot;)
-	end
-end</Lua><RecastDelay>0</RecastDelay><Target>Click</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Shred (PRO)</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>local savage,_,_,_,_,_, savagetime = UnitBuffID(&amp;quot;player&amp;quot;, 52610)
-local rake, _, _, _, _, _, raketime = UnitDebuffID(&amp;quot;target&amp;quot;, 48574, &amp;quot;player&amp;quot;)
-
-if energycost(48572) and ( mangle or CantMangle() == true )
-and CanAttack()
-and rangeCheck(48574, &amp;quot;target&amp;quot;)
-and ( ( cp &amp;lt;= 4 or rip(0.8) ) and rake and raketime - GetTime() &amp;gt;= 0.4 and ( energy &amp;gt;= 80 or berserk == 50334 or ( CooldownRemains(50213) == false or CooldownRemains(50213) &amp;lt;= 3 ) )
-or ( calc_time ~= nil and calc_time &amp;lt;= 9 )
-or ( cp &amp;lt;= 0 and ( savage == nil or ( savage and savagetime - GetTime() &amp;lt;= 2 ) ) ) )
-then
-	if NotBehindCheck() == false then
-		CastSpellByID(48572)
-		return true
-	elseif NotBehindCheck() == true then
-		CastSpellByID(48566)
-		return true
-	end
-end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>R:Regrowth (All)</Name><Default>false</Default><SpellID>48443</SpellID><Actions></Actions><Lua>local group = &amp;quot;party&amp;quot;
-local members = GetNumPartyMembers()
-
-if UnitBuffID(PQR_CustomTarget, 48443, &amp;quot;player&amp;quot;) == nil
-    then CastSpellByID(48443, &amp;quot;player&amp;quot;) end
-
-if GetNumRaidMembers() &amp;gt; 0 then
-  group = &amp;quot;raid&amp;quot;
-  members = GetNumRaidMembers()
-end
-
-for i = 1, members, 1 do
-  local member = group..tostring(i)
-    if UnitBuffID(member, 48443, &amp;quot;player&amp;quot;) == nil
-    and UnitInRange(member)
-    and UnitIsFriend(&amp;quot;player&amp;quot;, member)
-    and UnitIsDeadOrGhost(member) == nil 
-    and UnitHasVehicleUI(member) == false
-    and UnitDebuffID(member, 69065) == nil
-    and UnitDebuffID(member, 70157) == nil
-    and pStay()
-    then
-        CastSpellByID(48443, member)
-   end
-end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- All:Racial --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>local debuff = { 6215, 8122, 5484, 2637, 5246, 6358 }
-local hracial = { 33697, 20572, 33702, 26297 }
-local alracial = { 20594, 28880 }
-local hrace = { &amp;quot;Troll&amp;quot;, &amp;quot;Orc&amp;quot; }
-local alrace = { &amp;quot;Dwarf&amp;quot;, &amp;quot;Draenei&amp;quot; }
-local myrace = UnitRace(&amp;quot;player&amp;quot;)
-
-	-- Undead --
-for i = 1, #debuff do
-  if UnitDebuffID(&amp;quot;player&amp;quot;,debuff[i])
-   and UnitRace(&amp;quot;player&amp;quot;) == &amp;quot;Undead&amp;quot; 
-   and IsSpellKnown(7744) 
-   and not CooldownRemains(7744)
-   and CanAttack() then
-    CastSpellByID(7744)
-    return true
-  end
-end
-
-	-- Horde race --
-if IsBoss()
- and CanAttack()
- and tContains(hrace, UnitRace(&amp;quot;player&amp;quot;)) then
-  for i = 1, #hracial do
-    if IsSpellKnown(hracial[i]) 
-     and not CooldownRemains(hracial[i]) then 
-      CastSpellByID(hracial[i])
-      return true
-    end
-  end
-end
-
-	-- Ally race -- 
-if CanAttack() 
-and getHp(&amp;quot;player&amp;quot;) &amp;lt;= 35 
-and tContains(alrace, UnitRace(&amp;quot;player&amp;quot;)) then
-  for i = 1, #alracial do
-    if IsSpellKnown(alracial[i]) 
-     and not CooldownRemains(alracial[i]) then
-      CastSpellByID(alracial[i])
-      return true
-    end
-  end
-end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:-- Hotkeys --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if not leftkeydown then leftkeydown = 0 end
-
-if modtime == nil then
-	modtime = 0
-end
-
-if IsLeftControlKeyDown() and GetTime() - leftkeydown &amp;gt; 1 then
-	leftkeydown = GetTime()
-  	if StopRota then
-		StopRota = false 
-		PQR_WriteToChat(&amp;quot;Rotation \124cFF15E615reenabled!&amp;quot;)
-  	else 
-		StopRota = true 
-		PQR_WriteToChat(&amp;quot;Rotation \124cFFE61515stopped!&amp;quot;)
-  	end
-end
-
-if not rightkeydown then rightkeydown = 0 end
-
-if modtime == nil then
-	modtime = 0
-end
-
-if IsRightAltKeyDown() and not GetCurrentKeyBoardFocus() and GetTime() - modtime &amp;gt; 0.3 then
-	modtime = GetTime()
-	if HN then
-		HN = false
-		PQR_WriteToChat(&amp;quot;Hurricane \124cFFE61515Disabled&amp;quot;)
-	else
-		HN = true
-		PQR_WriteToChat(&amp;quot;Hurricane \124cFF15E615Enabled&amp;quot;)
-	end
-end</Lua><RecastDelay>0</RecastDelay><Target>Click</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- All:Auto Buff (Raid/Party) --</Name><Default>false</Default><SpellID>48470</SpellID><Actions></Actions><Lua>local group = &amp;quot;party&amp;quot;
-local members = GetNumPartyMembers()
-
-if GetNumRaidMembers() &amp;gt; 0 then
-  group = &amp;quot;raid&amp;quot;
-  members = GetNumRaidMembers()
-end
-
--- Change true/false for auto buff raid
-AutoRaidBuff = true
-
-if AutoRaidBuff then
-for i = 1, members, 1 do
-  local member = group..tostring(i)
- 
-	-- Gift of the Wild
-	if not UnitBuffID(member, 48470)
-	and (GetSpellInfo(48470) or GetItemCount(44605) &amp;gt;= 1)
-	and UnitInRange(member)
-	and UnitIsFriend(&amp;quot;player&amp;quot;, member)
-	and UnitIsDeadOrGhost(member) == nil
-	and UnitHasVehicleUI(member) == false
-	and UnitAffectingCombat(&amp;quot;player&amp;quot;) == nil
-	then
-		CastSpellByID(48470, member)
-	end
-  end
-end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Regrowth (Cat)</Name><Default>false</Default><SpellID>48443</SpellID><Actions></Actions><Lua>if getHp(&amp;quot;player&amp;quot;) &amp;lt; 55
-and not bearform
-and pswitness
-and not regrowth
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Heal Engine --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- Simplest Heal Eng --
-if UnitExists(&amp;quot;target&amp;quot;) 
-  and UnitIsDead(&amp;quot;target&amp;quot;) == nil
-  and UnitIsFriend(&amp;quot;player&amp;quot;, &amp;quot;target&amp;quot;) 
-  and UnitCanCooperate(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;)
-  and UnitHasVehicleUI(&amp;quot;target&amp;quot;) == false
-  and UnitDebuffID(&amp;quot;target&amp;quot;, 69065) == nil
-  and UnitDebuffID(&amp;quot;target&amp;quot;, 70157) == nil
-  then PQR_CustomTarget = &amp;quot;target&amp;quot;
-       PQR_CustomTargetHP = 100 * UnitHealth(&amp;quot;target&amp;quot;) / UnitHealthMax(&amp;quot;target&amp;quot;)
-else 
-
-PQR_CustomTarget = &amp;quot;player&amp;quot;
-PQR_CustomTargetHP = 100 * UnitHealth(&amp;quot;player&amp;quot;) / UnitHealthMax(&amp;quot;player&amp;quot;)
-local group = &amp;quot;party&amp;quot;
-local members = GetNumPartyMembers()
-lowhpmembers = 0
-
-if GetNumRaidMembers() &amp;gt; 0 then
-  group = &amp;quot;raid&amp;quot;
-  members = GetNumRaidMembers()
-end
-
-for i = 1, members, 1 do
-  local member = group..tostring(i)
-  local memberhp = 100 * UnitHealth(member) / UnitHealthMax(member)
-  if UnitInRange(member) 
-  and UnitIsFriend(&amp;quot;player&amp;quot;, member)
-  and UnitIsDeadOrGhost(member) == nil  then
-    if UnitGroupRolesAssigned(member) == &amp;quot;TANK&amp;quot; then memberhp = memberhp - 1 end
-    if UnitThreatSituation(member) == 3 then memberhp = memberhp - 3 end
-    if UnitBuffID(member, 53563) ~= nil then memberhp = memberhp + 7 end
-		if memberhp &amp;lt; 85 then lowhpmembers = lowhpmembers +1 end
-		if memberhp &amp;lt; PQR_CustomTargetHP then
-		  PQR_CustomTarget = member
-		  PQR_CustomTargetHP = memberhp
-		end
-	  end
-	end
-end
-
-if view == nil then 
-	view = true
-	local eventframe = CreateFrame(&amp;quot;FRAME&amp;quot;)
-	print(&amp;quot;\124cFFE61515DO NOT TARGET A FRIENDLY PLAYER!&amp;quot;)
-	print(&amp;quot;\124cFFE61515НЕ ВЫБИРАТЬ В КАЧЕСТВИ ЦЕЛИ СОЮЗНИКА!&amp;quot;)
-	eventframe:RegisterEvent(&amp;quot;EXECUTE_CHAT_LINE&amp;quot;)	
-end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Autotarget script --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>if UnitAffectingCombat(&amp;quot;player&amp;quot;)
-and not UnitExists(&amp;quot;target&amp;quot;)
-and not SpellIsTargeting() then
-    RunMacroText(&amp;quot;/targetenemy&amp;quot;)
-    return true
-end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Druid Stuff --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- Druid Stuff --
--- Dots / Debuffs --
-FaFire = UnitDebuffID(&amp;quot;target&amp;quot;,770)
-fFaFire = UnitDebuffID(&amp;quot;target&amp;quot;,16857)
-iswarm = UnitDebuffID(&amp;quot;target&amp;quot;, 48468, &amp;quot;player&amp;quot;)
-mfire = UnitDebuffID(&amp;quot;target&amp;quot;, 48463, &amp;quot;player&amp;quot;)
-mangle = UnitDebuffID(&amp;quot;target&amp;quot;, 48566)
-rake = UnitDebuffID(&amp;quot;target&amp;quot;, 48574, &amp;quot;player&amp;quot;)
-lacerate = UnitDebuffID(&amp;quot;target&amp;quot;, 48568, &amp;quot;player&amp;quot;)
--- Procs --
-clearcast = UnitBuffID(&amp;quot;player&amp;quot;, 16870)
-pswitness = UnitBuffID(&amp;quot;player&amp;quot;, 69369)
--- Forms --
-moonkin = UnitBuffID(&amp;quot;player&amp;quot;, 24858)
-bearform = UnitBuffID(&amp;quot;player&amp;quot;, 9634)
-catform = UnitBuffID(&amp;quot;player&amp;quot;, 768) 
--- Buffs -- 
-GotW = UnitBuffID(&amp;quot;player&amp;quot;, 48470)
-thorns = UnitBuffID(&amp;quot;player&amp;quot;,53307)
-dash = UnitBuffID(&amp;quot;player&amp;quot;, 33357, &amp;quot;player&amp;quot;)
-berserk = select(11, UnitBuffID(&amp;quot;player&amp;quot;, 50334))
-berserk = UnitBuffID(&amp;quot;player&amp;quot;, 50334)
-tigers = UnitBuffID(&amp;quot;player&amp;quot;, 50213)
-innervate = UnitBuffID(&amp;quot;player&amp;quot;, 29166)
--- Healing --
-regrowth = UnitBuffID(&amp;quot;player&amp;quot;, 48443)
--- Other --
-energy = UnitPower(&amp;quot;player&amp;quot;)
-rage = UnitPower(&amp;quot;player&amp;quot;)
-cp = GetComboPoints(&amp;quot;player&amp;quot;)</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- All:Healthstone --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>local stones = { 36892, 36893, 36894 }
-
-for i = 1, #stones do
-   	 if getHp(&amp;quot;player&amp;quot;) &amp;lt;= 25
-	and GetItemCount(stones[i]) &amp;gt;= 1 
-	and not ItemCooldownRemains(stones[i]) then
-       		UseItemByName(stones[i])
-	end
-end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- All:Potions --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>hpot = { 33447, 43569, 40087, 41166, 40067 }
-
-for i = 1, #hpot do
-   	if getHp(&amp;quot;player&amp;quot;) &amp;lt;= 12
-	and GetItemCount(hpot[i]) &amp;gt;= 1 
-	and not ItemCooldownRemains(hpot[i]) then
-       		UseItemByName(hpot[i])
-	end
-end
-
-mpot = { 33448, 43570, 40087, 42545, 39671 }
-
-for i = 1, #mpot do
-   	if getMana(&amp;quot;player&amp;quot;) &amp;lt;= 20
-	and IsBoss()
-	and GetItemCount(mpot[i]) &amp;gt;= 1 
-	and not ItemCooldownRemains(mpot[i]) then
-       		UseItemByName(mpot[i])
-	end
-end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Offensive Spells (H) --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>local mob = { &amp;quot;Training Dummy&amp;quot;, &amp;quot;Raider&amp;apos;s Training Dummy&amp;quot; }
-local elite = { }
-local noaggromobs = nil
-local eliteboss = nil
-
-for i,v in ipairs(mob) do
-  if UnitName(&amp;quot;target&amp;quot;) == v then noaggromobs = 1 end
-end
-
-if UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) == nil
-or (UnitAffectingCombat(&amp;quot;target&amp;quot;) == nil and noaggromobs == nil and UnitIsPlayer(&amp;quot;target&amp;quot;) == nil)
-then return true end
-
-for i,v in ipairs(elite) do
-  if UnitName(&amp;quot;target&amp;quot;) == v then eliteboss = 1 end
-end
-
-IsBoss = nil
-function IsBoss()
-	if UnitExists(&amp;quot;target&amp;quot;)
-	and ( UnitLevel(&amp;quot;target&amp;quot;) == -1 or eliteboss )
-	then return 
-		true 
-	end
-end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>True</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>B:Innervate</Name><Default>false</Default><SpellID>29166</SpellID><Actions></Actions><Lua>if getMana(&amp;quot;player&amp;quot;) &amp;lt; 15
-and not innervate
-and not CooldownRemains(29166)
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- All:HOOK --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>local PQR_DebugFrame = UIParent.PQR_DebugFrame
-
-if not _G._PQR_WriteToChat_Original then
-	_G._PQR_WriteToChat_Original = _G.PQR_WriteToChat
-end
-
-if not PQR_DebugFrame then
-	local frame = CreateFrame(&amp;quot;Frame&amp;quot;, nil, UIParent)
-	frame:SetSize(math.random(370, 420), 140)
-	frame:SetPoint(&amp;quot;BOTTOMLEFT&amp;quot;, ChatFrame1, &amp;quot;TOPLEFT&amp;quot;, 0, 8)
-
-	frame:SetBackdrop({
-		bgFile = &amp;quot;Interface\\Buttons\\WHITE8X8&amp;quot;,
-		edgeFile = &amp;quot;Interface\\Buttons\\WHITE8X8&amp;quot;,
-		edgeSize = 1,
-	})
-
-	frame:SetBackdropColor(0, 0, 0, 0.75)
-	frame:SetBackdropBorderColor(0.25, 0.25, 0.25, 1)
-
-	frame:SetMovable(true)
-	frame:EnableMouse(true)
-	frame:RegisterForDrag(&amp;quot;LeftButton&amp;quot;)
-	frame:SetScript(&amp;quot;OnDragStart&amp;quot;, frame.StartMoving)
-	frame:SetScript(&amp;quot;OnDragStop&amp;quot;, frame.StopMovingOrSizing)
-
-	local title = frame:CreateFontString(nil, &amp;quot;OVERLAY&amp;quot;, &amp;quot;GameFontNormalSmall&amp;quot;)
-	title:SetPoint(&amp;quot;TOPLEFT&amp;quot;, 6, -5)
-	title:SetText(&amp;quot;PQR Debug&amp;quot;)
-
-	local text = frame:CreateFontString(nil, &amp;quot;OVERLAY&amp;quot;, &amp;quot;GameFontHighlightSmall&amp;quot;)
-	text:SetPoint(&amp;quot;TOPLEFT&amp;quot;, 6, -22)
-	text:SetPoint(&amp;quot;BOTTOMRIGHT&amp;quot;, -6, 6)
-	text:SetJustifyH(&amp;quot;LEFT&amp;quot;)
-	text:SetJustifyV(&amp;quot;TOP&amp;quot;)
-	text:SetText(&amp;quot;&amp;quot;)
-
-	frame.lines = {}
-	frame.text = text
-	frame.maxLines = 8
-	frame.rotationModeEnabled = true
-
-	function frame:AddLine(msg)
-		local lines = self.lines
-
-		lines[#lines + 1] = &amp;quot;|r&amp;quot; .. tostring(msg) .. &amp;quot;|r&amp;quot;
-
-		while #lines &amp;gt; self.maxLines do
-			table.remove(lines, 1)
-		end
-
-		self.text:SetText(table.concat(lines, &amp;quot;\n&amp;quot;))
-	end
-
-	frame:AddLine(&amp;quot;|cff00ff00Rotation Mode Enabled|r&amp;quot;)
-
-	PQR_DebugFrame = frame
-	UIParent.PQR_DebugFrame = frame
-end
-
-_G.PQR_WriteToChat = function(msg)
-	msg = tostring(msg)
-
-	if msg:find(&amp;quot;Rotation Mode Disabled&amp;quot;, 1, true) then
-		PQR_DebugFrame.rotationModeEnabled = false
-		PQR_DebugFrame:AddLine(msg)
-
-	elseif msg:find(&amp;quot;Rotation Mode Enabled&amp;quot;, 1, true) then
-		if not PQR_DebugFrame.rotationModeEnabled then
-			PQR_DebugFrame.rotationModeEnabled = true
-			PQR_DebugFrame:AddLine(msg)
-		end
-
-	else
-		PQR_DebugFrame:AddLine(msg)
-	end
-
-	if _G._PQR_WriteToChat_Original then
-		return _G._PQR_WriteToChat_Original(msg)
-	end
-end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Barkskin</Name><Default>false</Default><SpellID>22812</SpellID><Actions></Actions><Lua>if CooldownRemains(22812) then return false end
-if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
-if UnitBuffID(&amp;quot;player&amp;quot;, 22812) then return false end
-if getHp(&amp;quot;player&amp;quot;) &amp;lt; 65 then return true end
-local stuns = { 408, 1833, 20549, 24394, 44572, 46968, 47481, 5211, 22703, 25046, 39796, 8983, 22570 }
-for i=1,#stuns do
-  if UnitDebuffID(&amp;quot;player&amp;quot;, stuns[i]) then return true end
-end
-local silences = { 15487, 18498, 25046, 47476, 34490, 55021, 31935 }
-for i=1,#silences do
-  if UnitDebuffID(&amp;quot;player&amp;quot;, silences[i]) then return true end
-end
-return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:NS + Healing Touch</Name><Default>false</Default><SpellID>17116</SpellID><Actions></Actions><Lua>if not IsSpellKnown(17116) then return false end
-if CooldownRemains(17116) then return false end
-if UnitBuffID(&amp;quot;player&amp;quot;, 17116) then return false end
-if getHp(&amp;quot;player&amp;quot;) &amp;gt; 35 then return false end
-CastSpellByID(17116)
-local ht = GetSpellInfo(48378)
-if ht then CastSpellByName(ht, &amp;quot;player&amp;quot;) end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Cyclone (Focus)</Name><Default>false</Default><SpellID>33786</SpellID><Actions></Actions><Lua>if not UnitExists(&amp;quot;focus&amp;quot;) then return false end
-if UnitIsDeadOrGhost(&amp;quot;focus&amp;quot;) then return false end
-if not UnitIsPlayer(&amp;quot;focus&amp;quot;) and not PQR_TestMode then return false end
-if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;focus&amp;quot;) then return false end
-if not rangeCheck(33786, &amp;quot;focus&amp;quot;) then return false end
-if UnitDebuffID(&amp;quot;focus&amp;quot;, 33786) then return false end
-if PQR_IsCastingSpell(33786) then return false end
-if PQR_TestMode then return true end
--- HEAL-FIRST veto: teammate dying -&gt; skip CC, heal instead (PvP_BG Cyclone sits above heals).
-if (PQR_CustomTargetHP or 100) &lt; 60 then return false end
-local n, _, _, _, _, _, _, _, notInt = UnitCastingInfo(&amp;quot;focus&amp;quot;)
-if n and not notInt then return true end
-local cn, _, _, _, _, _, _, cNotInt = UnitChannelInfo(&amp;quot;focus&amp;quot;)
-if cn and not cNotInt then return true end
-local _, cls = UnitClass(&amp;quot;focus&amp;quot;)
-local isHealer = cls == &amp;quot;PRIEST&amp;quot; or cls == &amp;quot;DRUID&amp;quot; or cls == &amp;quot;PALADIN&amp;quot; or cls == &amp;quot;SHAMAN&amp;quot;
-if isHealer and getHp(&amp;quot;focus&amp;quot;) &amp;lt; 95 then return true end
-local isMelee = cls == &amp;quot;WARRIOR&amp;quot; or cls == &amp;quot;ROGUE&amp;quot; or cls == &amp;quot;DEATHKNIGHT&amp;quot; or cls == &amp;quot;PALADIN&amp;quot; or cls == &amp;quot;SHAMAN&amp;quot; or cls == &amp;quot;DRUID&amp;quot; or cls == &amp;quot;HUNTER&amp;quot;
-if isMelee and getHp(&amp;quot;player&amp;quot;) &amp;lt; 65 then return true end
-return false</Lua><RecastDelay>0</RecastDelay><Target>Focus</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Entangling Roots (Focus)</Name><Default>false</Default><SpellID>53308</SpellID><Actions></Actions><Lua>if not UnitExists(&amp;quot;focus&amp;quot;) then return false end
-if UnitIsDeadOrGhost(&amp;quot;focus&amp;quot;) then return false end
-if not UnitIsPlayer(&amp;quot;focus&amp;quot;) and not PQR_TestMode then return false end
-if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;focus&amp;quot;) then return false end
-if not rangeCheck(53308, &amp;quot;focus&amp;quot;) then return false end
-if UnitDebuffID(&amp;quot;focus&amp;quot;, 339) or UnitDebuffID(&amp;quot;focus&amp;quot;, 26989) or UnitDebuffID(&amp;quot;focus&amp;quot;, 53308) then return false end
-if UnitDebuffID(&amp;quot;focus&amp;quot;, 33786) then return false end
-if PQR_IsCastingSpell(53308) then return false end
-if PQR_TestMode then return true end
-local _, cls = UnitClass(&amp;quot;focus&amp;quot;)
-local isMelee = cls == &amp;quot;WARRIOR&amp;quot; or cls == &amp;quot;ROGUE&amp;quot; or cls == &amp;quot;DEATHKNIGHT&amp;quot; or cls == &amp;quot;PALADIN&amp;quot; or cls == &amp;quot;SHAMAN&amp;quot; or cls == &amp;quot;DRUID&amp;quot; or cls == &amp;quot;HUNTER&amp;quot;
-if not isMelee then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Focus</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Faerie Fire (Anti-Stealth)</Name><Default>false</Default><SpellID>770</SpellID><Actions></Actions><Lua>if CooldownRemains(770) then return false end
-if not UnitExists(&amp;quot;target&amp;quot;) then return false end
-if not UnitIsPlayer(&amp;quot;target&amp;quot;) and not PQR_TestMode then return false end
-if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) then return false end
-if not rangeCheck(770, &amp;quot;target&amp;quot;) then return false end
-if UnitDebuffID(&amp;quot;target&amp;quot;, 770) or UnitDebuffID(&amp;quot;target&amp;quot;, 91565) or UnitDebuffID(&amp;quot;target&amp;quot;, 26993) then return false end
-if PQR_TestMode then return true end
-local _, cls = UnitClass(&amp;quot;target&amp;quot;)
-if cls ~= &amp;quot;ROGUE&amp;quot; and cls ~= &amp;quot;DRUID&amp;quot; then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Nature's Grasp (PvP)</Name><Default>false</Default><SpellID>53312</SpellID><Actions></Actions><Lua>if CooldownRemains(53312) then return false end
-if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
-if UnitBuffID(&amp;quot;player&amp;quot;, 53312) or UnitBuffID(&amp;quot;player&amp;quot;, 19975) then return false end
-if getHp(&amp;quot;player&amp;quot;) &amp;gt; 80 then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:War Stomp (Tauren)</Name><Default>false</Default><SpellID>20549</SpellID><Actions></Actions><Lua>if not IsSpellKnown(20549) then return false end
-if CooldownRemains(20549) then return false end
-if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
-if not UnitExists(&amp;quot;target&amp;quot;) then return false end
-if not UnitCanAttack(&amp;quot;player&amp;quot;,&amp;quot;target&amp;quot;) then return false end
-if not UnitIsPlayer(&amp;quot;target&amp;quot;) and not PQR_TestMode then return false end
-if not rangeCheck(20549, &amp;quot;target&amp;quot;) then return false end
-if PQR_TestMode then return true end
-local _, cls = UnitClass(&amp;quot;target&amp;quot;)
-local isMelee = cls == &amp;quot;WARRIOR&amp;quot; or cls == &amp;quot;ROGUE&amp;quot; or cls == &amp;quot;DEATHKNIGHT&amp;quot; or cls == &amp;quot;PALADIN&amp;quot; or cls == &amp;quot;SHAMAN&amp;quot; or cls == &amp;quot;HUNTER&amp;quot;
-if not isMelee then return false end
-if getHp(&amp;quot;player&amp;quot;) &amp;gt; 70 then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Innervate (PvP)</Name><Default>false</Default><SpellID>29166</SpellID><Actions></Actions><Lua>if CooldownRemains(29166) then return false end
-if UnitBuffID(&amp;quot;player&amp;quot;, 29166) then return false end
-if not UnitAffectingCombat(&amp;quot;player&amp;quot;) then return false end
-local m = getMana(&amp;quot;player&amp;quot;)
-if m &amp;lt; 40 then return true end
-return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP_BG:Tree of Life</Name><Default>false</Default><SpellID>33891</SpellID><Actions></Actions><Lua>-- FIX: original used OR (always true). AND = only cast when neither ToL buff present.
-if (UnitBuffID(&quot;player&quot;, 33891, &quot;player&quot;) == nil and UnitBuffID(&quot;player&quot;, 34123, &quot;player&quot;) == nil)
-and UnitBuffID(&quot;player&quot;, 33357, &quot;player&quot;) == nil
-then return true end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP_BG:Swiftmend</Name><Default>false</Default><SpellID>18562</SpellID><Actions></Actions><Lua>-- BG tune: 60% (was 50%) for faster emergency response in 5v5.
-if CooldownRemains(18562) then return false end
-if PQR_CustomTarget == nil then return false end
-if PQR_CustomTargetHP &gt; 60 then return false end
-if UnitDebuffID(&quot;player&quot;, 69762) ~= nil then return false end
-if UnitBuffID(PQR_CustomTarget, 48441) == nil and UnitBuffID(PQR_CustomTarget, 48443) == nil then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP_BG:Wild Growth</Name><Default>false</Default><SpellID>53251</SpellID><Actions></Actions><Lua>-- FIX: original HP&lt;=100 always true, starved everything below it.
-if CooldownRemains(53251) then return false end
-if PQR_CustomTarget == nil then return false end
-if not rangeCheck(53251, PQR_CustomTarget) then return false end
-if PQR_CustomTargetHP &gt; 90 then return false end
-if (lowhpmembers or 0) &lt; 2 and PQR_CustomTargetHP &gt; 75 then return false end
-if UnitBuffID(PQR_CustomTarget, 53251, &quot;player&quot;) ~= nil then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP_BG:Rejuvenation</Name><Default>false</Default><SpellID>48441</SpellID><Actions></Actions><Lua>-- FIX: original had no HP check, spammed GCD at 100%.
-if PQR_CustomTarget == nil then return false end
-if PQR_CustomTargetHP &gt; 92 then return false end
-if UnitBuffID(PQR_CustomTarget, 48441, &quot;player&quot;) ~= nil then return false end
-if not rangeCheck(48441, PQR_CustomTarget) then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP_BG:Lifebloom</Name><Default>false</Default><SpellID>48451</SpellID><Actions></Actions><Lua>-- FIX: original unconditioned, nil-unsafe. BG: only sub-85%.
-local _,_,_,count,_,_,expire = UnitBuffID(PQR_CustomTarget, 48451, &quot;player&quot;)
-if PQR_CustomTarget == nil then return false end
-if PQR_CustomTargetHP &gt; 85 then return false end
-if not rangeCheck(48451, PQR_CustomTarget) then return false end
-if count == 3 and expire ~= nil and expire - GetTime() &gt; 3 then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP_BG:Nourish</Name><Default>false</Default><SpellID>50464</SpellID><Actions></Actions><Lua>-- FIX: original required 3 HoTs at once (never fires). Now any-HoT.
-if PQR_CustomTarget == nil then return false end
-if PQR_CustomTargetHP &gt; 70 then return false end
-if not pStay() then return false end
-if UnitBuffID(PQR_CustomTarget, 48441) == nil and UnitBuffID(PQR_CustomTarget, 48443) == nil and UnitBuffID(PQR_CustomTarget, 48451) == nil then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP_BG:NS + Healing Touch</Name><Default>false</Default><SpellID>17116</SpellID><Actions></Actions><Lua>-- FIX: original double-cast NS+HT same frame, HT died to GCD. 2-step: tick1 PQR casts NS (SpellID), tick2 buff present -&gt; instant HT.
-if not IsSpellKnown(17116) then return false end
-if CooldownRemains(17116) and UnitBuffID(&quot;player&quot;, 17116) == nil then return false end
-if getHp(&quot;player&quot;) &gt; 35 then return false end
-if UnitBuffID(&quot;player&quot;, 17116) then
-  if UnitCastingInfo(&quot;player&quot;) == nil and UnitChannelInfo(&quot;player&quot;) == nil then
-    local ht = GetSpellInfo(48378)
-    if ht then CastSpellByName(ht, &quot;player&quot;) end
-  end
-  return true
-end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP_BG:Tranquility</Name><Default>false</Default><SpellID>48447</SpellID><Actions></Actions><Lua>-- BG tune: 3+ low (was 8, never fires in 5v5/BG skirmish).
-if CooldownRemains(48447) then return false end
-if UnitChannelInfo(&quot;player&quot;) ~= nil then return false end
-if PQR_IsCastingSpell(48447) then return false end
-if not pStay() then return false end
-if (lowhpmembers or 0) &lt; 3 and getHp(&quot;player&quot;) &gt; 60 then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP_BG:Shapeshift Break</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- NEW BG tech: druids cannot dispel magic in 3.3.5a (no Nature&apos;s Cure until Cata). Powershift Bear to break roots/snares.
-if not UnitAffectingCombat(&quot;player&quot;) then return false end
-if UnitBuffID(&quot;player&quot;, 33891) then return false end
-if UnitChannelInfo(&quot;player&quot;) ~= nil then return false end
-local roots = { 339, 26989, 53308, 122, 33395, 12494, 4167, 54706, 19675 }
-for i=1,#roots do
-  if UnitDebuffID(&quot;player&quot;, roots[i]) then
-    if bearform == nil or bearform == false then CastSpellByID(9634) end
-    return true
-  end
-end
-local snares = { 45524, 1715, 12323, 3409, 26679, 29793 }
-for i=1,#snares do
-  if UnitDebuffID(&quot;player&quot;, snares[i]) and getHp(&quot;player&quot;) &gt; 50 then
-    if bearform == nil or bearform == false then CastSpellByID(9634) end
-    return true
-  end
-end
-return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Wild Growth</Name><Default>false</Default><SpellID>53251</SpellID><Actions></Actions><Lua>-- Arena: HP-gated (shared R: version is HP&lt;=100 always-true, starves everything below it).
-if CooldownRemains(53251) then return false end
-if PQR_CustomTarget == nil then return false end
-if not rangeCheck(53251, PQR_CustomTarget) then return false end
-if PQR_CustomTargetHP &gt; 90 then return false end
-if UnitBuffID(PQR_CustomTarget, 53251, &quot;player&quot;) ~= nil then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Rejuvenation</Name><Default>false</Default><SpellID>48441</SpellID><Actions></Actions><Lua>-- Arena: HP-gated maintenance (shared R: version has no HP check, spams GCD at 100%).
-if PQR_CustomTarget == nil then return false end
-if PQR_CustomTargetHP &gt; 92 then return false end
-if UnitBuffID(PQR_CustomTarget, 48441, &quot;player&quot;) ~= nil then return false end
-if not rangeCheck(48441, PQR_CustomTarget) then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Regrowth</Name><Default>false</Default><SpellID>48443</SpellID><Actions></Actions><Lua>-- Arena: only (re)apply missing Regrowth HoT; Nourish does fast healing when any HoT is up (shared R: version refresh-spams).
-if PQR_CustomTarget == nil then return false end
-if PQR_CustomTargetHP &gt; 75 then return false end
-if not pStay() then return false end
-if not rangeCheck(48443, PQR_CustomTarget) then return false end
-if UnitBuffID(PQR_CustomTarget, 48443, &quot;player&quot;) ~= nil then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Lifebloom</Name><Default>false</Default><SpellID>48451</SpellID><Actions></Actions><Lua>-- Arena: nil-safe stack upkeep, sub-85% only.
-local _,_,_,count,_,_,expire = UnitBuffID(PQR_CustomTarget, 48451, &quot;player&quot;)
-if PQR_CustomTarget == nil then return false end
-if PQR_CustomTargetHP &gt; 85 then return false end
-if not rangeCheck(48451, PQR_CustomTarget) then return false end
-if count == 3 and expire ~= nil and expire - GetTime() &gt; 3 then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Nourish</Name><Default>false</Default><SpellID>50464</SpellID><Actions></Actions><Lua>-- Arena: any-HoT (shared R: version requires 3 HoTs at once, never fires).
-if PQR_CustomTarget == nil then return false end
-if PQR_CustomTargetHP &gt; 70 then return false end
-if not pStay() then return false end
-if UnitBuffID(PQR_CustomTarget, 48441) == nil and UnitBuffID(PQR_CustomTarget, 48443) == nil and UnitBuffID(PQR_CustomTarget, 48451) == nil then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP:Tranquility</Name><Default>false</Default><SpellID>48447</SpellID><Actions></Actions><Lua>-- Arena tune: 2+ low, stationary channel (shared R: version needs 8, never fires in arena).
-if CooldownRemains(48447) then return false end
-if UnitChannelInfo(&quot;player&quot;) ~= nil then return false end
-if PQR_IsCastingSpell(48447) then return false end
-if not pStay() then return false end
-if (lowhpmembers or 0) &lt; 2 and getHp(&quot;player&quot;) &gt; 60 then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>PvP_BG:Regrowth</Name><Default>false</Default><SpellID>48443</SpellID><Actions></Actions><Lua>-- BG: only (re)apply missing Regrowth HoT; Nourish does fast healing when any HoT is up (shared R: version refresh-spams).
-if PQR_CustomTarget == nil then return false end
-if PQR_CustomTargetHP &gt; 75 then return false end
-if not pStay() then return false end
-if not rangeCheck(48443, PQR_CustomTarget) then return false end
-if UnitBuffID(PQR_CustomTarget, 48443, &quot;player&quot;) ~= nil then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Arena Functions --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- Arena helpers, loaded once via FuncLoadedArena guard. Runs every tick but body is idempotent.
-if not FuncLoadedArena then
-	FuncLoadedArena = true
-
-	-- Rolling HP samples per unit for burst detection (no combat-log parsing).
-	ArenaHPHist = ArenaHPHist or {}
-	ArenaDmgWindow = 5
-
-	function ArenaSampleHP(unit)
-		if not UnitExists(unit) or UnitIsDeadOrGhost(unit) then return end
-		local guid = UnitGUID(unit)
-		if not guid then return end
-		local hp = 100 * UnitHealth(unit) / UnitHealthMax(unit)
-		local t = GetTime()
-		local hist = ArenaHPHist[guid]
-		if not hist then hist = {}; ArenaHPHist[guid] = hist end
-		hist[#hist + 1] = { t = t, hp = hp }
-		while hist[1] and (t - hist[1].t) &gt; ArenaDmgWindow do
-			table.remove(hist, 1)
-		end
-	end
-
-	-- Percent HP lost across the current sample window.
-	function ArenaGetDrop(unit)
-		if not UnitExists(unit) then return 0 end
-		local guid = UnitGUID(unit)
-		if not guid then return 0 end
-		local hist = ArenaHPHist[guid]
-		if not hist or #hist &lt; 2 then return 0 end
-		local first = hist[1].hp
-		local last  = hist[#hist].hp
-		local d = first - last
-		if d &lt; 0 then return 0 end
-		return d
-	end
-
-	-- CC id tables. Kept small on purpose; covers the common 3.3.5a arena/BG suite.
-	ArenaStuns     = { 408, 1833, 20549, 24394, 44572, 46968, 47481, 5211, 22703, 25046, 39796, 8983, 22570, 6789, 9005 }
-	ArenaFears     = { 5782, 6358, 8122, 8143, 5484, 17928 }
-	ArenaSilences  = { 15487, 18498, 25046, 47476, 34490, 55021, 31935, 18425 }
-	ArenaRootIds   = { 339, 26989, 53308, 122, 33395, 12494, 4167, 54706, 19675 }
-	ArenaSnareIds  = { 45524, 1715, 12323, 3409, 26679, 29793, 61391, 3600, 8034 }
-	ArenaPolyIds   = { 118, 12824, 12825, 12826, 28271, 28272, 61305, 61721, 61780, 51514 }
-
-	function ArenaHasDebuffList(unit, list)
-		for i = 1, #list do
-			if UnitDebuffID(unit, list[i]) then return true end
-		end
-		return false
-	end
-	function ArenaStunned(u)  return ArenaHasDebuffList(u, ArenaStuns) end
-	function ArenaFeared(u)   return ArenaHasDebuffList(u, ArenaFears) end
-	function ArenaSilenced(u) return ArenaHasDebuffList(u, ArenaSilences) end
-	function ArenaRooted(u)   return ArenaHasDebuffList(u, ArenaRootIds) end
-	function ArenaSnared(u)   return ArenaHasDebuffList(u, ArenaSnareIds) end
-	function ArenaPolyd(u)    return ArenaHasDebuffList(u, ArenaPolyIds) end
-	function ArenaCCed(u)     return ArenaStunned(u) or ArenaFeared(u) or ArenaSilenced(u) or ArenaPolyd(u) end
-
-	-- Can I hardcast right now? (stun/fear/silence/poly block cast-time heals)
-	function ArenaCanHardcast()
-		if ArenaStunned(&quot;player&quot;) or ArenaFeared(&quot;player&quot;) or ArenaSilenced(&quot;player&quot;) or ArenaPolyd(&quot;player&quot;) then return false end
-		return true
-	end
-
-	-- HoT presence (mine) and remaining seconds.
-	function ArenaMyHoT(unit, spellId)
-		local n, _, _, _, _, _, expire = UnitBuffID(unit, spellId, &quot;player&quot;)
-		if not n then return false, 0 end
-		return true, (expire or 0) - GetTime()
-	end
-
-	function ArenaHasAnyHoT(unit)
-		return (ArenaMyHoT(unit, 48441)) or (ArenaMyHoT(unit, 48443))
-		    or (ArenaMyHoT(unit, 48451)) or (ArenaMyHoT(unit, 53251))
-	end
-
-	-- Range + LoS proxy: IsSpellInRange returns 1 only when both range AND LoS OK.
-	function ArenaReachable(unit)
-		if not UnitExists(unit) then return false end
-		if UnitIsDeadOrGhost(unit) then return false end
-		local ht = GetSpellInfo(48378)
-		if not ht then return false end
-		return IsSpellInRange(ht, unit) == 1
-	end
-
-	function ArenaValidAlly(unit)
-		if not UnitExists(unit) then return false end
-		if UnitIsDeadOrGhost(unit) then return false end
-		if not UnitIsFriend(&quot;player&quot;, unit) then return false end
-		if UnitIsCharmed(unit) then return false end
-		if UnitHasVehicleUI(unit) then return false end
-		if UnitDebuffID(unit, 69065) then return false end
-		if UnitDebuffID(unit, 70157) then return false end
-		return true
-	end
-
-	-- Lower score = more urgent to heal. Projects damage forward and rewards HoT coverage.
-	function ArenaScore(unit)
-		local hp = 100 * UnitHealth(unit) / UnitHealthMax(unit)
-		local drop = ArenaGetDrop(unit)
-		local projected = drop * (3 / ArenaDmgWindow)
-		local score = hp - projected
-		local hots = 0
-		if UnitBuffID(unit, 48441, &quot;player&quot;) then hots = hots + 1 end
-		if UnitBuffID(unit, 48443, &quot;player&quot;) then hots = hots + 1 end
-		if UnitBuffID(unit, 48451, &quot;player&quot;) then hots = hots + 1 end
-		if UnitBuffID(unit, 53251, &quot;player&quot;) then hots = hots + 1 end
-		score = score + (hots * 2)
-		if not ArenaReachable(unit) then score = score + 100 end
-		if ArenaPolyd(unit) and hp &gt; 40 then score = score + 50 end
-		return score
-	end
-
-	-- Skip healing if the target is currently heal-immune / cannot be affected.
-	ArenaHealImmunities = { 45438, 642, 33786, 6940, 46924 }
-	function ArenaBuffedOut(unit)
-		for i = 1, #ArenaHealImmunities do
-			if UnitBuffID(unit, ArenaHealImmunities[i]) then return true end
-		end
-		return false
-	end
-
-	-- Rate-limited chat print for decisions (2s per key).
-	ArenaLastMsg = ArenaLastMsg or {}
-	function ArenaSay(key, msg)
-		local t = GetTime()
-		if (ArenaLastMsg[key] or 0) + 2 &gt; t then return end
-		ArenaLastMsg[key] = t
-		if PQR_WriteToChat then PQR_WriteToChat(&quot;|cff88ff88[Arena]|r &quot; .. tostring(msg)) end
-	end
-end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>-- Arena Heal Engine --</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- Builds ally list, samples HP for burst tracker, picks PQR_CustomTarget with self-danger override.
-local list = { &quot;player&quot; }
-local group = GetNumRaidMembers() &gt; 0 and &quot;raid&quot; or &quot;party&quot;
-local n = group == &quot;raid&quot; and GetNumRaidMembers() or GetNumPartyMembers()
-for i = 1, n do list[#list + 1] = group .. i end
-
-for i = 1, #list do ArenaSampleHP(list[i]) end
-
-local playerHP = 100 * UnitHealth(&quot;player&quot;) / UnitHealthMax(&quot;player&quot;)
-local playerDrop = ArenaGetDrop(&quot;player&quot;) or 0
-
-ArenaSelfDanger = false
-if playerHP &lt; 40 then ArenaSelfDanger = true end
-if playerHP &lt; 65 and playerDrop &gt; 25 then ArenaSelfDanger = true end
-if playerHP &lt; 80 and playerDrop &gt; 40 then ArenaSelfDanger = true end
-
-if ArenaSelfDanger then
-	PQR_CustomTarget = &quot;player&quot;
-	PQR_CustomTargetHP = playerHP
-else
-	local best, bestScore = &quot;player&quot;, ArenaScore(&quot;player&quot;)
-	for i = 1, #list do
-		local u = list[i]
-		if ArenaValidAlly(u) and not ArenaBuffedOut(u) then
-			local s = ArenaScore(u)
-			if s &lt; bestScore then bestScore = s; best = u end
-		end
-	end
-	PQR_CustomTarget = best
-	PQR_CustomTargetHP = 100 * UnitHealth(best) / UnitHealthMax(best)
-end
-
-ArenaLowMembers = 0
-ArenaCritMembers = 0
-for i = 1, #list do
-	local u = list[i]
-	if ArenaValidAlly(u) then
-		local hp = 100 * UnitHealth(u) / UnitHealthMax(u)
-		if hp &lt; 85 then ArenaLowMembers = ArenaLowMembers + 1 end
-		if hp &lt; 45 then ArenaCritMembers = ArenaCritMembers + 1 end
-	end
-end
-
-ArenaPressured = &quot;player&quot;
-local pressuredDrop = playerDrop
-for i = 1, #list do
-	local u = list[i]
-	if ArenaValidAlly(u) then
-		local d = ArenaGetDrop(u) or 0
-		if d &gt; pressuredDrop then pressuredDrop = d; ArenaPressured = u end
-	end
-end
-ArenaPressuredDrop = pressuredDrop</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:PvP Trinket (Break)</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- PvP trinket break only. On-use trinkets/gloves stay in Use:Trinkets/Hands (PvP) at layer 5.
-if not UnitAffectingCombat(&quot;player&quot;) then return false end
-
-local function isCCd()
-	return ArenaStunned(&quot;player&quot;) or ArenaFeared(&quot;player&quot;) or ArenaSilenced(&quot;player&quot;) or ArenaPolyd(&quot;player&quot;)
-end
-
-local function tryPvPTrinket(slot)
-	local _, cd, havecd = GetInventoryItemCooldown(&quot;player&quot;, slot)
-	if not (cd == 0 and havecd == 1) then return false end
-	local id = GetInventoryItemID(&quot;player&quot;, slot)
-	local isPvP = id == 18854 or id == 18855 or id == 42364 or id == 42365 or id == 42126 or id == 61048
-	if isPvP and isCCd() then
-		UseInventoryItem(slot)
-		ArenaSay(&quot;trinket_break&quot;, &quot;PvP trinket -&gt; break CC&quot;)
-		return true
-	end
-	return false
-end
-
-if tryPvPTrinket(13) then return true end
-if tryPvPTrinket(14) then return true end
-return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:Barkskin (Reactive)</Name><Default>false</Default><SpellID>22812</SpellID><Actions></Actions><Lua>-- Reactive + proactive Barkskin: low HP, big burst, or need pushback resist under stun/silence.
-if CooldownRemains(22812) then return false end
-if UnitBuffID(&quot;player&quot;, 22812) then return false end
-if not UnitAffectingCombat(&quot;player&quot;) then return false end
-
-local hp = getHp(&quot;player&quot;)
-local drop = ArenaGetDrop(&quot;player&quot;) or 0
-
-if hp &lt; 55 then ArenaSay(&quot;bs_hp&quot;, &quot;Barkskin reactive HP&quot;); return true end
-if drop &gt; 25 then ArenaSay(&quot;bs_burst&quot;, &quot;Barkskin burst detected&quot;); return true end
-if (ArenaStunned(&quot;player&quot;) or ArenaFeared(&quot;player&quot;)) and hp &lt; 80 then
-	ArenaSay(&quot;bs_stun&quot;, &quot;Barkskin under stun/fear&quot;); return true
-end
-if ArenaSilenced(&quot;player&quot;) and hp &lt; 70 then ArenaSay(&quot;bs_sil&quot;, &quot;Barkskin under silence&quot;); return true end
-return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:NS + HT (Panic Self)</Name><Default>false</Default><SpellID>17116</SpellID><Actions></Actions><Lua>-- Two-tick NS+HT panic on self. tick1 casts NS via SpellID; tick2 with NS buff up casts HT.
-if not IsSpellKnown(17116) then return false end
-if CooldownRemains(17116) and UnitBuffID(&quot;player&quot;, 17116) == nil then return false end
-if ArenaPolyd(&quot;player&quot;) or ArenaFeared(&quot;player&quot;) then return false end
-
-local hp = getHp(&quot;player&quot;)
-local drop = ArenaGetDrop(&quot;player&quot;) or 0
-
-if hp &gt; 35 and not (hp &lt; 55 and drop &gt; 30) then return false end
-
-if UnitBuffID(&quot;player&quot;, 17116) then
-	if UnitCastingInfo(&quot;player&quot;) == nil and UnitChannelInfo(&quot;player&quot;) == nil then
-		local ht = GetSpellInfo(48378)
-		if ht then CastSpellByName(ht, &quot;player&quot;) end
-	end
-	ArenaSay(&quot;nsht_self_cast&quot;, &quot;NS+HT self cast at &quot; .. math.floor(hp) .. &quot;%&quot;)
-	return true
-end
-ArenaSay(&quot;nsht_self_arm&quot;, &quot;arming NS for self&quot;)
-return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:Swiftmend (Panic Self)</Name><Default>false</Default><SpellID>18562</SpellID><Actions></Actions><Lua>-- Instant Swiftmend on self. Requires my Rejuv or Regrowth on player.
-if CooldownRemains(18562) then return false end
-if UnitDebuffID(&quot;player&quot;, 69762) then return false end
-if not (UnitBuffID(&quot;player&quot;, 48441, &quot;player&quot;) or UnitBuffID(&quot;player&quot;, 48443, &quot;player&quot;)) then return false end
-local hp = getHp(&quot;player&quot;)
-local drop = ArenaGetDrop(&quot;player&quot;) or 0
-if hp &gt; 40 and not (hp &lt; 60 and drop &gt; 25) then return false end
-ArenaSay(&quot;sm_self&quot;, &quot;Swiftmend self at &quot; .. math.floor(hp) .. &quot;%&quot;)
-return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:Natures Grasp (Panic)</Name><Default>false</Default><SpellID>53312</SpellID><Actions></Actions><Lua>-- Nature&apos;s Grasp melee peel + fallback if HP dropping fast.
-if not IsSpellKnown(53312) then return false end
-if CooldownRemains(53312) then return false end
-if UnitBuffID(&quot;player&quot;, 53312) or UnitBuffID(&quot;player&quot;, 19975) then return false end
-if not UnitAffectingCombat(&quot;player&quot;) then return false end
-if getHp(&quot;player&quot;) &gt; 70 then return false end
-if UnitExists(&quot;target&quot;) and UnitCanAttack(&quot;player&quot;, &quot;target&quot;) == 1 and UnitIsUnit(&quot;targettarget&quot;, &quot;player&quot;) then
-	return true
-end
-if (ArenaGetDrop(&quot;player&quot;) or 0) &gt; 25 then return true end
-return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:Berserker Rage (Fear Break)</Name><Default>false</Default><SpellID>50334</SpellID><Actions></Actions><Lua>-- Break fear via Berserker Rage. 30s CD, works while feared.
-if not IsSpellKnown(50334) then return false end
-if CooldownRemains(50334) then return false end
-if not UnitAffectingCombat(&quot;player&quot;) then return false end
-if not ArenaFeared(&quot;player&quot;) then return false end
-ArenaSay(&quot;brage&quot;, &quot;Berserker Rage -&gt; break fear&quot;)
-return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:NS + HT (Save Ally)</Name><Default>false</Default><SpellID>17116</SpellID><Actions></Actions><Lua>-- Two-tick NS+HT save on ally chosen by the heal engine. Only when self is NOT in danger.
-if not IsSpellKnown(17116) then return false end
-if CooldownRemains(17116) and UnitBuffID(&quot;player&quot;, 17116) == nil then return false end
-if ArenaPolyd(&quot;player&quot;) or ArenaFeared(&quot;player&quot;) then return false end
-if ArenaSelfDanger then return false end
-
-local t = PQR_CustomTarget
-if not t or t == &quot;player&quot; then return false end
-if not ArenaValidAlly(t) then return false end
-if not ArenaReachable(t) then return false end
-
-local hp = 100 * UnitHealth(t) / UnitHealthMax(t)
-local drop = ArenaGetDrop(t) or 0
-if hp &gt; 25 and not (hp &lt; 45 and drop &gt; 30) then return false end
-
-if UnitBuffID(&quot;player&quot;, 17116) then
-	if UnitCastingInfo(&quot;player&quot;) == nil and UnitChannelInfo(&quot;player&quot;) == nil then
-		local ht = GetSpellInfo(48378)
-		if ht then CastSpellByName(ht, t) end
-	end
-	ArenaSay(&quot;nsht_ally_cast&quot;, &quot;NS+HT save &quot; .. (UnitName(t) or &quot;?&quot;))
-	return true
-end
-ArenaSay(&quot;nsht_ally_arm&quot;, &quot;arming NS for ally&quot;)
-return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:Swiftmend (Emergency)</Name><Default>false</Default><SpellID>18562</SpellID><Actions></Actions><Lua>-- Instant Swiftmend on emergency ally. Requires an existing Rejuv/Regrowth on target.
-if CooldownRemains(18562) then return false end
-if UnitDebuffID(&quot;player&quot;, 69762) then return false end
-local t = PQR_CustomTarget
-if not t then return false end
-if not ArenaValidAlly(t) then return false end
-if not ArenaReachable(t) then return false end
-local hp = 100 * UnitHealth(t) / UnitHealthMax(t)
-local drop = ArenaGetDrop(t) or 0
-if hp &gt; 45 and not (hp &lt; 65 and drop &gt; 25) then return false end
-if not (UnitBuffID(t, 48441, &quot;player&quot;) or UnitBuffID(t, 48443, &quot;player&quot;)) then return false end
-ArenaSay(&quot;sm_ally&quot;, &quot;Swiftmend &quot; .. (UnitName(t) or &quot;?&quot;))
-return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:Wild Growth (Emergency)</Name><Default>false</Default><SpellID>53251</SpellID><Actions></Actions><Lua>-- Emergency Wild Growth: 2+ crit members or chosen target below 55%.
-if not IsSpellKnown(53251) then return false end
-if CooldownRemains(53251) then return false end
-local t = PQR_CustomTarget
-if not t then return false end
-if not ArenaReachable(t) then return false end
-if UnitBuffID(t, 53251, &quot;player&quot;) then return false end
-local hp = 100 * UnitHealth(t) / UnitHealthMax(t)
-if hp &lt; 55 or (ArenaCritMembers or 0) &gt;= 2 then return true end
-return false</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:Nourish (Emergency)</Name><Default>false</Default><SpellID>50464</SpellID><Actions></Actions><Lua>-- Fast heal 1.5s cast. Requires HoT on target for the talent bonus and can-cast state.
-local t = PQR_CustomTarget
-if not t then return false end
-if not ArenaValidAlly(t) then return false end
-if not ArenaCanHardcast() then return false end
-if not pStay() then return false end
-if not ArenaReachable(t) then return false end
-if UnitCastingInfo(&quot;player&quot;) or UnitChannelInfo(&quot;player&quot;) then return false end
-local hp = 100 * UnitHealth(t) / UnitHealthMax(t)
-if hp &gt; 55 then return false end
-if not (UnitBuffID(t, 48441, &quot;player&quot;) or UnitBuffID(t, 48443, &quot;player&quot;) or UnitBuffID(t, 48451, &quot;player&quot;) or UnitBuffID(t, 53251, &quot;player&quot;)) then
-	return false
-end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:Abolish Poison (Priority)</Name><Default>false</Default><SpellID>2893</SpellID><Actions></Actions><Lua>-- Poison dispel on the pressured unit only. Saves GCDs vs whole-party scan.
-local t = ArenaPressured
-if not t then return false end
-if not ArenaValidAlly(t) then return false end
-if not ArenaReachable(t) then return false end
-if UnitBuffID(t, 2893) then return false end
-local j = 1
-while true do
-	local name, _, _, _, dtype, dur = UnitDebuff(t, j)
-	if not name then return false end
-	if dtype == &quot;Poison&quot; and (dur or 0) &gt; 1 then
-		CastSpellByID(2893, t)
-		ArenaSay(&quot;abol&quot;, &quot;Abolish Poison on &quot; .. (UnitName(t) or &quot;?&quot;))
-		return true
-	end
-	j = j + 1
-end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:Remove Curse (Priority)</Name><Default>false</Default><SpellID>2782</SpellID><Actions></Actions><Lua>-- Curse dispel on the pressured unit only.
-local t = ArenaPressured
-if not t then return false end
-if not ArenaValidAlly(t) then return false end
-if not ArenaReachable(t) then return false end
-local j = 1
-while true do
-	local name, _, _, _, dtype, dur = UnitDebuff(t, j)
-	if not name then return false end
-	if dtype == &quot;Curse&quot; and (dur or 0) &gt; 1 then
-		CastSpellByID(2782, t)
-		ArenaSay(&quot;curse&quot;, &quot;Remove Curse on &quot; .. (UnitName(t) or &quot;?&quot;))
-		return true
-	end
-	j = j + 1
-end</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:Shapeshift Break</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- Bear powershift to break roots (always) or snares (only when HP-safe, since it costs a GCD + leaves ToL).
-if not UnitAffectingCombat(&quot;player&quot;) then return false end
-if UnitChannelInfo(&quot;player&quot;) then return false end
-local rooted = ArenaRooted(&quot;player&quot;)
-local snared = ArenaSnared(&quot;player&quot;)
-if not rooted and not snared then return false end
-if snared and not rooted and getHp(&quot;player&quot;) &lt; 60 then return false end
-if not UnitBuffID(&quot;player&quot;, 9634) then CastSpellByID(9634) end
-ArenaSay(&quot;bear&quot;, &quot;Bear powershift break&quot;)
-return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:Rejuvenation (Refresh)</Name><Default>false</Default><SpellID>48441</SpellID><Actions></Actions><Lua>-- Pandemic Rejuv: refresh when missing or &lt; 3s remain. Skip overhealing at 92%+.
-local t = PQR_CustomTarget
-if not t then return false end
-if not ArenaValidAlly(t) then return false end
-if not ArenaReachable(t) then return false end
-local hp = 100 * UnitHealth(t) / UnitHealthMax(t)
-if hp &gt; 92 then return false end
-local up, rem = ArenaMyHoT(t, 48441)
-if up and rem &gt; 3 then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:Lifebloom (Stack)</Name><Default>false</Default><SpellID>48451</SpellID><Actions></Actions><Lua>-- Stack Lifebloom on pressured target only. Nil-safe count/expire check.
-local t = PQR_CustomTarget
-if not t then return false end
-if not ArenaValidAlly(t) then return false end
-if not ArenaReachable(t) then return false end
-local hp = 100 * UnitHealth(t) / UnitHealthMax(t)
-local drop = ArenaGetDrop(t) or 0
-if hp &gt; 85 and drop &lt; 10 then return false end
-local _, _, _, count, _, _, expire = UnitBuffID(t, 48451, &quot;player&quot;)
-if count == 3 and expire and (expire - GetTime()) &gt; 3 then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:Regrowth (HoT Missing)</Name><Default>false</Default><SpellID>48443</SpellID><Actions></Actions><Lua>-- Only (re)apply Regrowth when its HoT is missing. Nourish handles subsequent fast heals.
-local t = PQR_CustomTarget
-if not t then return false end
-if not ArenaValidAlly(t) then return false end
-if not ArenaCanHardcast() then return false end
-if not pStay() then return false end
-if not ArenaReachable(t) then return false end
-if UnitCastingInfo(&quot;player&quot;) or UnitChannelInfo(&quot;player&quot;) then return false end
-local hp = 100 * UnitHealth(t) / UnitHealthMax(t)
-if hp &gt; 80 then return false end
-if UnitBuffID(t, 48443, &quot;player&quot;) then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:Wild Growth (Maintenance)</Name><Default>false</Default><SpellID>53251</SpellID><Actions></Actions><Lua>-- Maintenance WG: only when 2+ members are low. Chosen target must not already carry my WG.
-if not IsSpellKnown(53251) then return false end
-if CooldownRemains(53251) then return false end
-local t = PQR_CustomTarget
-if not t then return false end
-if not ArenaReachable(t) then return false end
-if (ArenaLowMembers or 0) &lt; 2 then return false end
-if UnitBuffID(t, 53251, &quot;player&quot;) then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:Innervate (Smart)</Name><Default>false</Default><SpellID>29166</SpellID><Actions></Actions><Lua>-- Smart Innervate: mana below 50% AND player is currently able to channel/cast.
-if CooldownRemains(29166) then return false end
-if UnitBuffID(&quot;player&quot;, 29166) then return false end
-if not UnitAffectingCombat(&quot;player&quot;) then return false end
-if getMana(&quot;player&quot;) &gt; 50 then return false end
-if ArenaStunned(&quot;player&quot;) or ArenaFeared(&quot;player&quot;) or ArenaSilenced(&quot;player&quot;) or ArenaPolyd(&quot;player&quot;) then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:War Stomp (Tauren)</Name><Default>false</Default><SpellID>20549</SpellID><Actions></Actions><Lua>-- Tauren racial melee peel. HP-gated so we don&apos;t burn a GCD off-cooldown when safe.
-if not IsSpellKnown(20549) then return false end
-if CooldownRemains(20549) then return false end
-if not UnitAffectingCombat(&quot;player&quot;) then return false end
-if not UnitExists(&quot;target&quot;) then return false end
-if UnitCanAttack(&quot;player&quot;,&quot;target&quot;) ~= 1 then return false end
-if not UnitIsPlayer(&quot;target&quot;) and not PQR_TestMode then return false end
-if not rangeCheck(20549, &quot;target&quot;) then return false end
-if PQR_TestMode then return true end
-local _, cls = UnitClass(&quot;target&quot;)
-local isMelee = cls == &quot;WARRIOR&quot; or cls == &quot;ROGUE&quot; or cls == &quot;DEATHKNIGHT&quot; or cls == &quot;PALADIN&quot; or cls == &quot;SHAMAN&quot; or cls == &quot;HUNTER&quot;
-if not isMelee then return false end
-if getHp(&quot;player&quot;) &gt; 70 then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:Cyclone (Focus)</Name><Default>false</Default><SpellID>33786</SpellID><Actions></Actions><Lua>-- Cyclone focus. Heal-first priority is enforced by ROTATION ORDER (default heals run before this).
--- Only self-danger blocks; ordering handles the rest so we still fire against enemy healers/melee even during BG fights.
-if not UnitExists(&quot;focus&quot;) then return false end
-if UnitIsDeadOrGhost(&quot;focus&quot;) then return false end
-if not UnitIsPlayer(&quot;focus&quot;) and not PQR_TestMode then return false end
-if not UnitCanAttack(&quot;player&quot;, &quot;focus&quot;) then return false end
-if not rangeCheck(33786, &quot;focus&quot;) then return false end
-if UnitDebuffID(&quot;focus&quot;, 33786) then return false end
-if PQR_IsCastingSpell(33786) then return false end
-if not ArenaCanHardcast() then return false end
-if PQR_TestMode then return true end
-if ArenaSelfDanger then return false end
-local n, _, _, _, _, _, _, _, notInt = UnitCastingInfo(&quot;focus&quot;)
-if n and not notInt then return true end
-local cn, _, _, _, _, _, _, cNotInt = UnitChannelInfo(&quot;focus&quot;)
-if cn and not cNotInt then return true end
-local _, cls = UnitClass(&quot;focus&quot;)
-local isHealer = cls == &quot;PRIEST&quot; or cls == &quot;DRUID&quot; or cls == &quot;PALADIN&quot; or cls == &quot;SHAMAN&quot;
-if isHealer and getHp(&quot;focus&quot;) &lt; 95 then return true end
-return false</Lua><RecastDelay>0</RecastDelay><Target>Focus</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:Entangling Roots (Focus)</Name><Default>false</Default><SpellID>53308</SpellID><Actions></Actions><Lua>-- Entangling Roots focus: melee focus not already CCed. Heal-first via rotation order (default heals run first).
-if not UnitExists(&quot;focus&quot;) then return false end
-if UnitIsDeadOrGhost(&quot;focus&quot;) then return false end
-if not UnitIsPlayer(&quot;focus&quot;) and not PQR_TestMode then return false end
-if not UnitCanAttack(&quot;player&quot;, &quot;focus&quot;) then return false end
-if not rangeCheck(53308, &quot;focus&quot;) then return false end
-if UnitDebuffID(&quot;focus&quot;, 339) or UnitDebuffID(&quot;focus&quot;, 26989) or UnitDebuffID(&quot;focus&quot;, 53308) then return false end
-if UnitDebuffID(&quot;focus&quot;, 33786) then return false end
-if PQR_IsCastingSpell(53308) then return false end
-if not ArenaCanHardcast() then return false end
-if PQR_TestMode then return true end
-if ArenaSelfDanger then return false end
-local _, cls = UnitClass(&quot;focus&quot;)
-local isMelee = cls == &quot;WARRIOR&quot; or cls == &quot;ROGUE&quot; or cls == &quot;DEATHKNIGHT&quot; or cls == &quot;PALADIN&quot; or cls == &quot;SHAMAN&quot; or cls == &quot;DRUID&quot; or cls == &quot;HUNTER&quot;
-if not isMelee then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Focus</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:Faerie Fire (Anti-Stealth)</Name><Default>false</Default><SpellID>770</SpellID><Actions></Actions><Lua>-- Anti-stealth FF for Rogue/Druid target. Heal-first via rotation order.
-if CooldownRemains(770) then return false end
-if not UnitExists(&quot;target&quot;) then return false end
-if not UnitIsPlayer(&quot;target&quot;) and not PQR_TestMode then return false end
-if not UnitCanAttack(&quot;player&quot;, &quot;target&quot;) then return false end
-if not rangeCheck(770, &quot;target&quot;) then return false end
-if UnitDebuffID(&quot;target&quot;, 770) or UnitDebuffID(&quot;target&quot;, 91565) or UnitDebuffID(&quot;target&quot;, 26993) then return false end
-if not ArenaCanHardcast() then return false end
-if PQR_TestMode then return true end
-if ArenaSelfDanger then return false end
-local _, cls = UnitClass(&quot;target&quot;)
-if cls ~= &quot;ROGUE&quot; and cls ~= &quot;DRUID&quot; then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:Healing Touch (Regular)</Name><Default>false</Default><SpellID>48378</SpellID><Actions></Actions><Lua>-- Default cast-time heal when no HoT is up (Nourish would be weaker without HoT).
-local t = PQR_CustomTarget
-if not t then return false end
-if not ArenaValidAlly(t) then return false end
-if not ArenaCanHardcast() then return false end
-if not pStay() then return false end
-if not ArenaReachable(t) then return false end
-if UnitCastingInfo(&quot;player&quot;) or UnitChannelInfo(&quot;player&quot;) then return false end
-local hp = 100 * UnitHealth(t) / UnitHealthMax(t)
-if hp &gt; 70 then return false end
-if UnitBuffID(t, 48441, &quot;player&quot;) or UnitBuffID(t, 48443, &quot;player&quot;) or UnitBuffID(t, 48451, &quot;player&quot;) then
-	return false
-end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>Arena:Nourish (Regular)</Name><Default>false</Default><SpellID>50464</SpellID><Actions></Actions><Lua>-- Default fast heal when any HoT is up. Cheap 1.5s cast with the talent bonus.
-local t = PQR_CustomTarget
-if not t then return false end
-if not ArenaValidAlly(t) then return false end
-if not ArenaCanHardcast() then return false end
-if not pStay() then return false end
-if not ArenaReachable(t) then return false end
-if UnitCastingInfo(&quot;player&quot;) or UnitChannelInfo(&quot;player&quot;) then return false end
-local hp = 100 * UnitHealth(t) / UnitHealthMax(t)
-if hp &gt; 80 then return false end
-if not (UnitBuffID(t, 48441, &quot;player&quot;) or UnitBuffID(t, 48443, &quot;player&quot;) or UnitBuffID(t, 48451, &quot;player&quot;) or UnitBuffID(t, 53251, &quot;player&quot;)) then
-	return false
-end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Custom</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability></DRUID>
+return false</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability></DRUID>
