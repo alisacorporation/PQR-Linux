@@ -1,0 +1,23 @@
+[package]
+name = "pqr-cli"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "pqr"
+path = "src/main.rs"
+
+[dependencies]
+pqr-profile = { path = "../pqr-profile" }
+pqr-wow = { path = "../pqr-wow" }
+pqr-engine = { path = "../pqr-engine" }
+pqr-mem = { path = "../pqr-mem" }
+pqr-inject = { path = "../pqr-inject" }
+anyhow = { workspace = true }
+clap = { workspace = true }
+ctrlc = "3"
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }

@@ -1,0 +1,33 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/pqr-profile",
+    "crates/pqr-mem",
+    "crates/pqr-asm",
+    "crates/pqr-wow",
+    "crates/pqr-inject",
+    "crates/pqr-engine",
+    "crates/pqr-cli",
+]
+
+[workspace.package]
+edition = "2021"
+rust-version = "1.75"
+license = "MIT"
+publish = false
+
+[workspace.dependencies]
+anyhow = "1"
+thiserror = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+quick-xml = "0.36"
+serde = { version = "1", features = ["derive"] }
+iced-x86 = { version = "1", features = ["code_asm"] }
+rand = "0.8"
+clap = { version = "4", features = ["derive"] }
+regex = "1"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
