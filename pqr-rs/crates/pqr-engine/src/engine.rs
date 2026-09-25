@@ -70,10 +70,13 @@ impl Engine {
     pub fn bootstrap(&mut self) -> Result<(), EngineError> {
         // Order matters: table setup first (defines PQR_AddAbility), then the
         // main framework (defines the event frame + PQR_ExecuteBot), then the
-        // scripting helpers.
+        // scripting helpers. Also tighten PQR_UpdateInterval from the 100ms
+        // upstream default to 30ms — 3x more rotation ticks per second within
+        // the 20–1000ms range PQR_ChangeInterval allows.
         self.run_lua(lua_snippets::TABLE_SETUP)?;
         self.run_lua(lua_snippets::FIRST_LOAD)?;
         self.run_lua(lua_snippets::SCRIPTING)?;
+        self.run_lua("PQR_ChangeInterval(30)")?;
         Ok(())
     }
 
@@ -84,37 +87,33 @@ impl Engine {
         let resolved = rotation.resolve(&profile.abilities)
             .map_err(EngineError::Unresolved)?;
 
-        // Rebuild tables from scratch (equivalent to strClearTables call).
-        self.run_lua(lua_snippets::CLEAR_TABLES)?;
-
-        // Register abilities in priority order. Rotation index 0 = the active
-        // rotation slot; the original PQR uses 0..=4 for multi-slot rotations,
-        // v0.1 uses just slot 0.
-        for (idx, ability) in resolved.iter().enumerate() {
-            let lua = add_ability_lua(0, idx, ability);
-            self.run_lua(&lua)?;
-        }
-
-        // Requirecombat flag on the slot.
-        self.run_lua(&format!(
-            "PQR[0].priorityTable.requireCombat = {}",
-            if rotation.require_combat { "true" } else { "false" },
-        ))?;
-
-        // Enable the bot. The upstream `PQR_EnableBot` calls `PlaySound` with
-        // globals PreStartupBot would have set (StartRotationSound etc.);
-        // when those are nil, PlaySound errors and the assignments below it
-        // never run. We best-effort call the function (for its side effect of
-        // firing the chat toast), then set the state flags directly so the
-        // tick loop reliably enters `PQR_CastNext(0)`.
+        // Build one Lua chunk that clears tables, registers every ability,
+        // sets requireCombat, and flips the run flags. Upstream PQR issues one
+        // Lua_DoString per ability which under our detour costs ~30ms per
+        // round-trip — batching turns a ~1.2s rotation load (for 40 abilities)
+        // into ~30ms.
         let display = rotation.name.replace('"', "\\\"");
-        self.run_lua(&format!(
-            r#"pcall(PQR_EnableBot, "{display}")
-               PQR_BotRotation = "{display}"
-               PQR_BotEnabled = true
-               PQR_ManualMode = false
-               PQR_ResetMovementTime = 1.0"#
-        ))?;
+        let combat = if rotation.require_combat { "true" } else { "false" };
+
+        let mut chunk = String::with_capacity(4096 + resolved.iter().map(|a| a.lua.len()).sum::<usize>() * 2);
+        chunk.push_str(lua_snippets::CLEAR_TABLES);
+        chunk.push('\n');
+        for (idx, ability) in resolved.iter().enumerate() {
+            chunk.push_str(&add_ability_lua(0, idx, ability));
+            chunk.push('\n');
+        }
+        chunk.push_str(&format!("PQR[0].priorityTable.requireCombat = {combat}\n"));
+        // Best-effort call to PQR_EnableBot (fires chat toast). Its assignments
+        // fail silently if PlaySound errors on nil sounds, so we set the flags
+        // directly right after.
+        chunk.push_str(&format!(
+            "pcall(PQR_EnableBot, \"{display}\")\n\
+             PQR_BotRotation = \"{display}\"\n\
+             PQR_BotEnabled = true\n\
+             PQR_ManualMode = false\n\
+             PQR_ResetMovementTime = 1.0\n"
+        ));
+        self.run_lua(&chunk)?;
         Ok(())
     }
 

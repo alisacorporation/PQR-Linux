@@ -23,7 +23,7 @@ use iced_x86::code_asm::*;
 use iced_x86::IcedError;
 use pqr_asm::assemble_randomized;
 use pqr_mem::ProcessMemory;
-use tracing::{debug, info};
+use tracing::debug;
 
 #[derive(Debug, thiserror::Error)]
 pub enum ExecError {
@@ -47,7 +47,11 @@ pub struct Executor {
 
 const TRAMPOLINE_SIZE: usize = 598;
 const HANDSHAKE_TIMEOUT: Duration = Duration::from_secs(3);
-const POLL_INTERVAL: Duration = Duration::from_millis(10);
+// 1ms polling: payload consume normally takes 10-30ms (bounded by game
+// thread hitting the detour), so shaving off up to 9ms of the tail wait cuts
+// average injection latency by ~5ms. Cost is a few extra RPM syscalls per
+// payload — negligible under Wine.
+const POLL_INTERVAL: Duration = Duration::from_millis(1);
 
 impl Executor {
     pub fn new(mem: Arc<dyn ProcessMemory>, detour_va: u32, overwritten: Vec<u8>) -> io::Result<Self> {
@@ -133,7 +137,7 @@ impl Executor {
 
         self.mem.write_bytes(payload_va, &bytes)?;
         self.mem.write_u32(self.code_cave_ptr, payload_va)?;
-        info!(payload_va = format!("0x{payload_va:x}"), size = bytes.len(), "payload published, awaiting handshake");
+        debug!(payload_va = format!("0x{payload_va:x}"), size = bytes.len(), "payload published, awaiting handshake");
 
         let start = Instant::now();
         while self.mem.read_u32(self.code_cave_ptr)? != 0 {
@@ -144,7 +148,7 @@ impl Executor {
             std::thread::sleep(POLL_INTERVAL);
         }
         self.mem.free(payload_va)?;
-        info!(payload_va = format!("0x{payload_va:x}"), elapsed = ?start.elapsed(), "payload consumed");
+        debug!(payload_va = format!("0x{payload_va:x}"), elapsed = ?start.elapsed(), "payload consumed");
         Ok(())
     }
 
