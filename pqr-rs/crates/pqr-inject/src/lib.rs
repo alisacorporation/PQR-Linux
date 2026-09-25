@@ -142,6 +142,14 @@ impl Executor {
         let start = Instant::now();
         while self.mem.read_u32(self.code_cave_ptr)? != 0 {
             if start.elapsed() > HANDSHAKE_TIMEOUT {
+                // The game hasn't taken the payload — clear the handshake and
+                // give any in-flight stub invocation one frame to finish
+                // before releasing the memory. Skipping this leaves a dangling
+                // pointer in the cave: the next detour hit executes freed
+                // memory (crashes the target), and every later injection sees
+                // a stuck slot (permanent timeouts).
+                let _ = self.mem.write_u32(self.code_cave_ptr, 0);
+                std::thread::sleep(Duration::from_millis(35));
                 self.mem.free(payload_va).ok();
                 return Err(ExecError::Timeout(HANDSHAKE_TIMEOUT));
             }
