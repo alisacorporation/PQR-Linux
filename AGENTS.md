@@ -68,8 +68,11 @@ cargo test                                            # only automated test suit
 ### TUI under Wine — use the wrapper, never raw `wine`
 
 ```sh
-cd pqr-rs && ./run-tui.sh tui DRUID Resto_DarhangeR --demo
+cd pqr-rs && ./run-tui.sh tui DRUID Resto_DarhangeR --demo   # UI only, no WoW
+cd pqr-rs && ./run-tui.sh tui DRUID Resto_DarhangeR          # live: attaches to WoW
 ```
+
+- `run-tui.sh` injects `--profiles ../PQR_fixed/Profiles --offsets-dir ../PQR_fixed` unless you pass your own (pqr's defaults are CWD-relative `Profiles`/`.` and those files live in `PQR_fixed/` — without them a non-demo run dies with `load profile ...`).
 
 - **Never run `wine pqr.exe tui ...` directly**: Wine's conhost does not parse VT sequences — it stores ESC sequences as literal cells and re-renders them through its own `\r` / `\x1b[?25h` / `\x1b[K` writer, injecting CRs mid-sequence at row wraps → garbled, crawling frames. Piping stdout (`| cat` inside the wrapper) bypasses conhost; keys/size still come through CONIN$/CONOUT$.
 - **Never add `2>&1`** to that pipe: Wine probes terminal size only from fd 1/2 (`ntdll/unix/env.c`, `TIOCGWINSZ`). Both piped → conhost spawns `--width 0 --height 0` → falls back to 80x150 → footer drawn at row 150 of a 40-row screen. stderr must stay on the tty.

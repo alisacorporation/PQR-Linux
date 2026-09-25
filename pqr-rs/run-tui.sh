@@ -22,4 +22,22 @@ if [[ ! -f "$EXE" ]]; then
     exit 1
 fi
 
-wine "$EXE" "$@" | cat
+# pqr's --profiles/--offsets-dir default to CWD ("Profiles" and "."), but the
+# real files live in PQR_fixed/. Inject the paths unless the caller passed
+# their own; without them a non---demo run dies with "load profile ...".
+args=("$@")
+have_profiles=0 have_offsets=0
+for a in "${args[@]}"; do
+    case "$a" in
+        --profiles|--profiles=*)    have_profiles=1 ;;
+        --offsets-dir|--offsets-dir=*) have_offsets=1 ;;
+    esac
+done
+if (( ! have_profiles )); then
+    args=(--profiles ../PQR_fixed/Profiles "${args[@]}")
+fi
+if (( ! have_offsets )); then
+    args=(--offsets-dir ../PQR_fixed "${args[@]}")
+fi
+
+wine "$EXE" "${args[@]}" | cat
