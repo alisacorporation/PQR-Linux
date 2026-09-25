@@ -27,6 +27,8 @@ iced-x86 = { version = "1", features = ["code_asm"] }
 rand = "0.8"
 clap = { version = "4", features = ["derive"] }
 regex = "1"
+ratatui = "0.28"
+crossterm = "0.28"
 
 [profile.release]
 lto = "thin"

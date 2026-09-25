@@ -9,6 +9,8 @@ use pqr_profile::parse::load_profile;
 use pqr_wow::{discover, offsets, Offsets};
 use tracing::{info, warn};
 
+mod tui;
+
 /// PQR-rs — Rust rewrite of Priority Queue Rotation.
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -70,19 +72,38 @@ enum Cmd {
         /// Lua code to run inside WoW. Example: `DEFAULT_CHAT_FRAME:AddMessage("hi")`.
         lua: String,
     },
+
+    /// Terminal UI: live-updating view of engine state, log tail, and stop
+    /// gracefully on `q`.
+    Tui {
+        #[arg(long, default_value = "DarhangeR")]
+        prefix: String,
+        class: String,
+        rotation: String,
+        #[arg(long)]
+        no_rename: bool,
+        /// Render with synthetic state (no WoW attach) — for debugging the UI.
+        #[arg(long)]
+        demo: bool,
+    },
 }
 
 fn main() -> Result<()> {
-    tracing_subscriber::fmt()
-        .with_writer(std::io::stderr)
-        .with_env_filter(
-            tracing_subscriber::EnvFilter::try_from_default_env()
-                // Binary crate is `pqr` (from [[bin]] name), not `pqr_cli` (package name).
-                .unwrap_or_else(|_| "info,pqr=debug,pqr_engine=debug,pqr_inject=debug".into()),
-        )
-        .init();
-
     let cli = Cli::parse();
+
+    // TUI installs its own subscriber that captures into a ring buffer; the
+    // stderr writer here would paint over the alternate screen.
+    if !matches!(cli.cmd, Cmd::Tui { .. }) {
+        tracing_subscriber::fmt()
+            .with_writer(std::io::stderr)
+            .with_env_filter(
+                tracing_subscriber::EnvFilter::try_from_default_env()
+                    // Binary crate is `pqr` (from [[bin]] name), not `pqr_cli` (package name).
+                    .unwrap_or_else(|_| "info,pqr=debug,pqr_engine=debug,pqr_inject=debug".into()),
+            )
+            .init();
+    }
+
     let profiles = cli.profiles.clone();
     let offsets_dir = cli.offsets_dir.clone();
     match &cli.cmd {
@@ -91,6 +112,8 @@ fn main() -> Result<()> {
         Cmd::Lint { prefix, class } => cmd_lint(&profiles, prefix, class),
         Cmd::Diff { prefix, class, left, right } => cmd_diff(&profiles, prefix, class, left, right),
         Cmd::Probe { lua } => cmd_probe(&offsets_dir, lua),
+        Cmd::Tui { prefix, class, rotation, no_rename, demo } =>
+            tui::run(&profiles, &offsets_dir, prefix, class, rotation, *no_rename, *demo, load_all_offsets),
     }
 }
 

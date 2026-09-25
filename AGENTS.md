@@ -12,8 +12,9 @@ Continuation of PQR 1.8.5 (external WoW WotLK 3.3.5a rotation tool, closed-sourc
 - `PQR_fixed/` — deployable runtime: committed exe + `.exe.config` + DLLs + `Offsets_*.xml` + `Fonts/` + `Profiles/`. What users actually run.
 - `PQR_DarhangeR_3.3.5a/` — pristine upstream clone (own `.git`, gitignored, read-only). **Builds hard-depend on it**: csproj HintPaths point at its `fasmdll_managed.dll` and `SyntaxHighlighter.dll`.
 - `viewer/` — static profile-compare site (plain HTML/CSS/JS, no build, no npm). Reads `PQR_fixed/Profiles/*.xml` at runtime.
+- `pqr-rs/` — Rust rewrite of the whole tool (cargo workspace, native Linux + Windows exe). See its section below.
 - `mempalace.yaml`, `entities.json` — local MemPalace tool files; gitignored, never commit or edit.
-- Tracked content is only `.gitignore`, `PQR_fixed/`, `reversed/`, `viewer/`. No CI, no tests, no lint, no `.sln`.
+- Tracked content is `.gitignore`, `PQR_fixed/`, `reversed/`, `viewer/`, `pqr-rs/`, `plans/`. No CI; the only tests are `cargo test` in `pqr-rs/`. No lint config, no `.sln`.
 
 ## Build (verified on Linux)
 
@@ -49,6 +50,31 @@ python3 -m http.server 8000    # from the repo ROOT, not from viewer/
 - No bundler/deps — keep it that way; edit `viewer/js/*.js` directly (`i18n` RU/EN, `parse` XML+double-decode, `compare` rank-diff, `app` UI).
 - Entity decode in `parse.js` must stay in sync with `clsXML.XMLDecode` (second pass after the XML parser) or legacy `&amp;quot;` profiles will show garbage.
 - `compare.js` aligns rotations by **base ability name** (mode prefixes `R:`/`F:`/`PvP:`/`PvP_BG:` stripped via whitelist regex — never split on bare `:` or `Power Word: Shield` breaks). XML files are never renamed by the viewer; ghost rows flag RotationList entries missing from Abilities.
+
+## pqr-rs (Rust rewrite)
+
+Cargo workspace in `pqr-rs/` reimplementing the whole tool natively (injector, Lua engine, profile parser, TUI).
+
+```sh
+export PATH="$HOME/.cargo/bin:$HOME/.dotnet:$PATH"   # neither cargo nor dotnet is on PATH by default
+cargo build                                           # native Linux binary (debug)
+cargo xwin build --release --target x86_64-pc-windows-msvc   # Windows exe -> pqr-rs/target/x86_64-pc-windows-msvc/release/pqr.exe
+cargo test                                            # only automated test suite in the repo
+```
+
+- Plain `cargo build --release --target x86_64-pc-windows-msvc` fails (`linker 'link.exe' not found`) — use `cargo xwin`.
+- `pqr-mem` (process access) is Windows-only: native Linux builds compile but cannot attach, so UI work uses `--demo`.
+
+### TUI under Wine — use the wrapper, never raw `wine`
+
+```sh
+cd pqr-rs && ./run-tui.sh tui DRUID Resto_DarhangeR --demo
+```
+
+- **Never run `wine pqr.exe tui ...` directly**: Wine's conhost does not parse VT sequences — it stores ESC sequences as literal cells and re-renders them through its own `\r` / `\x1b[?25h` / `\x1b[K` writer, injecting CRs mid-sequence at row wraps → garbled, crawling frames. Piping stdout (`| cat` inside the wrapper) bypasses conhost; keys/size still come through CONIN$/CONOUT$.
+- **Never add `2>&1`** to that pipe: Wine probes terminal size only from fd 1/2 (`ntdll/unix/env.c`, `TIOCGWINSZ`). Both piped → conhost spawns `--width 0 --height 0` → falls back to 80x150 → footer drawn at row 150 of a 40-row screen. stderr must stay on the tty.
+- `--demo` renders synthetic engine state (no WoW attach) — the standard way to verify the UI.
+- Key handling: Windows consoles emit a Release event after every Press; `tui.rs` filters `KeyEventKind::Release` or toggles (the `L` debug-pane switch) fire twice per keystroke and cancel out.
 
 ## Running under Wine
 

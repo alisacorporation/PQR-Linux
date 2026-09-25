@@ -69,6 +69,8 @@ pub struct Rotation {
 /// A loaded pair of abilities + rotations for a single class.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Profile {
+    // (Clone was already derived — TUI relies on it to hand the profile to
+    // the background engine thread.)
     pub class: String,
     pub abilities: Vec<Ability>,
     pub rotations: Vec<Rotation>,
