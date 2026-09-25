@@ -402,6 +402,8 @@ public class frmMain : Form
 		}
 	}
 
+	private static string DebugLogPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PQR_debug.log");
+
 	public static void ProcessDebug()
 	{
 		if (!GlobalSettings.DebugMode)
@@ -413,6 +415,32 @@ public class frmMain : Form
 			if (GlobalSettings.DebugArray[i] != null)
 			{
 				GlobalSettings.DebugArray[i] = null;
+			}
+		}
+		try
+		{
+			if (clsMemory.IsWoWReady())
+			{
+				string text = clsMemory.Lua_GetReturnValue("return PQR_FlushDebugLog and PQR_FlushDebugLog() or \"\"");
+				if (!string.IsNullOrEmpty(text))
+				{
+					text = text.Replace("\\n", "\n");
+					File.AppendAllText(DebugLogPath, text);
+					if (!text.EndsWith("\n"))
+					{
+						File.AppendAllText(DebugLogPath, "\n");
+					}
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				File.AppendAllText(DebugLogPath, "[ProcessDebug error] " + ex.Message + "\n");
+			}
+			catch
+			{
 			}
 		}
 	}
@@ -880,7 +908,7 @@ public class frmMain : Form
 			{
 				if (currentRotationArray[i, 0] != null)
 				{
-					text = text + " " + clsLua.AddAbility("0", i.ToString(), currentRotationArray[i, 2], currentRotationArray[i, 3], currentRotationArray[i, 4], currentRotationArray[i, 5], currentRotationArray[i, 6], currentRotationArray[i, 7], currentRotationArray[i, 8], currentRotationArray[i, 9]);
+					text = text + " " + clsLua.AddAbility("0", i.ToString(), currentRotationArray[i, 0], currentRotationArray[i, 2], currentRotationArray[i, 3], currentRotationArray[i, 4], currentRotationArray[i, 5], currentRotationArray[i, 6], currentRotationArray[i, 7], currentRotationArray[i, 8], currentRotationArray[i, 9]);
 				}
 			}
 			text = text + " PQR[0].priorityTable.requireCombat = " + RotationRequiresCombat(text2).ToString().ToLower();
@@ -895,7 +923,7 @@ public class frmMain : Form
 			{
 				if (currentRotationArray[j, 0] != null)
 				{
-					text = text + " " + clsLua.AddAbility("1", j.ToString(), currentRotationArray[j, 2], currentRotationArray[j, 3], currentRotationArray[j, 4], currentRotationArray[j, 5], currentRotationArray[j, 6], currentRotationArray[j, 7], currentRotationArray[j, 8], currentRotationArray[j, 9]);
+					text = text + " " + clsLua.AddAbility("1", j.ToString(), currentRotationArray[j, 0], currentRotationArray[j, 2], currentRotationArray[j, 3], currentRotationArray[j, 4], currentRotationArray[j, 5], currentRotationArray[j, 6], currentRotationArray[j, 7], currentRotationArray[j, 8], currentRotationArray[j, 9]);
 				}
 			}
 			text = text + " PQR[1].priorityTable.requireCombat = " + RotationRequiresCombat(text2).ToString().ToLower();
@@ -910,7 +938,7 @@ public class frmMain : Form
 			{
 				if (currentRotationArray[k, 0] != null)
 				{
-					text = text + " " + clsLua.AddAbility("2", k.ToString(), currentRotationArray[k, 2], currentRotationArray[k, 3], currentRotationArray[k, 4], currentRotationArray[k, 5], currentRotationArray[k, 6], currentRotationArray[k, 7], currentRotationArray[k, 8], currentRotationArray[k, 9]);
+					text = text + " " + clsLua.AddAbility("2", k.ToString(), currentRotationArray[k, 0], currentRotationArray[k, 2], currentRotationArray[k, 3], currentRotationArray[k, 4], currentRotationArray[k, 5], currentRotationArray[k, 6], currentRotationArray[k, 7], currentRotationArray[k, 8], currentRotationArray[k, 9]);
 				}
 			}
 			text = text + " PQR[2].priorityTable.requireCombat = " + RotationRequiresCombat(text2).ToString().ToLower();
@@ -925,7 +953,7 @@ public class frmMain : Form
 			{
 				if (currentRotationArray[l, 0] != null)
 				{
-					text = text + " " + clsLua.AddAbility("3", l.ToString(), currentRotationArray[l, 2], currentRotationArray[l, 3], currentRotationArray[l, 4], currentRotationArray[l, 5], currentRotationArray[l, 6], currentRotationArray[l, 7], currentRotationArray[l, 8], currentRotationArray[l, 9]);
+					text = text + " " + clsLua.AddAbility("3", l.ToString(), currentRotationArray[l, 0], currentRotationArray[l, 2], currentRotationArray[l, 3], currentRotationArray[l, 4], currentRotationArray[l, 5], currentRotationArray[l, 6], currentRotationArray[l, 7], currentRotationArray[l, 8], currentRotationArray[l, 9]);
 				}
 			}
 			text = text + " PQR[3].priorityTable.requireCombat = " + RotationRequiresCombat(text2).ToString().ToLower();
@@ -940,7 +968,7 @@ public class frmMain : Form
 			{
 				if (currentRotationArray[m, 0] != null)
 				{
-					text = text + " " + clsLua.AddAbility("4", m.ToString(), currentRotationArray[m, 2], currentRotationArray[m, 3], currentRotationArray[m, 4], currentRotationArray[m, 5], currentRotationArray[m, 6], currentRotationArray[m, 7], currentRotationArray[m, 8], currentRotationArray[m, 9]);
+					text = text + " " + clsLua.AddAbility("4", m.ToString(), currentRotationArray[m, 0], currentRotationArray[m, 2], currentRotationArray[m, 3], currentRotationArray[m, 4], currentRotationArray[m, 5], currentRotationArray[m, 6], currentRotationArray[m, 7], currentRotationArray[m, 8], currentRotationArray[m, 9]);
 				}
 			}
 			text = text + " PQR[4].priorityTable.requireCombat = " + RotationRequiresCombat(text2).ToString().ToLower();
@@ -1236,6 +1264,16 @@ public class frmMain : Form
 	{
 		GlobalSettings.DebugMode = chkDebug.Checked;
 		GlobalSettings.LoadBot = true;
+		if (chkDebug.Checked)
+		{
+			try
+			{
+				File.AppendAllText(DebugLogPath, "=== PQR debug session " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " ===\n");
+			}
+			catch
+			{
+			}
+		}
 	}
 
 	private void tbRefreshRate_Scroll(object sender, EventArgs e)
