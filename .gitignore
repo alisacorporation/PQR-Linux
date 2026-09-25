@@ -13,3 +13,5 @@ entities.json
 # local backups / debug artifacts under the runtime dir
 PQR_fixed/Profiles.zip
 PQR_fixed/Screenshot_*.png
+PQR_fixed/PQR_debug.log
+pqr-rs/Screenshot_*.png
