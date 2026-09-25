@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use anyhow::{anyhow, Context, Result};
 use clap::{Parser, Subcommand};
-use pqr_engine::Engine;
+use pqr_engine::{ChainWork, Engine, LuaEvent};
 use pqr_profile::parse::load_profile;
 use pqr_wow::{discover, offsets, Offsets};
 use tracing::{info, warn};
@@ -124,6 +124,7 @@ fn cmd_probe(offsets_dir: &std::path::Path, lua: &str) -> Result<()> {
     let client = discovery.into_client()?;
     let mem = client.mem.clone();
     let detour_va = mem.image_base().wrapping_add(client.offsets.detour);
+    pqr_engine::engine::warn_if_already_patched(&*mem, detour_va, &client.offsets.overwritten)?;
     let mut executor = pqr_inject::Executor::new(mem, detour_va, client.offsets.overwritten.clone())?;
     executor.apply()?;
     info!("detour applied — sending probe");
@@ -213,12 +214,31 @@ fn cmd_run(profiles: &std::path::Path, offsets_dir: &std::path::Path, prefix: &s
 
     info!("running (Ctrl-C to stop)");
     while !stopping.load(Ordering::SeqCst) {
-        match engine.tick() {
-            Ok(true) => {}
-            Ok(false) => { warn!("no longer in world; stopping"); break; }
-            Err(e) => { warn!(error = %e, "tick failed"); }
+        // One self-sustaining chain link (kick + marker read). Tight loop
+        // while the chain is healthy — each link blocks ~one game frame.
+        let step = engine.chain_step(|ev| match ev {
+            LuaEvent::Alive(_) => {}
+            LuaEvent::Lost => warn!("lua framework lost (reload?) — recovering"),
+            LuaEvent::Recovering => info!("rebootstrapping framework..."),
+            LuaEvent::Recovered => info!("framework recovered, rotation reloaded"),
+            LuaEvent::RecoverFailed(err) => warn!(error = %err, "rebootstrap failed"),
+            LuaEvent::ProbeUnavailable => {
+                warn!("lua probe unavailable (ClntObjMgr pattern not found)")
+            }
+        });
+        match step {
+            Ok(ChainWork::Injected) => {}
+            // Out of world (loading screen after /reload): pause and wait —
+            // the chain resumes when the frame returns, notices the wiped
+            // marker, and re-bootstraps. Ctrl-C remains the way to stop.
+            Ok(ChainWork::Skipped) => {
+                std::thread::sleep(std::time::Duration::from_millis(50))
+            }
+            Err(e) => {
+                warn!(error = %e, "lua chain step failed");
+                std::thread::sleep(std::time::Duration::from_millis(50));
+            }
         }
-        std::thread::sleep(pqr_engine::engine::DEFAULT_TICK_INTERVAL);
     }
     info!("shutting down");
     engine.shutdown()?;

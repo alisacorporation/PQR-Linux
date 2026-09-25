@@ -11,5 +11,5 @@ pub mod lua_call;
 pub mod ability;
 pub mod engine;
 
-pub use engine::{Engine, EngineError};
+pub use engine::{ChainWork, Engine, EngineError, LuaEvent};
 pub use ident::IdentReplacer;

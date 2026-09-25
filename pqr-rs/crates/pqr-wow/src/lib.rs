@@ -9,7 +9,9 @@
 pub mod offsets;
 pub mod discover;
 pub mod client;
+pub mod scan;
 
 pub use offsets::{Offsets, OffsetsError};
 pub use discover::{discover, Discovery};
 pub use client::{WowClient, WowClass};
+pub use scan::resolve_clnt_obj_mgr;

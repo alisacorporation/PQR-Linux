@@ -14,7 +14,7 @@
 //! │  debug log (press L to toggle)                                       │  optional
 //! │  … dimmed low-level tracing …                                        │
 //! └──────────────────────────────────────────────────────────────────────┘
-//!   q/Esc quit   L toggle debug   R restart rotation (todo)
+//!   q/Esc quit   L toggle debug   x reload ui   Ctrl-C force quit
 //!
 //! Engine work runs on a background thread; the UI thread paints from
 //! shared state at ~30fps and cooperatively stops on `q`.
@@ -34,7 +34,7 @@ use crossterm::terminal::{
     disable_raw_mode, enable_raw_mode, BeginSynchronizedUpdate, EndSynchronizedUpdate,
     EnterAlternateScreen, LeaveAlternateScreen,
 };
-use pqr_engine::{Engine, IdentReplacer};
+use pqr_engine::{ChainWork, Engine, IdentReplacer, LuaEvent};
 use pqr_profile::parse::load_profile;
 use pqr_wow::{discover, Offsets};
 use ratatui::backend::CrosstermBackend;
@@ -62,6 +62,9 @@ pub fn run(
     let debug_ring: Arc<Mutex<VecDeque<String>>> = Arc::new(Mutex::new(VecDeque::with_capacity(DEBUG_LOG_CAPACITY)));
     let state = Arc::new(Mutex::new(AppState::default()));
     let stop = Arc::new(AtomicBool::new(false));
+    // Set by the UI thread on `x`, consumed by the engine thread — runs
+    // `ReloadUI()` so the health probe can demonstrate a live recovery.
+    let reload = Arc::new(AtomicBool::new(false));
 
     // Route tracing to the debug ring only; the "events" panel is fed by the
     // engine thread through push_event() so the two panes stay independent.
@@ -127,51 +130,175 @@ pub fn run(
         }
 
         let stop_engine = stop.clone();
+        let reload_engine = reload.clone();
         let state_for_engine = state.clone();
         let profile_for_engine = profile.clone();
         let rotation_owned = rotation_name.to_string();
         thread::spawn(move || -> Result<()> {
-            let client = discovery.into_client()?;
+            // A dead engine thread must say so — before, a bootstrap timeout
+            // returned an error that only surfaced at join, leaving the UI
+            // frozen in BOOTSTRAP for the rest of the session.
+            let report = |e: &dyn std::fmt::Display| {
+                state_for_engine.lock().unwrap()
+                    .push_event(EventKind::Warn, format!("engine stopped: {e}"));
+            };
+            let client = discovery.into_client().map_err(|e| {
+                report(&e);
+                anyhow!("into_client: {e}")
+            })?;
             let ident = if no_rename { IdentReplacer::identity() } else { IdentReplacer::random() };
-            let mut engine = Engine::attach_with(client, ident)?;
+            let mut engine = Engine::attach_with(client, ident).map_err(|e| {
+                report(&e);
+                anyhow!("attach: {e}")
+            })?;
             {
                 let mut s = state_for_engine.lock().unwrap();
                 s.status = Status::Bootstrapping;
                 s.push_event(EventKind::Ok, "detour applied".into());
             }
-            engine.bootstrap()?;
-            {
-                let mut s = state_for_engine.lock().unwrap();
-                s.status = Status::LoadingRotation;
-                s.push_event(EventKind::Ok, "bootstrap complete".into());
-            }
-            engine.load_rotation(&profile_for_engine, &rotation_owned)?;
-            {
-                let mut s = state_for_engine.lock().unwrap();
-                s.status = Status::Running;
-                s.running_start = Some(Instant::now());
-                s.push_event(EventKind::Ok, format!("rotation loaded: {}", rotation_owned));
+
+            // Wait for the world, then bootstrap; retry until it takes.
+            // Discovery succeeds at login/char-select (the player-name static
+            // survives logout), but payloads are only consumed while the game
+            // runs the detoured function — never during loading — so a
+            // bootstrap attempted out of world times out. Both init steps are
+            // idempotent, so a failure retries a second later instead of
+            // killing the session.
+            let mut stage = "bootstrap";
+            let mut waiting_logged = false;
+            while !stop_engine.load(Ordering::SeqCst) {
+                match engine.tick() {
+                    Ok(true) => {}
+                    Ok(false) => {
+                        if !waiting_logged {
+                            waiting_logged = true;
+                            state_for_engine.lock().unwrap().push_event(
+                                EventKind::Info, "not in world — waiting for login".into());
+                        }
+                        thread::sleep(Duration::from_secs(1));
+                        continue;
+                    }
+                    Err(e) => {
+                        state_for_engine.lock().unwrap()
+                            .push_event(EventKind::Warn, format!("tick: {e}"));
+                        thread::sleep(Duration::from_secs(1));
+                        continue;
+                    }
+                }
+                let attempt = if stage == "bootstrap" {
+                    engine.bootstrap().map(|()| {
+                        let mut s = state_for_engine.lock().unwrap();
+                        s.status = Status::LoadingRotation;
+                        s.push_event(EventKind::Ok, "bootstrap complete".into());
+                    })
+                } else {
+                    engine.load_rotation(&profile_for_engine, &rotation_owned).map(|()| {
+                        let mut s = state_for_engine.lock().unwrap();
+                        s.status = Status::Running;
+                        s.running_start = Some(Instant::now());
+                        s.lua_ok = Some(true);
+                        s.push_event(EventKind::Ok,
+                            format!("rotation loaded: {}", rotation_owned));
+                    })
+                };
+                match attempt {
+                    Ok(()) => {
+                        if stage == "bootstrap" {
+                            stage = "rotation";
+                        } else {
+                            break;
+                        }
+                    }
+                    Err(e) => {
+                        state_for_engine.lock().unwrap()
+                            .push_event(EventKind::Warn,
+                                format!("{stage}: {e} — retrying"));
+                        thread::sleep(Duration::from_secs(1));
+                    }
+                }
             }
 
             let mut last_tick = Instant::now();
             while !stop_engine.load(Ordering::SeqCst) {
-                match engine.tick() {
-                    Ok(alive) => {
-                        let mut s = state_for_engine.lock().unwrap();
-                        s.ticks = s.ticks.wrapping_add(1);
-                        s.in_world = alive;
-                        let now = Instant::now();
-                        let dt = now.duration_since(last_tick).as_secs_f32().max(1e-3);
-                        // EWMA on tick rate
-                        let inst = 1.0 / dt;
-                        s.tick_rate = if s.tick_rate == 0.0 { inst } else { s.tick_rate * 0.85 + inst * 0.15 };
-                        last_tick = now;
+                // x: queue ReloadUI — the engine sends it as the next chain
+                // link (only while the trigger is armed), retried until the
+                // game consumes it.
+                if reload_engine.swap(false, Ordering::SeqCst) {
+                    engine.request_reload();
+                    state_for_engine.lock().unwrap()
+                        .push_event(EventKind::Info, "ReloadUI() queued (x)".into());
+                }
+                // One self-sustaining chain link (kick + marker read). While
+                // the chain is healthy this blocks ~one game frame per call,
+                // so no sleep on Injected; Skipped (loading screen) and
+                // errors sleep briefly instead of spinning. The closure only
+                // locks `state` for the event push itself — recover() runs
+                // unlocked so the UI keeps painting.
+                let step = engine.chain_step(|ev| {
+                    let mut s = state_for_engine.lock().unwrap();
+                    match ev {
+                        LuaEvent::Alive(took) => {
+                            s.lua_ok = Some(true);
+                            s.probe_ms = Some(took.as_millis() as u64);
+                        }
+                        LuaEvent::Lost => {
+                            s.lua_ok = Some(false);
+                            s.probe_ms = None;
+                            s.status = Status::LuaLost;
+                            s.push_event(EventKind::Warn,
+                                "lua framework lost (reload?) — recovering".into());
+                        }
+                        LuaEvent::Recovering => {
+                            s.status = Status::Recovering;
+                            s.push_event(EventKind::Info, "rebootstrapping framework...".into());
+                        }
+                        LuaEvent::Recovered => {
+                            s.lua_ok = Some(true);
+                            s.probe_ms = None;
+                            s.status = Status::Running;
+                            s.push_event(EventKind::Ok,
+                                "framework recovered, rotation reloaded".into());
+                        }
+                        LuaEvent::RecoverFailed(err) => {
+                            s.push_event(EventKind::Warn, format!("rebootstrap failed: {err}"));
+                        }
+                        LuaEvent::ProbeUnavailable => {
+                            s.push_event(EventKind::Warn,
+                                "lua probe unavailable (ClntObjMgr pattern not found)".into());
+                        }
                     }
+                });
+                match step {
+                    Ok(ChainWork::Injected) => {}
+                    Ok(ChainWork::Skipped) => thread::sleep(Duration::from_millis(50)),
                     Err(e) => {
-                        state_for_engine.lock().unwrap().push_event(EventKind::Warn, format!("tick: {e}"));
+                        // Timeout = trigger lost; the next step republishes
+                        // and hunts again. Dedup in push_event keeps the
+                        // log line refreshing instead of growing.
+                        state_for_engine.lock().unwrap()
+                            .push_event(EventKind::Warn, format!("lua chain: {e}"));
+                        thread::sleep(Duration::from_millis(50));
                     }
                 }
-                thread::sleep(pqr_engine::engine::DEFAULT_TICK_INTERVAL);
+                // Stat poll: in-world flag, ticks, tick-rate EWMA.
+                if last_tick.elapsed() >= pqr_engine::engine::DEFAULT_TICK_INTERVAL {
+                    match engine.tick() {
+                        Ok(alive) => {
+                            let mut s = state_for_engine.lock().unwrap();
+                            s.ticks = s.ticks.wrapping_add(1);
+                            s.in_world = alive;
+                            let now = Instant::now();
+                            let dt = now.duration_since(last_tick).as_secs_f32().max(1e-3);
+                            // EWMA on tick rate
+                            let inst = 1.0 / dt;
+                            s.tick_rate = if s.tick_rate == 0.0 { inst } else { s.tick_rate * 0.85 + inst * 0.15 };
+                        }
+                        Err(e) => {
+                            state_for_engine.lock().unwrap().push_event(EventKind::Warn, format!("tick: {e}"));
+                        }
+                    }
+                    last_tick = Instant::now();
+                }
             }
 
             {
@@ -179,7 +306,10 @@ pub fn run(
                 s.status = Status::ShuttingDown;
                 s.push_event(EventKind::Info, "shutting down".into());
             }
-            engine.shutdown()?;
+            engine.shutdown().map_err(|e| {
+                report(&e);
+                anyhow!("shutdown: {e}")
+            })?;
             {
                 let mut s = state_for_engine.lock().unwrap();
                 s.status = Status::Done;
@@ -204,7 +334,7 @@ pub fn run(
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend).context("create terminal")?;
 
-    let ui_result = ui_loop(&mut terminal, &debug_ring, &state, &stop);
+    let ui_result = ui_loop(&mut terminal, &debug_ring, &state, &stop, &reload);
 
     stop.store(true, Ordering::SeqCst);
     let join_result = engine_handle.join();
@@ -225,6 +355,7 @@ fn ui_loop(
     debug_ring: &Arc<Mutex<VecDeque<String>>>,
     state: &Arc<Mutex<AppState>>,
     stop: &Arc<AtomicBool>,
+    reload: &Arc<AtomicBool>,
 ) -> Result<()> {
     // Full initial clear. Afterwards ratatui's per-cell diff keeps repaints
     // minimal — blanking + repainting the whole screen every frame (the old
@@ -246,6 +377,7 @@ fn ui_loop(
                         stop.store(true, Ordering::SeqCst); break;
                     }
                     KeyCode::Char('l') | KeyCode::Char('L') => { show_debug = !show_debug; }
+                    KeyCode::Char('x') => { reload.store(true, Ordering::SeqCst); }
                     _ => {}
                 },
                 // Resizes are handled by ratatui's autoresize on the next draw.
@@ -285,6 +417,10 @@ fn demo_engine(state: Arc<Mutex<AppState>>, stop: Arc<AtomicBool>, rotation: &st
     let mut next_trace = Instant::now() + Duration::from_millis(1000);
     let mut last_tick = Instant::now();
     let mut event_no = 0u32;
+    // Scripted reload cycle: LUA LOST -> RECOVERING -> RUNNING, once, after
+    // the normal stages have settled.
+    let mut reload_step = 0u8;
+    let mut reload_next = Instant::now() + Duration::from_secs(10);
     let rotation = rotation.to_string();
 
     while !stop.load(Ordering::SeqCst) {
@@ -297,10 +433,34 @@ fn demo_engine(state: Arc<Mutex<AppState>>, stop: Arc<AtomicBool>, rotation: &st
             s.status = status;
             if matches!(status, Status::Running) {
                 s.running_start = Some(now);
+                s.lua_ok = Some(true);
             }
             s.push_event(kind, format!("{text}: {rotation}"));
             stage += 1;
             next_event = now + Duration::from_millis(900);
+        }
+
+        if stage >= STAGES.len() && reload_step < 3 && now >= reload_next {
+            reload_step += 1;
+            match reload_step {
+                1 => {
+                    s.lua_ok = Some(false);
+                    s.status = Status::LuaLost;
+                    s.push_event(EventKind::Warn, "lua framework lost (reload?) — recovering".into());
+                    reload_next = now + Duration::from_millis(900);
+                }
+                2 => {
+                    s.status = Status::Recovering;
+                    s.push_event(EventKind::Info, "rebootstrapping framework...".into());
+                    reload_next = now + Duration::from_millis(700);
+                }
+                3 => {
+                    s.lua_ok = Some(true);
+                    s.status = Status::Running;
+                    s.push_event(EventKind::Ok, "framework recovered, rotation reloaded".into());
+                }
+                _ => {}
+            }
         }
 
         if matches!(s.status, Status::Running | Status::ShuttingDown) {
@@ -358,6 +518,8 @@ fn draw_banner(f: &mut ratatui::Frame, area: Rect, s: &AppState) {
         Status::Bootstrapping  => ("*", Color::Yellow,   "BOOTSTRAP"),
         Status::LoadingRotation=> ("*", Color::Yellow,   "LOADING ROTATION"),
         Status::Running        => ("*", Color::Green,    "RUNNING"),
+        Status::LuaLost        => ("!", Color::Red,      "LUA LOST"),
+        Status::Recovering     => ("*", Color::Yellow,   "RECOVERING"),
         Status::ShuttingDown   => ("*", Color::Yellow,   "SHUTTING DOWN"),
         Status::Done           => ("*", Color::Gray,     "DONE"),
     };
@@ -421,6 +583,10 @@ fn draw_stats(f: &mut ratatui::Frame, area: Rect, s: &AppState) {
             Span::styled("  world      ", Style::default().add_modifier(Modifier::DIM)),
             Span::styled(format!("{world_txt:<10}"), Style::default().fg(world_color).add_modifier(Modifier::BOLD)),
         ]),
+        Line::from(vec![
+            Span::styled("  lua        ", Style::default().add_modifier(Modifier::DIM)),
+            Span::styled(format!("{:<10}", lua_txt(s)), Style::default().fg(lua_color(s)).add_modifier(Modifier::BOLD)),
+        ]),
         stat_row("priority",   format!("{:>8}", s.priority_count),  Color::Cyan),
         stat_row("abilities",  format!("{:>8}", s.abilities_count), Color::Gray),
         stat_row("rotations",  format!("{:>8}", s.rotations_count), Color::Gray),
@@ -435,6 +601,21 @@ fn stat_row(label: &'static str, value: String, val_color: Color) -> Line<'stati
         Span::styled(format!("  {label:<10} "), Style::default().add_modifier(Modifier::DIM)),
         Span::styled(value, Style::default().fg(val_color).add_modifier(Modifier::BOLD)),
     ])
+}
+
+fn lua_txt(s: &AppState) -> String {
+    match s.lua_ok {
+        Some(true) => match s.probe_ms {
+            Some(ms) => format!("OK {ms}ms"),
+            None => "OK".into(),
+        },
+        Some(false) => "LOST".into(),
+        None => "-".into(),
+    }
+}
+
+fn lua_color(s: &AppState) -> Color {
+    match s.lua_ok { Some(true) => Color::Green, Some(false) => Color::Red, None => Color::DarkGray }
 }
 
 fn draw_events(f: &mut ratatui::Frame, area: Rect, s: &AppState) {
@@ -478,6 +659,7 @@ fn draw_footer(f: &mut ratatui::Frame, area: Rect, show_debug: bool) {
         Span::raw("  "),
         key("q/Esc"), Span::styled(" quit  ", Style::default().add_modifier(Modifier::DIM)),
         key("L"),     Span::styled(format!(" {debug_label}  "), Style::default().add_modifier(Modifier::DIM)),
+        key("x"),     Span::styled(" reload ui  ", Style::default().add_modifier(Modifier::DIM)),
         key("Ctrl-C"), Span::styled(" force quit", Style::default().add_modifier(Modifier::DIM)),
     ]));
     f.render_widget(p, area);
@@ -518,6 +700,11 @@ struct AppState {
     ticks: u64,
     tick_rate: f32,
     in_world: bool,
+    /// Framework health from the Lua marker probe: Some(true) = OK,
+    /// Some(false) = lost, None = not yet probed. `probe_ms` = last probe
+    /// round-trip time (detour consumption latency).
+    lua_ok: Option<bool>,
+    probe_ms: Option<u64>,
     events: VecDeque<AppEvent>,
 }
 
@@ -529,7 +716,7 @@ impl Default for AppState {
             status: Status::Idle,
             session_start: Instant::now(),
             running_start: None,
-            ticks: 0, tick_rate: 0.0, in_world: false,
+            ticks: 0, tick_rate: 0.0, in_world: false, lua_ok: None, probe_ms: None,
             events: VecDeque::with_capacity(EVENT_LOG_CAPACITY),
         }
     }
@@ -537,6 +724,14 @@ impl Default for AppState {
 
 impl AppState {
     fn push_event(&mut self, kind: EventKind, text: String) {
+        // Consecutive identical events (e.g. a dead-handle read error firing
+        // at tick rate) refresh their timestamp instead of growing the log.
+        if let Some(last) = self.events.back_mut() {
+            if last.text == text && matches!(std::mem::discriminant(&last.kind), d if d == std::mem::discriminant(&kind)) {
+                last.at = Instant::now();
+                return;
+            }
+        }
         if self.events.len() >= EVENT_LOG_CAPACITY { self.events.pop_front(); }
         self.events.push_back(AppEvent { kind, text, at: Instant::now() });
     }
@@ -549,7 +744,19 @@ struct AppEvent { kind: EventKind, text: String, at: Instant }
 enum EventKind { Ok, Info, Warn }
 
 #[derive(Debug, Clone, Copy)]
-enum Status { Idle, Attaching, Bootstrapping, LoadingRotation, Running, ShuttingDown, Done }
+enum Status {
+    Idle,
+    Attaching,
+    Bootstrapping,
+    LoadingRotation,
+    Running,
+    /// Marker probe lost the framework (e.g. `/reload` wiped it).
+    LuaLost,
+    /// Re-bootstrapping the framework + rotation.
+    Recovering,
+    ShuttingDown,
+    Done,
+}
 
 // -------- tracing capture (debug pane only) --------
 
