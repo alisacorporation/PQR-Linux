@@ -8,6 +8,7 @@ members = [
     "crates/pqr-inject",
     "crates/pqr-engine",
     "crates/pqr-cli",
+    "crates/pqr-gui",
 ]
 
 [workspace.package]

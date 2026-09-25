@@ -4,10 +4,12 @@
 //! Ports `reversed/pqr-app/PriorityQueueRotation/clsXML.cs` including its
 //! double XMLEncode/XMLDecode quirk (see clsXML.cs:575-590).
 
+pub mod compare;
 pub mod escape;
 pub mod model;
 pub mod parse;
 pub mod write;
 
 pub use model::{Ability, Rotation, Profile, TargetKind, UnresolvedName};
-pub use parse::{parse_abilities, parse_rotations, ProfileError};
+pub use parse::{load_profile, parse_abilities, parse_rotations, ProfileError};
+pub use write::{write_abilities, write_rotations};
