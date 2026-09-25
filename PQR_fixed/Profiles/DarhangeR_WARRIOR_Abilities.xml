@@ -68,10 +68,14 @@ then return true end</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><Ca
 and ragecost(47475)
 and CanAttack()
 and rangeCheck(47465, &amp;quot;target&amp;quot;)
-then return true end</Lua><RecastDelay>150</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Heroic Strike</Name><Default>false</Default><SpellID>47450</SpellID><Actions></Actions><Lua>-- Rage dump only when high (was dumping at any rage).
+then return true end</Lua><RecastDelay>150</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>F:Heroic Strike</Name><Default>false</Default><SpellID>47450</SpellID><Actions></Actions><Lua>-- Rage dump ≥45. If kill target ≤25% (or Sudden Death window), bank rage for Execute unless 70+.
 if not CanAttack() then return false end
-if UnitPower("player") &lt; 45 then return false end
+local rageNow = UnitPower("player")
+if rageNow &lt; 45 then return false end
 if not rangeCheck2(47450, "target") then return false end
+local thp = getHp("target")
+local bank = (thp &lt;= 25) or (sdeath and thp &lt;= 35)
+if bank and rageNow &lt; 70 then return false end
 if AoE == true then
 	if ragecost(47520) then
 		CastSpellByID(47520)
@@ -271,13 +275,45 @@ if not CanAttack() then return false end
 if UnitDebuffID("target", 47437, "player") then return false end
 if not rangeCheck(47465, "target") then return false end
 if not PQR_TestMode and not UnitIsPlayer("target") then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Bladestorm (Sh)</Name><Default>false</Default><SpellID>46924</SpellID><Actions></Actions><Lua>-- Hold Left Shift = Bladestorm (manual BG pack/duel).
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Bladestorm (Sh)</Name><Default>false</Default><SpellID>46924</SpellID><Actions></Actions><Lua>-- Hold Left Shift = Bladestorm. Auto when AoE mode + rage≥70 + ≥2 hostiles within Thunder Clap range (8yd).
+if CooldownRemains(46924) then return false end
+if not CanAttack() then return false end
+if not ragecost(46924) then return false end
+if not rangeCheck(47465, "target") then return false end
+
 if IsLeftShiftKeyDown() and GetCurrentKeyBoardFocus() == nil then
-	if CooldownRemains(46924) then return false end
-	if not CanAttack() then return false end
-	if not ragecost(46924) then return false end
 	return true
 end
+
+if AoE ~= true then return false end
+if UnitPower("player") &lt; 70 then return false end
+
+local rangeName = GetSpellInfo(47502)
+if not rangeName then return false end
+local seen = {}
+local near = 0
+local function mark(u)
+	if not u or not UnitExists(u) then return end
+	if UnitIsDeadOrGhost(u) then return end
+	if UnitCanAttack("player", u) ~= 1 then return end
+	if IsSpellInRange(rangeName, u) ~= 1 then return end
+	local id = UnitGUID(u)
+	if id and seen[id] then return end
+	if id then seen[id] = true end
+	near = near + 1
+end
+
+mark("target")
+mark("focus")
+mark("mouseover")
+
+local gtype = GetNumRaidMembers() &gt; 0 and "raid" or "party"
+local gn = gtype == "raid" and GetNumRaidMembers() or GetNumPartyMembers()
+for i = 1, gn do
+	mark(gtype .. i .. "target")
+end
+
+if near &gt;= 2 then return true end
 return false</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Thunder Clap</Name><Default>false</Default><SpellID>47502</SpellID><Actions></Actions><Lua>-- Melee train slow — refresh when missing, or AoE mode, or 2+ nearby enemies optional via AoE.
 if not ragecost(47502) then return false end
 if not CanAttack() then return false end
@@ -378,16 +414,28 @@ if modtime == nil then
 	modtime = 0
 end
 
-if IsLeftControlKeyDown()  and GetTime() - leftkeydown &amp;gt; 1 then
+if IsLeftControlKeyDown() and GetTime() - leftkeydown &gt; 1 then
 	leftkeydown = GetTime()
-  	if StopRota  then
-		StopRota  = false 
-		PQR_WriteToChat(&amp;quot;Rotation \124cFF15E615reenabled!&amp;quot;)
-  	else 
-		StopRota  = true 
-		PQR_WriteToChat(&amp;quot;Rotation \124cFFE61515stopped!&amp;quot;)
-  	end
-end</Lua><RecastDelay>0</RecastDelay><Target>Click</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Berserker Rage (PvP)</Name><Default>false</Default><SpellID>18499</SpellID><Actions></Actions><Lua>-- CC break. Dance to Berserker first (BR is zerk-only); cast next tick if stance just changed.
+	if StopRota then
+		StopRota = false
+		PQR_WriteToChat("Rotation \124cFF15E615reenabled!")
+	else
+		StopRota = true
+		PQR_WriteToChat("Rotation \124cFFE61515stopped!")
+	end
+end
+
+-- Left Alt = AoE pack mode (auto Bladestorm + Cleave dump). Shift stays manual BS hold.
+if IsLeftAltKeyDown() and not GetCurrentKeyBoardFocus() and GetTime() - modtime &gt; 0.3 then
+	modtime = GetTime()
+	if AoE then
+		AoE = false
+		PQR_WriteToChat("AoE: \124cFFE61515Disabled")
+	else
+		AoE = true
+		PQR_WriteToChat("AoE: \124cFF15E615Enabled")
+	end
+end</Lua><RecastDelay>0</RecastDelay><Target>Player</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Berserker Rage (PvP)</Name><Default>false</Default><SpellID>18499</SpellID><Actions></Actions><Lua>-- CC break. Dance to Berserker first (BR is zerk-only); cast next tick if stance just changed.
 local fears = { 6215, 8122, 5484, 2637, 6358, 5782, 10890, 17928 }
 local stuns = { 5246, 20066, 34490, 31935, 47476, 853, 10326 }
 local cced = false
@@ -1191,16 +1239,26 @@ if CooldownRemains(20252) then return false end
 if UnitPower("player") &lt; 25 then return false end
 if rangeCheck2(47465, "target") then return false end
 if IsSpellInRange(GetSpellInfo(20252), "target") ~= 1 then return false end
-return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Pummel (Kick)</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- Real kick (Heroic Throw does NOT interrupt). SpellID 0 — cast manual after Zerk dance.
+return true</Lua><RecastDelay>0</RecastDelay><Target>Target</Target><CancelChannel>False</CancelChannel><LuaBefore></LuaBefore><LuaAfter></LuaAfter></Ability><Ability><Name>A:Pummel (Kick)</Name><Default>false</Default><SpellID>0</SpellID><Actions></Actions><Lua>-- Real kick on cast PROGRESS (30-70%) so it isn't faked. Zerk dance + Pummel. SpellID 0.
 if not IsSpellKnown(6552) then return false end
 if not CanAttack() then return false end
 if CooldownRemains(6552) then return false end
 
-local castName, _, _, _, _, _, _, _, castNotInt = UnitCastingInfo("target")
-local chName, _, _, _, _, _, _, chNotInt = UnitChannelInfo("target")
+local castName, _, _, _, castStart, castEnd, _, _, castNotInt = UnitCastingInfo("target")
+local chName, _, _, _, chStart, chEnd, _, chNotInt = UnitChannelInfo("target")
 local kick = false
-if castName and castNotInt == false then kick = true end
-if chName and chNotInt == false then kick = true end
+
+if castName and castNotInt == false and castStart and castEnd then
+	local span = castEnd - castStart
+	if span &lt;= 0 then
+		kick = true
+	else
+		local pct = (GetTime() * 1000 - castStart) / span * 100
+		if pct &gt;= 30 and pct &lt;= 70 then kick = true end
+	end
+elseif chName and chNotInt == false then
+	kick = true
+end
 if not kick then return false end
 
 if GetShapeshiftForm() ~= 3 then
